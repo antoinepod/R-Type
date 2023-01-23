@@ -8,7 +8,8 @@ if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/build>)
 endif()
 
-include_directories(assets/ src/ src/GameStatus)
+include_directories(assets/ includes/ includes/Encapsulation includes/Network src/
+        src/GameStatus)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
