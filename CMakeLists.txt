@@ -8,9 +8,16 @@ if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/build>)
 endif()
 
-file(GLOB_RECURSE HEADERS src/*.hpp)
+include_directories(assets/ src/ src/GameStatus)
+
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(r-type ${HEADERS} ${SOURCES})
 
 target_link_libraries(r-type raylib)
+
+add_custom_command(
+        TARGET r-type
+        POST_BUILD COMMAND ${CMAKE_COMMAND}
+        -E create_symlink ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+)

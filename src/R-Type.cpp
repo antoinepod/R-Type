@@ -6,13 +6,15 @@
 */
 
 #include "R-Type.hpp"
-#include "GameStatus/Menu.hpp"
+
 
 RType::RType() {
-    InitWindow(600, 600, "R-Type window");
+    InitWindow(1500, 900, "R-Type window");
     SetTargetFPS(60);
+    SetExitKey(KEY_A);
 
     _gameStatus[GameStatus::MENU] = std::make_shared<Menu>();
+    _gameStatus[GameStatus::GAME] = std::make_shared<Game>();
     _currentGameStatus = GameStatus::MENU;
 }
 

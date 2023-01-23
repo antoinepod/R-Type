@@ -17,4 +17,8 @@ public:
 
     void Display() override;
     GameStatus ManageInput() override;
+
+private:
+    std::vector<std::string> _buttons;
+    unsigned int _selectedButton;
 };

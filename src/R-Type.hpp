@@ -8,9 +8,13 @@
 #pragma once
 
 #include <raylib.h>
-#include "GameStatus/IGameStatus.hpp"
 #include <map>
 #include <memory>
+
+#include "GameStatus/IGameStatus.hpp"
+#include "Menu.hpp"
+#include "Game.hpp"
+
 
 class RType {
 public:
