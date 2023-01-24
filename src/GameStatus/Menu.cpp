@@ -18,7 +18,8 @@ Menu::~Menu() {
 
 void Menu::Display() {
     ClearBackground(BLACK);
-    DrawTextEx(_font, "R-Type", (Vector2) {static_cast<float>(750 - (MeasureText("R-Type", 80) / 2)), 200}, 100, 20, WHITE);
+    Vector2 pos = {300, 200};
+    DrawTextEx(_font, "R-Type", pos, 100, 20, WHITE);
     for (int i = 0; i < _buttons.size(); i++) {
         if (i == _selectedButton)
             DrawText(_buttons[i].c_str(), 750 - (MeasureText(_buttons[i].c_str(), 40) / 2), 450 + (i * 100), 40, RED);
