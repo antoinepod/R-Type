@@ -21,4 +21,5 @@ public:
 private:
     std::vector<std::string> _buttons;
     unsigned int _selectedButton;
+    Font _font;
 };

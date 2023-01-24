@@ -10,6 +10,7 @@
 Menu::Menu() {
     _buttons = {"Play", "Settings", "Quit"};
     _selectedButton = 0;
+    _font = LoadFont("assets/13misa/13_Misa.TTF");
 }
 
 Menu::~Menu() {
@@ -17,7 +18,7 @@ Menu::~Menu() {
 
 void Menu::Display() {
     ClearBackground(BLACK);
-    DrawText("R-Type", 750 - (MeasureText("R-Type", 80) / 2), 200, 80, WHITE);
+    DrawTextEx(_font, "R-Type", (Vector2) {static_cast<float>(750 - (MeasureText("R-Type", 80) / 2)), 200}, 100, 20, WHITE);
     for (int i = 0; i < _buttons.size(); i++) {
         if (i == _selectedButton)
             DrawText(_buttons[i].c_str(), 750 - (MeasureText(_buttons[i].c_str(), 40) / 2), 450 + (i * 100), 40, RED);
