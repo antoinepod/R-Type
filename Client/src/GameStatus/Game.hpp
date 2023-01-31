@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2023
-** r-type
+** B-CPP-500-LIL-5-2-rtype-william.mallevays
 ** File description:
 ** Game.hpp
 */

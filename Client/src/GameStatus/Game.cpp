@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2023
-** r-type
+** B-CPP-500-LIL-5-2-rtype-william.mallevays
 ** File description:
 ** Game.cpp
 */
@@ -8,7 +8,11 @@
 #include <iostream>
 #include "Game.hpp"
 
+#include <filesystem>
+
+
 Game::Game() {
+    std::cout << "Current path = " << std::filesystem::current_path() << std::endl;
     _spaceShip = LoadTexture("assets/spaceShip.png");
     _spaceShipPos = {100, 420};
     _spaceShipRec = {132, 0, 66, 34};
