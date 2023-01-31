@@ -1,8 +1,11 @@
 [requires]
-boost/1.74.0@conan/stable
+boost/1.74.0
+#raylib/4.0.0
 
 [options]
 boost:shared=True
+#raylib:shared=False
+
 
 [generators]
 cmake
