@@ -18,6 +18,11 @@ public:
     void Display() override;
     GameStatus ManageInput() override;
 
+    std::string _serverIp;
+    bool _ipStatus;
+
+    std::string _ip;
+
 private:
     Texture _spaceShip;
     Vector2 _spaceShipPos;

@@ -14,6 +14,7 @@
 #include "GameStatus/IGameStatus.hpp"
 #include "Menu.hpp"
 #include "Game.hpp"
+#include "Settings.hpp"
 
 
 class RType {

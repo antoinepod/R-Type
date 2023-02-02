@@ -15,6 +15,7 @@ RType::RType() {
 
     _gameStatus[GameStatus::MENU] = std::make_shared<Menu>();
     _gameStatus[GameStatus::GAME] = std::make_shared<Game>();
+    _gameStatus[GameStatus::SETTINGS] = std::make_shared<Settings>();
     _currentGameStatus = GameStatus::MENU;
 }
 
