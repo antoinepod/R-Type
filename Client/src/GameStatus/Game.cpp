@@ -50,8 +50,10 @@ GameStatus Game::ManageInput() {
 
         if (IsKeyPressed(KEY_BACKSPACE) && !_ip.empty())
             _ip.pop_back();
-        if (IsKeyPressed(KEY_ENTER))
+        if (IsKeyPressed(KEY_ENTER)) {
+            connectToServer(_ip);
             _ipStatus = true;
+        }
     } else {
         if (IsKeyDown(KEY_UP) && _spaceShipPos.y > 0) {
             _spaceShipPos.y -= 4;
@@ -91,4 +93,37 @@ GameStatus Game::ManageInput() {
     }
 
     return GameStatus::GAME;
+}
+
+
+#include <iostream>
+#include <vector>
+#include <boost/asio.hpp>
+#include <chrono>
+#include <thread>
+
+const int port_num = 8080;
+
+void Game::connectToServer(const std::string& ip) {
+    boost::asio::io_service service;
+    boost::asio::ip::udp::socket socket(service);
+    socket.open(boost::asio::ip::udp::v4());
+
+    boost::asio::ip::udp::endpoint server_endpoint = *boost::asio::ip::udp::resolver(service).resolve({boost::asio::ip::udp::v4(), ip, std::to_string(port_num)});
+
+    while (true)
+    {
+        std::vector<int> send_vec = {1, 2, 3, 4, 5};
+        socket.send_to(boost::asio::buffer(send_vec), server_endpoint);
+
+        std::array<char, 1024> recv_buf{};
+        boost::asio::ip::udp::endpoint sender_endpoint;
+        size_t bytes_recvd = socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+
+        std::cout << "Received message from " << sender_endpoint << ": ";
+        std::cout.write(recv_buf.data(), bytes_recvd);
+        std::cout << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
 }

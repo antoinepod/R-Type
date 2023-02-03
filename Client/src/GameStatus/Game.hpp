@@ -18,6 +18,8 @@ public:
     void Display() override;
     GameStatus ManageInput() override;
 
+    void connectToServer(const std::string& ip);
+
     std::string _serverIp;
     bool _ipStatus;
 
