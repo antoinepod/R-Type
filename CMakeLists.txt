@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
 set(CMAKE_CXX_STANDARD 17)
-project(r-type)
 
 if (NOT raylib_FOUND)
     INCLUDE(FetchContent)
@@ -19,16 +18,26 @@ if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/build>)
 endif()
 
+
+project(r-type_server)
+
+include_directories(Server/ Server/src/)
+file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp)
+file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp)
+
+add_executable(r-type_server ${SERVER_HEADERS} ${SERVER_SOURCES})
+
+
+project(r-type_client)
+
 include_directories(Client/ Client/assets/ Client/src/ Client/src/GameStatus)
+file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp)
+file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp)
 
-file(GLOB_RECURSE SOURCES Client/src/*.cpp)
-
-add_executable(r-type ${HEADERS} ${SOURCES})
-
-target_link_libraries(r-type raylib)
-
+add_executable(r-type_client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
+target_link_libraries(r-type_client raylib)
 add_custom_command(
-        TARGET r-type
+        TARGET r-type_client
         POST_BUILD COMMAND ${CMAKE_COMMAND}
         -E create_symlink ${CMAKE_SOURCE_DIR}/Client/assets
         ${CMAKE_BINARY_DIR}/assets
