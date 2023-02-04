@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../includes/network.hpp"
+#include "../interfaces/INetwork.hpp"
 
 namespace RType {
     namespace Network {
@@ -10,10 +10,10 @@ namespace RType {
                 ~UDPClient() {};
                 void Run() {
                     boost::asio::ip::udp::socket socket = SocketFd();
-                    boost::array<char, 1> send_buf  = {{ 48 }};
+                    boost::array<char, 1024> send_buf  = {{ 48 }};
                     socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
 
-                    boost::array<char, 128> recv_buf;
+                    boost::array<char, 1024> recv_buf;
                     boost::asio::ip::udp::endpoint sender_endpoint;
                     size_t len = socket.receive_from(
                             boost::asio::buffer(recv_buf), sender_endpoint);

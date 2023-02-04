@@ -1,4 +1,4 @@
-#include "UDPServer.hpp"
+#include "UDPAsyncServer.hpp"
 #include <thread>         // std::thread
 
 int main()
@@ -9,9 +9,9 @@ int main()
         udp_server server(io_context);
         //io_context.run();
         std::thread t([&io_context] { io_context.run(); });
-        for(int i = 0; i != 20; i++) {
-            std::cout << "\"GAME LOOP\"" << std::endl;
-            sleep(5);
+        for(int i = 0; i != 10; i++) {
+            std::cout << "IS OK" << std::endl;
+            sleep(3);
         }
         t.join();
     }
@@ -19,6 +19,6 @@ int main()
     {
         std::cerr << e.what() << std::endl;
     }
-    
+    //std::thread first(io_context.run());
     return 0;
 }
