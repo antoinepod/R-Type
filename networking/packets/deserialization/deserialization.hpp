@@ -1,0 +1,75 @@
+#pragma once
+
+#include <vector>
+#include <cstdlib>
+#include <boost/asio.hpp>
+#include <boost/array.hpp>
+#include "../dataStruct/playerObject.hpp"
+#include "../dataStruct/enemyObject.hpp"
+
+namespace RType {
+    namespace Network {
+
+        class Deseria {
+
+            public:
+                Deseria() {};
+                ~Deseria() {};
+
+                std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> D_eserialize(boost::array<char, 1024>& buffer) {
+                    RType::Network::PlayerObject playerObject;
+                    RType::Network::EnemyObject enemyObject;
+                    std::size_t pos = 0;
+                    std::size_t size = 0;
+                    std::vector<RType::Network::PlayerObject> playerObjectHolder;
+                    std::vector<RType::Network::EnemyObject> enemyObjectHolder;
+
+                    size = getMeta(buffer, pos);
+                    //std::cout << "the buffer size is: " << size << std::endl;
+                    for (int i = 0; i < size; i++) {
+                        playerObject.setX(getDoubleValue(buffer, pos));
+                        playerObject.setY(getDoubleValue(buffer, pos));
+                        playerObject.setCelerity(getDoubleValue(buffer, pos));
+                        playerObject.setHealth(getIntValue(buffer, pos));
+                        playerObject.setStrength(getIntValue(buffer, pos));
+                        playerObject.setPlayerNumber(getIntValue(buffer, pos));
+                        playerObject.setType(getIntValue(buffer, pos));
+                        playerObjectHolder.push_back(playerObject);
+                    }
+                    size = getMeta(buffer, pos);
+                    for (int i = 0; i < size; i++) {
+                        enemyObject.setX(getDoubleValue(buffer, pos));
+                        enemyObject.setY(getDoubleValue(buffer, pos));
+                        enemyObject.setCelerity(getDoubleValue(buffer, pos));
+                        enemyObject.setHealth(getIntValue(buffer, pos));
+                        enemyObject.setStrength(getIntValue(buffer, pos));
+                        enemyObject.setPlayerNumber(getIntValue(buffer, pos));
+                        enemyObject.setType(getIntValue(buffer, pos));
+                        enemyObjectHolder.push_back(enemyObject);
+                    }
+                    return make_pair(playerObjectHolder, enemyObjectHolder);
+                };
+                std::size_t getMeta(boost::array<char, 1024> buffer, std::size_t& pos) {
+                    std::size_t result = 0;
+                    std::memcpy(&result, buffer.data() + pos, sizeof(result));
+                    pos += sizeof(result);
+                    //std::cout << "size_t value: " << result << "and pos is: " << pos << std::endl;
+                    return result;
+                }
+                int getIntValue(boost::array<char, 1024> buffer, std::size_t& pos) {
+                    int result = 0;
+                    std::memcpy(&result, buffer.data() + pos, sizeof(result));
+                    pos += sizeof(result);
+                    ///std::cout << "int value: " << result << "and pos is: " << pos << std::endl;
+                    return result;
+                }
+                double getDoubleValue(boost::array<char, 1024> buffer, std::size_t& pos) {
+                    double result = 0;
+                    std::memcpy(&result, buffer.data() + pos, sizeof(result));
+                    pos += sizeof(result);
+                    //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;
+                    return result;
+                }
+        };
+    }
+}
