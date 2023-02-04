@@ -8,6 +8,8 @@
 #pragma once
 
 #include "IGameStatus.hpp"
+#include "R-Type.hpp"
+
 
 
 class Menu : public IGameStatus {
@@ -16,9 +18,10 @@ public:
     ~Menu() override;
 
     void Display() override;
-    GameStatus ManageInput() override;
+    GameStatus ManageInput(std::string &serverIp) override;
 
 private:
     std::vector<std::string> _buttons;
     unsigned int _selectedButton;
+    std::string _serverIp;
 };

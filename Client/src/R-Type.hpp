@@ -28,4 +28,6 @@ protected:
 private:
     std::map<GameStatus, std::shared_ptr<IGameStatus>> _gameStatus;
     GameStatus _currentGameStatus;
+
+    std::string _serverIp;
 };

@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 
+
 enum GameStatus {
     MENU,
     GAME,
@@ -23,6 +24,5 @@ public:
     virtual ~IGameStatus() = default;
 
     virtual void Display() = 0;
-    virtual GameStatus ManageInput() = 0;
-
+    virtual GameStatus ManageInput(std::string &serverIp) = 0;
 };

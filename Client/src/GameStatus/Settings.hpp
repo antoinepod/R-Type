@@ -8,6 +8,7 @@
 #pragma once
 
 #include "IGameStatus.hpp"
+#include "R-Type.hpp"
 
 
 class Settings : public IGameStatus {
@@ -16,8 +17,9 @@ public:
     ~Settings() override;
 
     void Display() override;
-    GameStatus ManageInput() override;
+    GameStatus ManageInput(std::string &serverIp) override;
 
 private:
+    std::string _ip;
 };
 
