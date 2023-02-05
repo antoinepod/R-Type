@@ -1,0 +1,3 @@
+/home/pan/Epitech/PGE/Tek3/R-Type/RType/_deps/raylib-subbuild/CMakeFiles/rebuild_cache.dir
+/home/pan/Epitech/PGE/Tek3/R-Type/RType/_deps/raylib-subbuild/CMakeFiles/edit_cache.dir
+/home/pan/Epitech/PGE/Tek3/R-Type/RType/_deps/raylib-subbuild/CMakeFiles/raylib-populate.dir

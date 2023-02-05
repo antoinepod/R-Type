@@ -30,9 +30,9 @@ namespace RType {
                     size = getMeta(buffer, pos);
                     //std::cout << "the buffer size is: " << size << std::endl;
                     for (int i = 0; i < size; i++) {
-                        playerObject.setX(getDoubleValue(buffer, pos));
-                        playerObject.setY(getDoubleValue(buffer, pos));
-                        playerObject.setCelerity(getDoubleValue(buffer, pos));
+                        playerObject.setX(getFloatValue(buffer, pos));
+                        playerObject.setY(getFloatValue(buffer, pos));
+                        playerObject.setCelerity(getFloatValue(buffer, pos));
                         playerObject.setHealth(getIntValue(buffer, pos));
                         playerObject.setStrength(getIntValue(buffer, pos));
                         playerObject.setPlayerNumber(getIntValue(buffer, pos));
@@ -41,9 +41,9 @@ namespace RType {
                     }
                     size = getMeta(buffer, pos);
                     for (int i = 0; i < size; i++) {
-                        enemyObject.setX(getDoubleValue(buffer, pos));
-                        enemyObject.setY(getDoubleValue(buffer, pos));
-                        enemyObject.setCelerity(getDoubleValue(buffer, pos));
+                        enemyObject.setX(getFloatValue(buffer, pos));
+                        enemyObject.setY(getFloatValue(buffer, pos));
+                        enemyObject.setCelerity(getFloatValue(buffer, pos));
                         enemyObject.setHealth(getIntValue(buffer, pos));
                         enemyObject.setStrength(getIntValue(buffer, pos));
                         enemyObject.setPlayerNumber(getIntValue(buffer, pos));
@@ -66,8 +66,8 @@ namespace RType {
                     ///std::cout << "int value: " << result << "and pos is: " << pos << std::endl;
                     return result;
                 }
-                double getDoubleValue(boost::array<char, 1024> buffer, std::size_t& pos) {
-                    double result = 0;
+                float getFloatValue(boost::array<char, 1024> buffer, std::size_t& pos) {
+                    float result = 0;
                     std::memcpy(&result, buffer.data() + pos, sizeof(result));
                     pos += sizeof(result);
                     //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;

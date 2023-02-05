@@ -13,13 +13,13 @@ namespace RType {
     namespace Network {
         class GameObject : public IGameObject {
             public:
-                void setX(double x){
+                void setX(float x){
                     this->_x = x;
                 };
-                void setY(double y){
+                void setY(float y){
                     this->_y = y;
                 };
-                void setCelerity(double v){
+                void setCelerity(float v){
                     this->_v = v;
                 };
                 void setHealth(int health){
@@ -34,13 +34,13 @@ namespace RType {
                 void setPlayerNumber(int playerNumber){
                     this->_playerNumber = playerNumber;
                 };
-                double getX(){
+                float getX(){
                     return this->_x;
                 };
-                double getY(){
+                float getY(){
                     return this->_y;
                 };
-                double getCelerity(){
+                float getCelerity(){
                     return this->_v;
                 };
                 int getHealth(){
@@ -57,9 +57,9 @@ namespace RType {
                 };
 
             private:
-                double _x;
-                double _y;
-                double _v;
+                float _x;
+                float _y;
+                float _v;
                 int _health;
                 int _strength;
                 int _playerNumber;

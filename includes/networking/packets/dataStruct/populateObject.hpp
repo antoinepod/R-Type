@@ -12,59 +12,37 @@
 
 namespace RType {
     namespace Network {
-        std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> populateObject() {
-            RType::Network::GameObject test;
-            RType::Network::PlayerObject playerOne;
-            RType::Network::PlayerObject playerTwo;
-            RType::Network::EnemyObject enemyOne;
-            RType::Network::EnemyObject enemyTwo;
-            std::vector<RType::Network::PlayerObject> playerObjectHolder;
-            std::vector<RType::Network::EnemyObject> enemyObjectHolder;
+        std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> populatePlayerObject(std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> gameObject) {
+            std::vector<RType::Network::PlayerObject> playerObjectHolder = gameObject.first;
+            std::vector<RType::Network::EnemyObject> enemyObjectHolder = gameObject.second;
+            RType::Network::PlayerObject player;
 
-            test.setX(0.1);
-            test.setY(0.1);
-            test.setCelerity(0.1);
-            test.setHealth(1);
-            test.setStrength(1);
-            test.setPlayerNumber(1);
-            test.setType(1);
+            player.setX(0.1);
+            player.setY(0.1);
+            player.setCelerity(0.1);
+            player.setHealth(1);
+            player.setStrength(1);
+            player.setPlayerNumber(1);
+            player.setType(1);
 
-            playerOne.setX(0.1);
-            playerOne.setY(0.1);
-            playerOne.setCelerity(0.1);
-            playerOne.setHealth(1);
-            playerOne.setStrength(1);
-            playerOne.setPlayerNumber(1);
-            playerOne.setType(1);
+            playerObjectHolder.push_back(player);
+            return make_pair(playerObjectHolder, enemyObjectHolder);
+        }
 
-            playerTwo.setX(0.2);
-            playerTwo.setY(0.2);
-            playerTwo.setCelerity(0.2);
-            playerTwo.setHealth(2);
-            playerTwo.setStrength(2);
-            playerTwo.setPlayerNumber(2);
-            playerTwo.setType(1);
+        std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> populateEnemyObject(std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> gameObject) {
+            std::vector<RType::Network::PlayerObject> playerObjectHolder = gameObject.first;
+            std::vector<RType::Network::EnemyObject> enemyObjectHolder = gameObject.second;
+            RType::Network::EnemyObject enemy;
 
-            enemyOne.setX(0.3);
-            enemyOne.setY(0.3);
-            enemyOne.setCelerity(0.3);
-            enemyOne.setHealth(3);
-            enemyOne.setStrength(3);
-            enemyOne.setPlayerNumber(-1);
-            enemyOne.setType(2);
+            enemy.setX(0.4);
+            enemy.setY(0.4);
+            enemy.setCelerity(0.4);
+            enemy.setHealth(4);
+            enemy.setStrength(4);
+            enemy.setPlayerNumber(-1);
+            enemy.setType(2);
 
-            enemyTwo.setX(0.4);
-            enemyTwo.setY(0.4);
-            enemyTwo.setCelerity(0.4);
-            enemyTwo.setHealth(4);
-            enemyTwo.setStrength(4);
-            enemyTwo.setPlayerNumber(-1);
-            enemyTwo.setType(2);
-
-            playerObjectHolder.push_back(playerOne);
-            playerObjectHolder.push_back(playerTwo);
-            enemyObjectHolder.push_back(enemyOne);
-            enemyObjectHolder.push_back(enemyTwo);
+            enemyObjectHolder.push_back(enemy);
             return make_pair(playerObjectHolder, enemyObjectHolder);
         }
     }

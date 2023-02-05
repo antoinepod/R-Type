@@ -50,7 +50,7 @@ namespace RType {
                     socket.open(boost::asio::ip::udp::v4());
                     return socket;
                 };
-                void Send(boost::array<char, 1> event) {
+                void Send(boost::array<unsigned char, 1> event) {
                     boost::asio::ip::udp::socket socket = SocketFd();
                     //boost::array<char, 11> send_buf  = {{ 48 }};
                     //socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);

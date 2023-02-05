@@ -21,18 +21,18 @@ endif()
 
 project(r-type_server)
 
-include_directories(Server/ Server/src/)
-file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp)
-file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp)
+include_directories(src/server/ src/server/game/ src/server/network/ includes/)
+file(GLOB_RECURSE SERVER_SOURCES src/server/main.cpp)
+file(GLOB_RECURSE SERVER_HEADERS src/server/*.hpp)
 
 add_executable(r-type_server ${SERVER_HEADERS} ${SERVER_SOURCES})
 
 
 project(r-type_client)
 
-include_directories(Client/ Client/assets/ Client/src/ Client/src/GameStatus)
-file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp)
-file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp)
+include_directories(src/client/ src/client/graphics/ includes/)
+file(GLOB_RECURSE CLIENT_SOURCES src/client/main.cpp)
+file(GLOB_RECURSE CLIENT_HEADERS src/client/*.hpp)
 
 add_executable(r-type_client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
 target_link_libraries(r-type_client raylib)

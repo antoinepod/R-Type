@@ -8,6 +8,7 @@
 #pragma once
 
 #include "headers.hpp"
+#define THREADS_NBR 4
 
 namespace RType {
 
@@ -21,5 +22,7 @@ namespace RType {
 
     enum Events {
         SHOT = 64,
+        QUIT = 128
     };
+
 }

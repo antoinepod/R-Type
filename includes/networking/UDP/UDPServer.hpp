@@ -9,27 +9,40 @@
 
 #include "../packets/serialization/serialization.hpp"
 #include "../packets/deserialization/deserialization.hpp"
-
-using boost::asio::ip::udp;
+#include "../packets/dataStruct/populateObject.hpp"
 
 class udp_server
 {
 public:
     udp_server(boost::asio::io_context& io_context)
-            : socket_(io_context, udp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8080))
+            : socket_(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8080))
     {
         start_receive();
-        //if (!recv_buffer_.empty) {
-            //std::cout << "Client message :" << recv_buffer_.c_array() << std::endl;
-            //std::cout << "Address :" << remote_endpoint_.address() << std::endl;
-        //}
+        for (int i = 0; i < THREADS_NBR; i++) {
+            threadPool.emplace_back(&udp_server::start_receive, this);
+        }
     }
+    std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> gameObject;
 
 private:
     void start_receive()
     {
         socket_.async_receive_from(boost::asio::buffer(recv_buffer_), remote_endpoint_,boost::bind(&udp_server::handle_receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
         std::cout << "" << std::to_string(recv_buffer_.data()[0]) << std::endl;
+        //std::cout << "" << remote_endpoint_.address().to_string() << std::endl;
+        auto search = myMap.find(remote_endpoint_.address().to_string());
+        //if (myMap.size() == 0 || search == myMap.end())
+        //    gameObject = RType::Network::populatePlayerObject(gameObject);
+        //if (!remote_endpoint_.address().to_string().compare("127.0.0.1"))
+        myMap[remote_endpoint_.address().to_string()] = (myMap.size());
+        //if (recv_buffer_.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
+        //    myMap.erase(remote_endpoint_.address().to_string());
+        //    if (myMap.size() == 0) {
+        //        for (auto& t : threadPool)
+        //            t.join();
+        //        return;
+        //    }
+        //}
     }
 
     void handle_receive(const boost::system::error_code& error,std::size_t)
@@ -49,10 +62,13 @@ private:
 
     void handle_send(boost::shared_ptr<std::string>,const boost::system::error_code&,std::size_t){}
 
-    udp::socket socket_;
-    udp::endpoint remote_endpoint_;
-    boost::array<char, 1> recv_buffer_;
+    boost::asio::ip::udp::socket socket_;
+    boost::asio::ip::udp::endpoint remote_endpoint_;
+    //boost::asio::io_context& _io_context;
+    boost::array<unsigned char, 1> recv_buffer_;
     RType::Network::Seria seria;
-    std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> gameObject = RType::Network::populateObject();
+    //std::pair<std::vector<RType::Network::PlayerObject>, std::vector<RType::Network::EnemyObject>> gameObject;
     boost::asio::streambuf buf;
+    std::vector<std::thread> threadPool;
+    std::map<std::string, int> myMap;
 };

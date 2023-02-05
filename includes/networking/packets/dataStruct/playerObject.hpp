@@ -13,9 +13,9 @@ namespace RType {
     namespace Network {
         class PlayerObject : public GameObject {
             protected:
-                double _x;
-                double _y;
-                double _v;
+                float _x;
+                float _y;
+                float _v;
                 int _health;
                 int _strength;
                 int _playerNumber;
