@@ -6,15 +6,6 @@ cmake_minimum_required(VERSION 3.19)
 project(r-type_server)
 project(r-type_client)
 
-include(FetchContent)
-set(BUILD_SHARED_LIBS OFF)
-FetchContent_Declare(
- SFML
- GIT_REPOSITORY https://github.com/SFML/SFML.git
- GIT_TAG 2.5.1
-)
-FetchContent_MakeAvailable(SFML)
-
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
@@ -39,10 +30,23 @@ file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp)
 file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp)
 add_executable(r-type_client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
 target_link_libraries(r-type_client CONAN_PKG::boost)
+
+if (WIN32)
+    include(FetchContent)
+    set(BUILD_SHARED_LIBS OFF)
+    FetchContent_Declare(
+            SFML
+            GIT_REPOSITORY https://github.com/SFML/SFML.git
+            GIT_TAG 2.5.1
+    )
+    FetchContent_MakeAvailable(SFML)
+endif()
+
 target_link_libraries(r-type_client sfml-graphics)
 target_link_libraries(r-type_client sfml-window)
 target_link_libraries(r-type_client sfml-audio)
 target_link_libraries(r-type_client sfml-network)
+
 
 # Assets
 add_custom_command(
