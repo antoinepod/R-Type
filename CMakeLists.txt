@@ -18,14 +18,15 @@ include(build/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
 # R-Type Server
-include_directories(${CMAKE_INCLUDE_PATH} Server/ Server/src/)
+include_directories(${CMAKE_INCLUDE_PATH} Server/ Network/ Network/dataStruct)
 file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp)
 file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp)
 add_executable(r-type_server ${SERVER_HEADERS} ${SERVER_SOURCES})
 target_link_libraries(r-type_server CONAN_PKG::boost)
 
 # R-Type Client
-include_directories(${CMAKE_INCLUDE_PATH} Client/ Client/assets/ Client/src/ Client/src/GameStatus)
+include_directories(${CMAKE_INCLUDE_PATH} Client/ Client/assets/ Client/src/
+        Client/src/GameStatus Network/ Network/dataStruct)
 file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp)
 file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp)
 add_executable(r-type_client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
@@ -46,12 +47,13 @@ target_link_libraries(r-type_client sfml-graphics)
 target_link_libraries(r-type_client sfml-window)
 target_link_libraries(r-type_client sfml-audio)
 target_link_libraries(r-type_client sfml-network)
+target_link_libraries(r-type_client sfml-system)
 
-
-# Assets
-add_custom_command(
-        TARGET r-type_client
-        POST_BUILD COMMAND ${CMAKE_COMMAND}
-        -E create_symlink ${CMAKE_SOURCE_DIR}/Client/assets
-        ${CMAKE_BINARY_DIR}/assets
+## Assets
+add_custom_target(copy_resources ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/Client/assets
+        ${CMAKE_BINARY_DIR}/bin/assets
+        COMMENT "Copying assets into binary directory"
 )
+add_dependencies(r-type_client copy_resources)
