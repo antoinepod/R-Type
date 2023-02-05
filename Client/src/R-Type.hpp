@@ -33,6 +33,8 @@ private:
 
     std::string _serverIp;
 
+    sf::Font _arcadeFont;
+
     sf::Clock _clock;
     float _currentTime;
     float _fps;

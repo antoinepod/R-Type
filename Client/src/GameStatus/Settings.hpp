@@ -21,6 +21,7 @@ public:
 private:
     std::string _ip;
 
+    sf::Font _arcadeFont;
     sf::Text _title;
     sf::Text _ipText;
     sf::Text _ipNumber;

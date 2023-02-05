@@ -19,6 +19,7 @@ public:
     GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
 
 private:
+    sf::Font _arcadeFont;
     std::vector<sf::Text> _buttons;
     sf::Text _title;
     sf::Text _serverIpInfo;

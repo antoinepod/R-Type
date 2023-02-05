@@ -9,7 +9,12 @@
 
 
 Game::Game() {
-    if (!_spaceShipTexture.loadFromFile("../../Client/assets/spaceShip.png")) {
+    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
+        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
+        //exit(84);
+    }
+
+    if (!_spaceShipTexture.loadFromFile("../../Client/assets/Images/spaceShip.png")) {
         std::cerr << "Failed to load 'assets/spaceShip.png'" << std::endl;
         //exit(84);
     }
@@ -41,55 +46,51 @@ GameStatus Game::ManageInput(sf::Event event, std::string &serverIp) {
         _thread = std::thread(&Game::connectToServer, this);
     }
 
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Escape)
-            return GameStatus::MENU;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        return GameStatus::MENU;
 
+    if (sf::Keyboard::isKeyPressed(UP) && _spaceShipPos.y > 0) {
+        _spaceShipPos.y -= 4;
+        _count++;
+        if (_count >= 10)
+            _spaceShipRect.left = 264;
+        else
+            _spaceShipRect.left = 198;
+    } else if (sf::Keyboard::isKeyPressed(DOWN) && _spaceShipPos.y < 900 - 34) {
+        _spaceShipPos.y += 4;
+        _count++;
+        if (_count >= 10)
+            _spaceShipRect.left = 0;
+        else
+            _spaceShipRect.left = 66;
+    } else {
+        _spaceShipRect.left = 132;
+        _count = 0;
+    }
 
-        if (event.key.code == UP && _spaceShipPos.y > 0) {
-            _spaceShipPos.y -= 4;
-            _count++;
-            if (_count >= 10)
-                _spaceShipRect.left = 264;
-            else
-                _spaceShipRect.left = 198;
-        } else if (event.key.code == DOWN && _spaceShipPos.y < 900 - 34) {
-            _spaceShipPos.y += 4;
-            _count++;
-            if (_count >= 10)
-                _spaceShipRect.left = 0;
-            else
-                _spaceShipRect.left = 66;
-        } else {
-            _spaceShipRect.left = 132;
-            _count = 0;
-        }
-        if (event.key.code == LEFT && _spaceShipPos.x > 0) {
-            _spaceShipPos.x -= 4;
-        }
-        if (event.key.code == RIGHT && _spaceShipPos.x < 1500 - 66) {
-            _spaceShipPos.x += 4;
-        }
+    if (sf::Keyboard::isKeyPressed(LEFT) && _spaceShipPos.x > 0)
+        _spaceShipPos.x -= 4;
+    if (sf::Keyboard::isKeyPressed(RIGHT) && _spaceShipPos.x < 1500 - 66)
+        _spaceShipPos.x += 4;
 
-        switch (event.key.code) {
-            case sf::Keyboard::F1:
-                _spaceShipRect.top = 0;
-                break;
-            case sf::Keyboard::F2:
-                _spaceShipRect.top = 34;
-                break;
-            case sf::Keyboard::F3:
-                _spaceShipRect.top = 68;
-                break;
-            case sf::Keyboard::F4:
-                _spaceShipRect.top = 102;
-                break;
-            case sf::Keyboard::F5:
-                _spaceShipRect.top = 136;
-                break;
-            default:
-                break;
-        }
+    switch (event.key.code) {
+        case sf::Keyboard::F1:
+            _spaceShipRect.top = 0;
+            break;
+        case sf::Keyboard::F2:
+            _spaceShipRect.top = 34;
+            break;
+        case sf::Keyboard::F3:
+            _spaceShipRect.top = 68;
+            break;
+        case sf::Keyboard::F4:
+            _spaceShipRect.top = 102;
+            break;
+        case sf::Keyboard::F5:
+            _spaceShipRect.top = 136;
+            break;
+        default:
+            break;
     }
 
     return GameStatus::GAME;

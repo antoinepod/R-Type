@@ -8,21 +8,20 @@
 #include "Menu.hpp"
 
 Menu::Menu() {
-    _title = sf::Text();
-    _title.setString("R-Type");
-    _title.setCharacterSize(80);
+    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
+        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
+        //exit(84);
+    }
+    _title = sf::Text("R-Type", _arcadeFont, 80);
     _title.setPosition(750 - (_title.getLocalBounds().width / 2), 200);
     _title.setFillColor(sf::Color::White);
 
-    _serverIpInfo = sf::Text();
-    _serverIpInfo.setCharacterSize(20);
+    _serverIpInfo = sf::Text("", _arcadeFont, 20);
     _serverIpInfo.setFillColor(sf::Color(128,128,128,255));
 
     std::vector<std::string> buttonNames = {"Play", "Settings", "Quit"};
     for (int i = 0; i < 3; i++) {
-        _buttons.emplace_back();
-        _buttons[i].setString(buttonNames[i]);
-        _buttons[i].setCharacterSize(40);
+        _buttons.emplace_back(buttonNames[i], _arcadeFont, 40);
         _buttons[i].setPosition(750 - (_buttons[i].getLocalBounds().width / 2), (float)(450 + (i * 100)));
     }
 

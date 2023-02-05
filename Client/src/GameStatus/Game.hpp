@@ -22,6 +22,7 @@ public:
     void receiveData();
 
 private:
+    sf::Font _arcadeFont;
     sf::Sprite _spaceShip;
     sf::Texture _spaceShipTexture;
     sf::Vector2f _spaceShipPos;

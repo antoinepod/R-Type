@@ -9,20 +9,19 @@
 
 
 Settings::Settings() {
-    _title = sf::Text();
-    _title.setString("Settings");
-    _title.setCharacterSize(60);
+    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
+        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
+        //exit(84);
+    }
+    _title = sf::Text("Settings", _arcadeFont, 60);
     _title.setPosition(750 - (_title.getLocalBounds().width / 2), 50);
     _title.setFillColor(sf::Color::White);
 
-    _ipText = sf::Text();
-    _ipText.setString("Server IP address :");
-    _ipText.setCharacterSize(40);
+    _ipText = sf::Text("Server IP address :", _arcadeFont, 40);
     _ipText.setPosition(50, 200);
     _ipText.setFillColor(sf::Color::White);
 
-    _ipNumber = sf::Text();
-    _ipNumber.setCharacterSize(40);
+    _ipNumber = sf::Text("", _arcadeFont, 40);
     _ipNumber.setPosition(500, 200);
     _ipNumber.setFillColor(sf::Color::White);
 }
