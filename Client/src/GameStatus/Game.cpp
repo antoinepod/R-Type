@@ -11,7 +11,7 @@
 Game::Game() {
     if (!_spaceShipTexture.loadFromFile("../../Client/assets/spaceShip.png")) {
         std::cerr << "Failed to load 'assets/spaceShip.png'" << std::endl;
-        exit(84);
+        //exit(84);
     }
     _spaceShip.setTexture(_spaceShipTexture);
     _spaceShipRect = {132, 0, 66, 34};
