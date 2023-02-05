@@ -9,36 +9,46 @@
 
 
 Settings::Settings() {
+    _title = sf::Text();
+    _title.setString("Settings");
+    _title.setCharacterSize(60);
+    _title.setPosition(750 - (_title.getLocalBounds().width / 2), 50);
+    _title.setFillColor(sf::Color::White);
+
+    _ipText = sf::Text();
+    _ipText.setString("Server IP address :");
+    _ipText.setCharacterSize(40);
+    _ipText.setPosition(50, 200);
+    _ipText.setFillColor(sf::Color::White);
+
+    _ipNumber = sf::Text();
+    _ipNumber.setCharacterSize(40);
+    _ipNumber.setPosition(500, 200);
+    _ipNumber.setFillColor(sf::Color::White);
 }
 
 Settings::~Settings() {
 }
 
-void Settings::Display() {
-    ClearBackground(BLACK);
-    DrawText("Settings", 750 - (MeasureText("Settings", 60) / 2), 50, 60, WHITE);
+void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+    window->draw(_title);
 
-    DrawText("Server IP address :", 50, 200, 40, WHITE);
-    DrawText(_ip.c_str(), 500, 200, 40, WHITE);
-
+    window->draw(_ipText);
+    window->draw(_ipNumber);
 }
 
-GameStatus Settings::ManageInput(std::string &serverIp) {
-    _ip = serverIp;
-    
-    if (IsKeyPressed(KEY_ESCAPE))
-        return GameStatus::MENU;
+GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp) {
+    _ipNumber.setString(serverIp);
 
-    int key = GetCharPressed();
+    if (event.type == sf::Event::TextEntered && std::isprint((char)event.text.unicode))
+        serverIp.push_back((char)event.text.unicode);
 
-    while (key > 0) {
-        if (key >= 32 && key <= 125)
-            serverIp.push_back(key);
-        key = GetCharPressed();
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Escape)
+            return GameStatus::MENU;
+        if (event.key.code == sf::Keyboard::BackSpace && !serverIp.empty())
+            serverIp.pop_back();
     }
-
-    if (IsKeyPressed(KEY_BACKSPACE) && !_ip.empty())
-        serverIp.pop_back();
 
     return GameStatus::SETTINGS;
 }

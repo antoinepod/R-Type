@@ -8,32 +8,48 @@
 #include "R-Type.hpp"
 
 
+
 RType::RType() {
-    InitWindow(1500, 900, "R-Type window");
-    SetTargetFPS(60);
-    SetExitKey(KEY_A);
+    _window = std::make_shared<sf::RenderWindow>(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "R-Type");
+    _window->setFramerateLimit(60);
 
     _gameStatus[GameStatus::MENU] = std::make_shared<Menu>();
     _gameStatus[GameStatus::GAME] = std::make_shared<Game>();
     _gameStatus[GameStatus::SETTINGS] = std::make_shared<Settings>();
     _currentGameStatus = GameStatus::MENU;
+
+    _fpsText.setPosition(10, 10);
 }
 
 RType::~RType() {
-    CloseWindow();
+    _window->close();
 }
 
 void RType::Start() {
-    while (!WindowShouldClose())
+    while (_window->isOpen())
     {
-        _currentGameStatus = _gameStatus[_currentGameStatus]->ManageInput(_serverIp);
+        sf::Event event{};
+        if (_window->pollEvent(event) && event.type == sf::Event::Closed)
+            _window->close();
+        else
+            _currentGameStatus = _gameStatus[_currentGameStatus]->ManageInput(event, _serverIp);
 
         if (_currentGameStatus == GameStatus::CLOSE)
             break;
 
-        BeginDrawing();
-        _gameStatus[_currentGameStatus]->Display();
-        DrawFPS(10, 10);
-        EndDrawing();
+        _window->clear(sf::Color::Blue);
+        _gameStatus[_currentGameStatus]->Display(_window);
+//        DrawFps();
+        _window->draw(sf::Text("TESTESTESTESTEST", sf::Font(), 200));
+        _window->display();
     }
+}
+
+void RType::DrawFps() {
+    _currentTime = _clock.restart().asSeconds();
+    _fps = 1.0f / _currentTime;
+
+    _fpsText.setString(std::to_string(_fps));
+
+    _window->draw(_fpsText);
 }

@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <raylib.h>
 #include <map>
 #include <memory>
 
@@ -23,11 +22,19 @@ public:
     ~RType();
 
     void Start();
+    void DrawFps();
 
 protected:
 private:
     std::map<GameStatus, std::shared_ptr<IGameStatus>> _gameStatus;
     GameStatus _currentGameStatus;
 
+    std::shared_ptr<sf::RenderWindow> _window;
+
     std::string _serverIp;
+
+    sf::Clock _clock;
+    float _currentTime;
+    float _fps;
+    sf::Text _fpsText;
 };

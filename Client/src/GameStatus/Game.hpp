@@ -7,12 +7,7 @@
 
 #pragma once
 
-#include <boost/asio.hpp>
-#include <iostream>
-#include <thread>
 #include "IGameStatus.hpp"
-#include "R-Type.hpp"
-
 
 
 class Game : public IGameStatus {
@@ -20,16 +15,17 @@ public:
     explicit Game();
     ~Game() override;
 
-    void Display() override;
-    GameStatus ManageInput(std::string &serverIp) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
+    GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
 
     void connectToServer();
     void receiveData();
 
 private:
-    Texture _spaceShip;
-    Vector2 _spaceShipPos;
-    Rectangle _spaceShipRec;
+    sf::Sprite _spaceShip;
+    sf::Texture _spaceShipTexture;
+    sf::Vector2f _spaceShipPos;
+    sf::IntRect _spaceShipRect;
     int _count;
     std::atomic_bool _isRunning;
     std::thread _thread;

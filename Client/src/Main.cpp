@@ -6,7 +6,6 @@
 */
 
 #include "R-Type.hpp"
-#include <memory>
 
 int main() {
     std::shared_ptr<RType> game = std::make_shared<RType>();

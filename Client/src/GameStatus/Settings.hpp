@@ -8,7 +8,6 @@
 #pragma once
 
 #include "IGameStatus.hpp"
-#include "R-Type.hpp"
 
 
 class Settings : public IGameStatus {
@@ -16,10 +15,14 @@ public:
     explicit Settings();
     ~Settings() override;
 
-    void Display() override;
-    GameStatus ManageInput(std::string &serverIp) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
+    GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
 
 private:
     std::string _ip;
+
+    sf::Text _title;
+    sf::Text _ipText;
+    sf::Text _ipNumber;
 };
 

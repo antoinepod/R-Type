@@ -9,11 +9,15 @@
 
 
 Game::Game() {
-    _spaceShip = LoadTexture("assets/spaceShip.png");
+    if (!_spaceShipTexture.loadFromFile("../../Client/assets/spaceShip.png")) {
+        std::cerr << "Failed to load 'assets/spaceShip.png'" << std::endl;
+        exit(84);
+    }
+    _spaceShip.setTexture(_spaceShipTexture);
+    _spaceShipRect = {132, 0, 66, 34};
     _spaceShipPos = {100, 420};
-    _spaceShipRec = {132, 0, 66, 34};
+    
     _count = 0;
-
     _isRunning = false;
 }
 
@@ -24,56 +28,69 @@ Game::~Game() {
     }
 }
 
-void Game::Display() {
-    ClearBackground(BLACK);
-    DrawTextureRec(_spaceShip, _spaceShipRec, _spaceShipPos, WHITE);
+void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+    _spaceShip.setTextureRect(_spaceShipRect);
+    _spaceShip.setPosition(_spaceShipPos);
+    window->draw(_spaceShip);
 }
 
-GameStatus Game::ManageInput(std::string &serverIp) {
+GameStatus Game::ManageInput(sf::Event event, std::string &serverIp) {
     if (!_isRunning) {
         _serverIp = serverIp;
         _isRunning = true;
         _thread = std::thread(&Game::connectToServer, this);
     }
 
-    if (IsKeyPressed(KEY_ESCAPE))
-        return GameStatus::MENU;
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Escape)
+            return GameStatus::MENU;
 
-    if (IsKeyDown(KEY_UP) && _spaceShipPos.y > 0) {
-        _spaceShipPos.y -= 4;
-        _count++;
-        if (_count >= 10)
-            _spaceShipRec.x = 264;
-        else
-            _spaceShipRec.x = 198;
-    } else if (IsKeyDown(KEY_DOWN) && _spaceShipPos.y < 900 - 34) {
-        _spaceShipPos.y += 4;
-        _count++;
-        if (_count >= 10)
-            _spaceShipRec.x = 0;
-        else
-            _spaceShipRec.x = 66;
-    } else {
-        _spaceShipRec.x = 132;
-        _count = 0;
-    }
-    if (IsKeyDown(KEY_LEFT) && _spaceShipPos.x > 0) {
-        _spaceShipPos.x -= 4;
-    }
-    if (IsKeyDown(KEY_RIGHT) && _spaceShipPos.x < 1500 - 66) {
-        _spaceShipPos.x += 4;
-    }
 
-    if (IsKeyPressed(KEY_F1))
-        _spaceShipRec.y = 0;
-    if (IsKeyPressed(KEY_F2))
-        _spaceShipRec.y = 34;
-    if (IsKeyPressed(KEY_F3))
-        _spaceShipRec.y = 68;
-    if (IsKeyPressed(KEY_F4))
-        _spaceShipRec.y = 102;
-    if (IsKeyPressed(KEY_F5))
-        _spaceShipRec.y = 136;
+        if (event.key.code == UP && _spaceShipPos.y > 0) {
+            _spaceShipPos.y -= 4;
+            _count++;
+            if (_count >= 10)
+                _spaceShipRect.left = 264;
+            else
+                _spaceShipRect.left = 198;
+        } else if (event.key.code == DOWN && _spaceShipPos.y < 900 - 34) {
+            _spaceShipPos.y += 4;
+            _count++;
+            if (_count >= 10)
+                _spaceShipRect.left = 0;
+            else
+                _spaceShipRect.left = 66;
+        } else {
+            _spaceShipRect.left = 132;
+            _count = 0;
+        }
+        if (event.key.code == LEFT && _spaceShipPos.x > 0) {
+            _spaceShipPos.x -= 4;
+        }
+        if (event.key.code == RIGHT && _spaceShipPos.x < 1500 - 66) {
+            _spaceShipPos.x += 4;
+        }
+
+        switch (event.key.code) {
+            case sf::Keyboard::F1:
+                _spaceShipRect.top = 0;
+                break;
+            case sf::Keyboard::F2:
+                _spaceShipRect.top = 34;
+                break;
+            case sf::Keyboard::F3:
+                _spaceShipRect.top = 68;
+                break;
+            case sf::Keyboard::F4:
+                _spaceShipRect.top = 102;
+                break;
+            case sf::Keyboard::F5:
+                _spaceShipRect.top = 136;
+                break;
+            default:
+                break;
+        }
+    }
 
     return GameStatus::GAME;
 }

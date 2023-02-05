@@ -7,9 +7,26 @@
 
 #pragma once
 
-#include <raylib.h>
 #include <vector>
 #include <string>
+#include <memory>
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/System.hpp>
+
+#define SCREEN_WIDTH 1500
+#define SCREEN_HEIGHT 900
+
+#define UP sf::Keyboard::Up
+#define DOWN sf::Keyboard::Down
+#define LEFT sf::Keyboard::Left
+#define RIGHT sf::Keyboard::Right
+#define ENTER sf::Keyboard::Enter
 
 
 enum GameStatus {
@@ -23,6 +40,6 @@ class IGameStatus {
 public:
     virtual ~IGameStatus() = default;
 
-    virtual void Display() = 0;
-    virtual GameStatus ManageInput(std::string &serverIp) = 0;
+    virtual void Display(const std::shared_ptr<sf::RenderWindow>& window) = 0;
+    virtual GameStatus ManageInput(sf::Event event, std::string &serverIp) = 0;
 };
