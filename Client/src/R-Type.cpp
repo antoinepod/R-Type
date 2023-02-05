@@ -8,12 +8,8 @@
 #include "R-Type.hpp"
 
 
-
 RType::RType() {
-    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
-        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
-        //exit(84);
-    }
+    _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
     _window = std::make_shared<sf::RenderWindow>(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "R-Type");
     _window->setFramerateLimit(60);
 
@@ -47,6 +43,7 @@ void RType::Start() {
         DrawFps();
         _window->display();
     }
+    _gameStatus[GameStatus::GAME].reset();
 }
 
 void RType::DrawFps() {

@@ -6,29 +6,28 @@
 */
 
 #include "Game.hpp"
+#include "Deserialization.hpp"
 
 
 Game::Game() {
-    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
-        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
-        //exit(84);
-    }
-
-    if (!_spaceShipTexture.loadFromFile("../../Client/assets/Images/spaceShip.png")) {
-        std::cerr << "Failed to load 'assets/spaceShip.png'" << std::endl;
-        //exit(84);
-    }
+    _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
+    _spaceShipTexture.loadFromFile("assets/Images/spaceShip.png");
     _spaceShip.setTexture(_spaceShipTexture);
     _spaceShipRect = {132, 0, 66, 34};
     _spaceShipPos = {100, 420};
     
     _count = 0;
-    _isRunning = false;
+
+    isRunning = false;
+
+    _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
+    _socket->open(boost::asio::ip::udp::v4());
 }
 
 Game::~Game() {
-    if (_isRunning) {
-        _isRunning = false;
+    _service.stop();
+    if (isRunning) {
+        isRunning = false;
         _thread.join();
     }
 }
@@ -40,38 +39,43 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string &serverIp) {
-    if (!_isRunning) {
+    if (!isRunning) {
         _serverIp = serverIp;
-        _isRunning = true;
+        isRunning = true;
         _thread = std::thread(&Game::connectToServer, this);
     }
+
+    boost::array<unsigned char, 1> buf = {Actions::NONE};
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         return GameStatus::MENU;
 
-    if (sf::Keyboard::isKeyPressed(UP) && _spaceShipPos.y > 0) {
+    if (sf::Keyboard::isKeyPressed(MOVE_LEFT) && _spaceShipPos.x > 0) {
+        _spaceShipPos.x -= 4;
+        buf = {Actions::LEFT};
+    } else if (sf::Keyboard::isKeyPressed(MOVE_RIGHT) && _spaceShipPos.x < 1500 - 66) {
+        _spaceShipPos.x += 4;
+        buf = {Actions::RIGHT};
+    } else if (sf::Keyboard::isKeyPressed(MOVE_UP) && _spaceShipPos.y > 0) {
         _spaceShipPos.y -= 4;
         _count++;
         if (_count >= 10)
             _spaceShipRect.left = 264;
         else
             _spaceShipRect.left = 198;
-    } else if (sf::Keyboard::isKeyPressed(DOWN) && _spaceShipPos.y < 900 - 34) {
+        buf = {Actions::UP};
+    } else if (sf::Keyboard::isKeyPressed(MOVE_DOWN) && _spaceShipPos.y < 900 - 34) {
         _spaceShipPos.y += 4;
         _count++;
         if (_count >= 10)
             _spaceShipRect.left = 0;
         else
             _spaceShipRect.left = 66;
+        buf = {Actions::DOWN};
     } else {
         _spaceShipRect.left = 132;
         _count = 0;
     }
-
-    if (sf::Keyboard::isKeyPressed(LEFT) && _spaceShipPos.x > 0)
-        _spaceShipPos.x -= 4;
-    if (sf::Keyboard::isKeyPressed(RIGHT) && _spaceShipPos.x < 1500 - 66)
-        _spaceShipPos.x += 4;
 
     switch (event.key.code) {
         case sf::Keyboard::F1:
@@ -93,19 +97,20 @@ GameStatus Game::ManageInput(sf::Event event, std::string &serverIp) {
             break;
     }
 
+    _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
+
     return GameStatus::GAME;
 }
 
 void Game::connectToServer() {
-    boost::asio::io_service service;
-    boost::asio::ip::udp::socket socket(service);
-    socket.open(boost::asio::ip::udp::v4());
-    boost::asio::ip::udp::endpoint server_endpoint = *boost::asio::ip::udp::resolver(service).resolve({boost::asio::ip::udp::v4(), _serverIp, std::to_string(8080)});
+    _serverEndpoint = *boost::asio::ip::udp::resolver(_service).resolve({boost::asio::ip::udp::v4(), _serverIp, std::to_string(8080)});
 
-    while (_isRunning)
+    Network::Deseria deseria;
+
+    while (isRunning)
     {
-        std::vector<float> send_vec = {_spaceShipPos.x, _spaceShipPos.y};
-        socket.send_to(boost::asio::buffer(send_vec), server_endpoint);
+//        std::vector<float> send_vec = {_spaceShipPos.x, _spaceShipPos.y};
+//        _socket->send_to(boost::asio::buffer(send_vec), _serverEndpoint);
 
 //        boost::asio::deadline_timer timer(service, boost::posix_time::seconds(3));
 //        timer.async_wait([&](const boost::system::error_code &error) {
@@ -116,13 +121,16 @@ void Game::connectToServer() {
 //            }
 //        });
 
-        std::array<char, 1024> recv_buf{};
+        boost::array<char, 1024> recv_buf{};
         boost::asio::ip::udp::endpoint sender_endpoint;
-        size_t bytes_recvd = socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+        size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 
         std::cout << "Received message from " << sender_endpoint << ": ";
-        std::cout.write(recv_buf.data(), bytes_recvd);
-        std::cout << std::endl;
+        std::pair<std::vector<Network::PlayerObject>, std::vector<Network::EnemyObject>> data = deseria.D_eserialize(recv_buf);
+        for (auto &player : data.first) {
+            std::cout << "Player " << player.getType() << " n°" << player.getPlayerNumber() << ", x=" << player.getX() << " y=" << player.getY() << std::endl;
+        }
+
 
 //        socket.async_receive_from(boost::asio::buffer(recv_buf), sender_endpoint, [&recv_buf, &sender_endpoint](const boost::system::error_code &ec, size_t bytes_recvd) {
 //            if (ec) {
@@ -137,6 +145,6 @@ void Game::connectToServer() {
 //        service.run();
 
 //        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+//        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }

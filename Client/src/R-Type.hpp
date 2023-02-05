@@ -16,6 +16,7 @@
 #include "Settings.hpp"
 
 
+
 class RType {
 public:
     RType();

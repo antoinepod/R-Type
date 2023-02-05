@@ -11,6 +11,7 @@
 #include <string>
 #include <memory>
 #include <boost/asio.hpp>
+#include <boost/array.hpp>
 #include <iostream>
 #include <thread>
 
@@ -22,11 +23,10 @@
 #define SCREEN_WIDTH 1500
 #define SCREEN_HEIGHT 900
 
-#define UP sf::Keyboard::Up
-#define DOWN sf::Keyboard::Down
-#define LEFT sf::Keyboard::Left
-#define RIGHT sf::Keyboard::Right
-#define ENTER sf::Keyboard::Enter
+#define MOVE_UP sf::Keyboard::Up
+#define MOVE_DOWN sf::Keyboard::Down
+#define MOVE_LEFT sf::Keyboard::Left
+#define MOVE_RIGHT sf::Keyboard::Right
 
 
 enum GameStatus {
@@ -34,6 +34,20 @@ enum GameStatus {
     GAME,
     SETTINGS,
     CLOSE
+};
+
+enum Actions {
+    NONE = 0,
+    UP = 2,
+    RIGHT = 4,
+    DOWN = 8,
+    LEFT = 16,
+    EVENT = 32
+};
+
+enum Events {
+    SHOT = 64,
+    QUIT = 128
 };
 
 class IGameStatus {

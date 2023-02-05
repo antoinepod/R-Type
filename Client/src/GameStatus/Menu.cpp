@@ -8,10 +8,7 @@
 #include "Menu.hpp"
 
 Menu::Menu() {
-    if (!_arcadeFont.loadFromFile("../../Client/assets/Fonts/PublicPixel.ttf")) {
-        std::cerr << "Failed to load '../../Client/assets/Fonts/PublicPixel.ttf'" << std::endl;
-        //exit(84);
-    }
+    _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
     _title = sf::Text("R-Type", _arcadeFont, 80);
     _title.setPosition(750 - (_title.getLocalBounds().width / 2), 200);
     _title.setFillColor(sf::Color::White);
@@ -59,11 +56,11 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp) {
     _serverIp = serverIp;
 
     if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == UP && _selectedButton > 0)
+        if (event.key.code == MOVE_UP && _selectedButton > 0)
             _selectedButton--;
-        if (event.key.code == DOWN && _selectedButton < _buttons.size() - 1)
+        if (event.key.code == MOVE_DOWN && _selectedButton < _buttons.size() - 1)
             _selectedButton++;
-        if (event.key.code == ENTER) {
+        if (event.key.code == sf::Keyboard::Enter) {
             switch (_selectedButton) {
                 case 0:
                     if (_serverIp.empty())

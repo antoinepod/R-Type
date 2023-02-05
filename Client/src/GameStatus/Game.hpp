@@ -21,6 +21,8 @@ public:
     void connectToServer();
     void receiveData();
 
+    std::atomic_bool isRunning;
+
 private:
     sf::Font _arcadeFont;
     sf::Sprite _spaceShip;
@@ -28,8 +30,12 @@ private:
     sf::Vector2f _spaceShipPos;
     sf::IntRect _spaceShipRect;
     int _count;
-    std::atomic_bool _isRunning;
     std::thread _thread;
     std::string _serverIp;
+
+    boost::asio::io_service _service;
+    std::shared_ptr<boost::asio::ip::udp::socket> _socket;
+    boost::asio::ip::udp::endpoint _serverEndpoint;
+
 };
 
