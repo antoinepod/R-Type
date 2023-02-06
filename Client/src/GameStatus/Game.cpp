@@ -28,7 +28,7 @@ Game::Game() {
 
     isRunning = false;
 
-    _playerId = -1;
+    _playerId = -2;
 
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
@@ -51,6 +51,8 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string &serverIp) {
+    std::cout << "player " << _playerId << std::endl;
+
     if (!isRunning) {
         _serverIp = serverIp;
         isRunning = true;
@@ -170,8 +172,11 @@ void Game::connectToServer() {
             _spaceShipPos[player.getPlayerNumber()].x = player.getX();
             _spaceShipPos[player.getPlayerNumber()].y = player.getY();
         }
-        if (_playerId == -1) {
+        if (_playerId < 0)
+            _playerId++;
+        if (_playerId == 0) {
             _playerId = data[data.size() - 1].getPlayerNumber();
+            std::cout << "azerty " << _playerId << std::endl;
         }
 
 
