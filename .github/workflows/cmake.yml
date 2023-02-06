@@ -12,14 +12,20 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up build environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ pip
+        sudo apt-get install -y g++ pip
         sudo pip install conan
         
+    - name: Install latest CMake
+      run: |
+        sudo apt-get install software-properties-common
+        sudo add-apt-repository --yes ppa:kitware/cmake
+        sudo apt-get update
+        sudo apt-get install -y cmake
 
     - name: Compile project
       run: |
