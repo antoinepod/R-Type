@@ -19,16 +19,16 @@ conan_basic_setup(TARGETS)
 
 # R-Type Server
 include_directories(${CMAKE_INCLUDE_PATH} Server/ Network/ Network/dataStruct)
-file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp)
-file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp)
+file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp Network/*.cpp)
+file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp Network/*.hpp)
 add_executable(r-type_server ${SERVER_HEADERS} ${SERVER_SOURCES})
 target_link_libraries(r-type_server CONAN_PKG::boost)
 
 # R-Type Client
 include_directories(${CMAKE_INCLUDE_PATH} Client/ Client/assets/ Client/src/
         Client/src/GameStatus Network/ Network/dataStruct)
-file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp)
-file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp)
+file(GLOB_RECURSE CLIENT_SOURCES Client/src/*.cpp Network/*.cpp)
+file(GLOB_RECURSE CLIENT_HEADERS Client/src/*.hpp Network/*.hpp)
 add_executable(r-type_client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
 target_link_libraries(r-type_client CONAN_PKG::boost)
 
