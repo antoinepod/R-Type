@@ -22,7 +22,7 @@ jobs:
         
     - name: Install latest CMake
       run: |
-        sudo apt-get update --fix-missing && sudo apt upgrade
+        sudo apt-get update --fix-missing && sudo apt upgrade -y
         sudo apt-get install software-properties-common
         sudo add-apt-repository --yes ppa:kitware/cmake
         sudo apt-get update
@@ -30,7 +30,7 @@ jobs:
         
     - name: Install libudev
       run: |
-        sudo apt-get update && sudo apt upgrade
+        sudo apt-get update && sudo apt upgrade -y
         sudo apt-get install -y libudev-dev
 
 
