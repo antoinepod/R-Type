@@ -25,10 +25,10 @@ public:
 
 private:
     sf::Font _arcadeFont;
-    sf::Sprite _spaceShip;
-    sf::Texture _spaceShipTexture;
-    sf::Vector2f _spaceShipPos;
-    sf::IntRect _spaceShipRect;
+    std::vector<sf::Sprite> _spaceShip;
+    std::vector<sf::Texture> _spaceShipTexture;
+    std::vector<sf::Vector2f> _spaceShipPos;
+    std::vector<sf::IntRect> _spaceShipRect;
     int _count;
     std::thread _thread;
     std::string _serverIp;
@@ -36,6 +36,8 @@ private:
     boost::asio::io_service _service;
     std::shared_ptr<boost::asio::ip::udp::socket> _socket;
     boost::asio::ip::udp::endpoint _serverEndpoint;
+
+    int _playerId;
 
 };
 
