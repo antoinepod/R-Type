@@ -29,12 +29,6 @@ jobs:
         tar xf ${CMAKE_TAR}
         export PATH=$PWD/${CMAKE_DIR}/bin:$PATH
         cmake --version
-        
-    - name: Install libudev
-      run: |
-        sudo apt-get update && sudo apt upgrade -y
-        sudo apt-get install -y libudev-dev
-
 
     - name: Compile project
       run: |
