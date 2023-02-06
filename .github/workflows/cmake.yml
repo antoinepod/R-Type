@@ -20,13 +20,15 @@ jobs:
         sudo apt-get install -y g++ pip
         sudo pip install conan
         
-    - name: Install latest CMake
+    - name: Install CMake
       run: |
-        sudo apt-get update --fix-missing && sudo apt upgrade -y
-        sudo apt-get install software-properties-common
-        sudo add-apt-repository --yes ppa:kitware/cmake
-        sudo apt-get update
-        sudo apt-get install -y cmake
+        CMAKE_VERSION=3.18.4
+        CMAKE_DIR=cmake-${CMAKE_VERSION}-Linux-x86_64
+        CMAKE_TAR=${CMAKE_DIR}.tar.gz
+        wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${CMAKE_TAR}
+        tar xf ${CMAKE_TAR}
+        export PATH=$PWD/${CMAKE_DIR}/bin:$PATH
+        cmake --version
         
     - name: Install libudev
       run: |
