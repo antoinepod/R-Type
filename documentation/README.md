@@ -22,6 +22,8 @@ We can play with a keyboard.
 
 ![alt text](./assets/server.png)
 
+The client communicate with the server in UDP, and play the game.
+
 # Server
 
 The server must be :
