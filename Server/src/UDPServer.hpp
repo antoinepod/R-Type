@@ -13,8 +13,10 @@
 class udp_server
 {
 public:
+    std::vector<Network::GameObject> gameObject;
+
     udp_server(boost::asio::io_context& io_context)
-        : socket_(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8080))
+        : socket_(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("10.26.100.197"), 8080))
     {
         start_receive();
         for (int i = 0; i < THREADS_NBR; i++) {
@@ -23,11 +25,18 @@ public:
     }
 
 
-    std::vector<Network::GameObject> gameObject;
 //    std::pair<std::vector<Network::PlayerObject>, std::vector<Network::EnemyObject>> gameObject;
 
 private:
-    int p_Id = -1;
+    int p_Id = 0;
+    boost::asio::ip::udp::socket socket_;
+    boost::asio::ip::udp::endpoint remote_endpoint_;
+    //boost::asio::io_context& _io_context;
+    boost::array<unsigned char, 1> recv_buffer_;
+    //std::pair<std::vector<Network::PlayerObject>, std::vector<Network::EnemyObject>> gameObject;
+    boost::asio::streambuf buf;
+    std::vector<std::thread> threadPool;
+    std::map<std::string, int> myMap;
 
     void start_receive()
     {
@@ -41,15 +50,20 @@ private:
             auto search = myMap.find(remote_endpoint_.address().to_string());
 
             if ((myMap.empty() || search == myMap.end())) {
-                p_Id++;
-                gameObject.push_back(
-                    Network::Populate::PlayerObject(p_Id, 100, 420));
+                //if (remote_endpoint_.address().to_string() != "0.0.0.0") {
+                    gameObject.push_back(Network::Populate::PlayerObject(p_Id, 100, 420));
+                    myMap[remote_endpoint_.address().to_string()] = p_Id;
+                    p_Id += 1;
+                //}
             }
-            //if (!remote_endpoint_.address().to_string().compare("127.0.0.1"))
-            //        myMap[remote_endpoint_.address().to_string() + std::to_string(remote_endpoint_.port())] = p_Id;
-            myMap[remote_endpoint_.address().to_string()] = p_Id;
 
-            switch (recv_buffer_.data()[0]) {
+            //if (remote_endpoint_.address().to_string() != "0.0.0.0") {
+                for (auto& i : myMap)
+                    std::cout << i.first << "  " << i.second << std::endl;
+                //if (!remote_endpoint_.address().to_string().compare("127.0.0.1"))
+                //        myMap[remote_endpoint_.address().to_string() + std::to_string(remote_endpoint_.port())] = p_Id;
+
+                switch (recv_buffer_.data()[0]) {
                 case RType::Actions::LEFT:
                     if (gameObject[search->second].getX() > 0)
                         gameObject[search->second].setX(
@@ -70,7 +84,8 @@ private:
                         gameObject[search->second].setY(
                             gameObject[search->second].getY() + 4);
                     break;
-            }
+                }
+            //}
 
             //if (recv_buffer_.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
             //    myMap.erase(remote_endpoint_.address().to_string());
@@ -83,10 +98,10 @@ private:
 //        }
     }
 
+
     void handle_receive(const boost::system::error_code& error,std::size_t)
     {
-        if (!error)
-        {
+        if (!error) {
             Network::Seria::S_erialize(gameObject, &buf);
             std::string strBuf(boost::asio::buffers_begin(buf.data()),boost::asio::buffers_end(buf.data()));
             boost::shared_ptr<std::string> message(new std::string(strBuf));
@@ -99,13 +114,4 @@ private:
     }
 
     void handle_send(boost::shared_ptr<std::string>,const boost::system::error_code&,std::size_t){}
-
-    boost::asio::ip::udp::socket socket_;
-    boost::asio::ip::udp::endpoint remote_endpoint_;
-    //boost::asio::io_context& _io_context;
-    boost::array<unsigned char, 1> recv_buffer_;
-    //std::pair<std::vector<Network::PlayerObject>, std::vector<Network::EnemyObject>> gameObject;
-    boost::asio::streambuf buf;
-    std::vector<std::thread> threadPool;
-    std::map<std::string, int> myMap;
 };
