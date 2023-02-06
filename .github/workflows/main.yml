@@ -1,0 +1,27 @@
+name: Compile CMake Project
+
+on: [push, pull_request]
+
+env:
+  CXX: g++
+  CC: gcc
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up build environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++
+
+    - name: Compile project
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
