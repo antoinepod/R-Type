@@ -16,7 +16,7 @@ public:
     std::vector<Network::GameObject> gameObject;
 
     udp_server(boost::asio::io_context& io_context)
-        : socket_(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("10.26.100.197"), 8080))
+        : socket_(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8080))
     {
         start_receive();
         for (int i = 0; i < THREADS_NBR; i++) {

@@ -2,15 +2,12 @@
 ** EPITECH PROJECT, 2022
 ** R-Type
 ** File description:
-** populateObject.cpp
+** PopulateObject.cpp
 */
 
 
-#include "populateObject.hpp"
+#include "PopulateObject.hpp"
 
-Network::Populate::Populate() = default;
-
-Network::Populate::~Populate() = default;
 
 Network::PlayerObject Network::Populate::PlayerObject(int playerNumber, float x, float y) {;
     Network::PlayerObject player;

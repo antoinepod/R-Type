@@ -8,10 +8,6 @@
 #include "Deserialization.hpp"
 
 
-Network::Deseria::Deseria() = default;
-
-Network::Deseria::~Deseria() = default;
-
 std::vector<Network::GameObject> Network::Deseria::D_eserialize(boost::array<char, 1024>& buffer) {
     Network::GameObject gameObject;
     std::size_t pos = 0;

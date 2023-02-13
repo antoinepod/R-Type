@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "dataStruct/populateObject.hpp"
+#include "Data/PopulateObject.hpp"
 
     namespace Network {
         template <typename T>
@@ -19,8 +19,6 @@
 
         class Seria {
         public:
-            Seria();
-            ~Seria();
             static void S_erialize(std::vector<Network::GameObject> gameObject, boost::asio::streambuf *buf);
         };
     }

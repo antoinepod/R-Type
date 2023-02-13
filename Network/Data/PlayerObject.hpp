@@ -2,15 +2,15 @@
 ** EPITECH PROJECT, 2022
 ** R-Type
 ** File description:
-** enemyObject.hpp
+** PlayerObject.hpp
 */
 
 #pragma once
 
-#include "gameObject.hpp"
+#include "GameObject.hpp"
 
     namespace Network {
-        class EnemyObject : public GameObject {
+        class PlayerObject : public GameObject {
         protected:
             float _x;
             float _y;

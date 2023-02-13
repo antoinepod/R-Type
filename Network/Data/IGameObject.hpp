@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "enums.hpp"
+#include "Enums.hpp"
 
     namespace Network {
         class IGameObject {

@@ -7,9 +7,6 @@
 
 #include "Serialization.hpp"
 
-Network::Seria::Seria() = default;
-
-Network::Seria::~Seria() = default;
 
 void Network::Seria::S_erialize(std::vector<Network::GameObject> gameObject, boost::asio::streambuf *buf) {
     serialize(*buf, gameObject.size());
