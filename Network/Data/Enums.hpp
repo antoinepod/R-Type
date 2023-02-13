@@ -39,4 +39,12 @@ namespace RType {
         QUIT = 128
     };
 
+    enum ObjectType {
+        PLAYER = 256,
+        ENEMY = 512,
+        BULLET = 1024,
+        WALL = 2048,
+        POWER_UP = 4096
+    };
+
 }

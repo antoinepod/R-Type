@@ -18,7 +18,7 @@ include(build/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
 # R-Type Server
-include_directories(${CMAKE_INCLUDE_PATH} Server/ Network/ Network/Data)
+include_directories(${CMAKE_INCLUDE_PATH} Server/ Network/)
 file(GLOB_RECURSE SERVER_SOURCES Server/src/*.cpp Network/*.cpp)
 file(GLOB_RECURSE SERVER_HEADERS Server/src/*.hpp Network/*.hpp)
 add_executable(r-type_server ${SERVER_HEADERS} ${SERVER_SOURCES})

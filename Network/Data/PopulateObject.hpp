@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "PlayerObject.hpp"
+#include "Objects/Player.hpp"
 
 namespace Network {
     class Populate {
     public:
-        static Network::PlayerObject PlayerObject(int playerNumber, float x, float y);
+        static Network::Player Player(int playerNumber, float x, float y);
     };
 
 }

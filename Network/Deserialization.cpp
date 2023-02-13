@@ -8,11 +8,11 @@
 #include "Deserialization.hpp"
 
 
-std::vector<Network::GameObject> Network::Deseria::D_eserialize(boost::array<char, 1024>& buffer) {
-    Network::GameObject gameObject;
+std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1024>& buffer) {
+    Network::Object gameObject;
     std::size_t pos = 0;
     std::size_t size = 0;
-    std::vector<Network::GameObject> gameObjectHolder;
+    std::vector<Network::Object> gameObjectHolder;
 
     size = getMeta(buffer, pos);
     //std::cout << "the buffer size is: " << size << std::endl;
@@ -22,12 +22,12 @@ std::vector<Network::GameObject> Network::Deseria::D_eserialize(boost::array<cha
         gameObject.setCelerity(getFloatValue(buffer, pos));
         gameObject.setHealth(getIntValue(buffer, pos));
         gameObject.setStrength(getIntValue(buffer, pos));
-        gameObject.setPlayerNumber(getIntValue(buffer, pos));
-        gameObject.setType(getIntValue(buffer, pos));
+        gameObject.setId(getIntValue(buffer, pos));
+        gameObject.setType((RType::ObjectType)getIntValue(buffer, pos));
         gameObjectHolder.push_back(gameObject);
     }
     return gameObjectHolder;
-};
+}
 
 std::size_t Network::Deseria::getMeta(boost::array<char, 1024> buffer, std::size_t& pos) {
     std::size_t result = 0;

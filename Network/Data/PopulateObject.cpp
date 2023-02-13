@@ -5,20 +5,19 @@
 ** PopulateObject.cpp
 */
 
-
 #include "PopulateObject.hpp"
 
 
-Network::PlayerObject Network::Populate::PlayerObject(int playerNumber, float x, float y) {;
-    Network::PlayerObject player;
+Network::Player Network::Populate::Player(int playerNumber, float x, float y) {;
+    Network::Player player;
 
     player.setX(x);
     player.setY(y);
     player.setCelerity(0.1);
     player.setHealth(1);
     player.setStrength(1);
-    player.setPlayerNumber(playerNumber);
-    player.setType(1);
+    player.setId(playerNumber);
+    player.setType(RType::ObjectType::PLAYER);
 
     return player;
 }

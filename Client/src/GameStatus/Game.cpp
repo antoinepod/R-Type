@@ -157,7 +157,7 @@ void Game::connectToServer() {
         size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 
         std::cout << "Received message from " << sender_endpoint << ": ";
-        std::vector<Network::GameObject> data = Network::Deseria::D_eserialize(recv_buf);
+        std::vector<Network::Object> data = Network::Deseria::D_eserialize(recv_buf);
         while (_spaceShip.size() < data.size()) {
             int i = _spaceShip.size();
             _spaceShipTexture.emplace_back();
@@ -168,14 +168,14 @@ void Game::connectToServer() {
             _spaceShip[i].setPosition(_spaceShipPos[i]);
         }
         for (auto &player : data) {
-            std::cout << "Player " << player.getType() << " n°" << player.getPlayerNumber() << ", x=" << player.getX() << " y=" << player.getY() << std::endl;
-            _spaceShipPos[player.getPlayerNumber()].x = player.getX();
-            _spaceShipPos[player.getPlayerNumber()].y = player.getY();
+            std::cout << "Player " << player.getType() << " n°" << player.getId() << ", x=" << player.getX() << " y=" << player.getY() << std::endl;
+            _spaceShipPos[player.getId()].x = player.getX();
+            _spaceShipPos[player.getId()].y = player.getY();
         }
         if (_playerId < 0)
             _playerId++;
         if (_playerId == 0) {
-            _playerId = data[data.size() - 1].getPlayerNumber();
+            _playerId = data[data.size() - 1].getId();
             std::cout << "azerty " << _playerId << std::endl;
         }
 
