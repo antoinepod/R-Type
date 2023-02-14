@@ -35,6 +35,9 @@ namespace Network {
     void Object::setId(int id) {
         _id = id;
     }
+    void Object::setDestroyable(bool destroyable) {
+        _destroyable = destroyable;
+    }
 
     // Getters
     float Object::getX() {
@@ -57,5 +60,8 @@ namespace Network {
     }
     int Object::getId() {
         return _id;
+    }
+    bool Object::getDestroyable() {
+        return _destroyable;
     }
 }

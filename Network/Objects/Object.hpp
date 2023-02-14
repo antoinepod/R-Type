@@ -23,6 +23,7 @@ namespace Network {
         void setStrength(int strength) override;
         void setType(RType::ObjectType type) override;
         void setId(int id) override;
+        void setDestroyable(bool destroyable) override;
 
         // Getters
         float getX() override;
@@ -32,6 +33,7 @@ namespace Network {
         int getStrength() override;
         RType::ObjectType getType() override;
         int getId() override;
+        bool getDestroyable() override;
 
     private:
         float _x;
@@ -41,5 +43,6 @@ namespace Network {
         int _strength;
         RType::ObjectType _type;
         int _id;
+        bool _destroyable;
     };
 }

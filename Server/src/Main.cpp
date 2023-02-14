@@ -37,7 +37,7 @@ int main()
     try
     {
         boost::asio::io_context io_context;
-        udp_server server(io_context);
+        UDPServer server(io_context);
         std::thread t([&io_context] { io_context.run(); });
         while (true) {
             //    std::cout << "IS OK" << std::endl;
