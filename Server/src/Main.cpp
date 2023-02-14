@@ -31,12 +31,13 @@
 */
 
 #include "UDPServer.hpp"
+#include "TCPServer.hpp"
 
 int main()
 {
-    try
-    {
+    try {
         boost::asio::io_context io_context;
+        Server s(io_context, 12345);
         UDPServer server(io_context);
         std::thread t([&io_context] { io_context.run(); });
         while (true) {
@@ -48,9 +49,7 @@ int main()
         }
         io_context.stop();
         t.join();
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
 }
