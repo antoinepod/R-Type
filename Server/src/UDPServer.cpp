@@ -20,27 +20,18 @@ UDPServer::~UDPServer() = default;
 
 void UDPServer::StartReceive() {
     _socket.async_receive_from(boost::asio::buffer(_recvBuffer), _remoteEndpoint,boost::bind(&UDPServer::Receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-    std::cout << "" << std::to_string(_recvBuffer.data()[0]) << std::endl;
-    //std::cout << "" << _remoteEndpoint.address().to_string() << std::endl;
+    std::cout << _remoteEndpoint.address().to_string() << ": " << std::to_string(_recvBuffer.data()[0]) << std::endl;
 
-    //        if (_remoteEndpoint.address().to_string().compare("0.0.0.0") != 0) {
-
-    //        auto search = _myMap.find(_remoteEndpoint.address().to_string() + std::to_string(_remoteEndpoint.port()));
     auto search = _myMap.find(_remoteEndpoint.address().to_string());
 
     if ((_myMap.empty() || search == _myMap.end())) {
-        //if (_remoteEndpoint.address().to_string() != "0.0.0.0") {
         gameObject.push_back(Network::Populate::Player(p_Id, 100, 420));
         _myMap[_remoteEndpoint.address().to_string()] = p_Id;
         p_Id += 1;
-        //}
     }
 
-    //if (_remoteEndpoint.address().to_string() != "0.0.0.0") {
     for (auto& i : _myMap)
         std::cout << i.first << "  " << i.second << std::endl;
-    //if (!_remoteEndpoint.address().to_string().compare("127.0.0.1"))
-    //        _myMap[_remoteEndpoint.address().to_string() + std::to_string(_remoteEndpoint.port())] = p_Id;
 
     switch (_recvBuffer.data()[0]) {
         case RType::Actions::LEFT:

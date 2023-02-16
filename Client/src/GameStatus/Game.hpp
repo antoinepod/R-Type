@@ -38,6 +38,5 @@ private:
     boost::asio::ip::udp::endpoint _serverEndpoint;
 
     int _playerId;
-
 };
 

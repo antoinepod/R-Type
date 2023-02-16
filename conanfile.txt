@@ -1,20 +1,15 @@
 [requires]
 boost/1.81.0
 sfml/2.5.1
-#raylib/4.0.0
 
 [options]
-boost:shared=True
+boost:shared=False
 sfml:graphics=True
 sfml:window=True
 sfml:audio=True
 sfml:network=True
-sfml:shared=False
-#raylib:shared=False
-
+sfml:shared=True
 
 [generators]
 cmake
 visual_studio
-
-[imports]

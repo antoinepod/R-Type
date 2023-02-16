@@ -8,13 +8,32 @@
 #include "TCPSession.hpp"
 
 Session::Session(tcp::socket socket, std::map<std::string, int>& clients) : _socket(std::move(socket)), _clients(clients) {};
+
 Session::~Session() = default;
 
 void Session::Start() {
-    std::string client_id = GenerateId();
-    _clients[client_id] = 0;
+//    std::string client_id = GenerateId();
+//    _clients[client_id] = 0;
+//
+//    std::cout << "Client connected with ID: " << client_id << std::endl;
+//
+//    Write(client_id);
 
-    std::cout << "Client connected with ID: " << client_id << std::endl;
+    std::string client_id;
+
+    // Check if this client has a stored ID
+    std::string client_address = _socket.remote_endpoint().address().to_string();
+    if (_clients.count(client_address) == 0) {
+        // Generate a new ID for this client
+        client_id = GenerateId();
+        _clients[client_address] = std::stoi(client_id);
+    }
+    else {
+        // Use the stored ID for this client
+        client_id = std::to_string(_clients[client_address]);
+    }
+
+    std::cout << "Client " << client_address << " connected with ID: " << client_id << std::endl;
 
     Write(client_id);
 }

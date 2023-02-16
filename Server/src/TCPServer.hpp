@@ -18,9 +18,11 @@ public:
     Server(boost::asio::io_service& io_service, short port);
     ~Server();
 
+    std::map<std::string, int> getClients() const;
+
 private:
     void Accept();
 
-    tcp::acceptor acceptor_;
+    tcp::acceptor _acceptor;
     std::map<std::string, int> _clients;
 };
