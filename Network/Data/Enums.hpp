@@ -24,27 +24,24 @@
 
 #define THREADS_NBR 4
 
-namespace RType {
+enum Actions {
+    NONE = 0,
+    UP = 2,
+    RIGHT = 4,
+    DOWN = 8,
+    LEFT = 16,
+    EVENT = 32
+};
 
-    enum Actions {
-        UP = 2,
-        RIGHT = 4,
-        DOWN = 8,
-        LEFT = 16,
-        EVENT = 32
-    };
+enum Events {
+    SHOT = 64,
+    QUIT = 128
+};
 
-    enum Events {
-        SHOT = 64,
-        QUIT = 128
-    };
-
-    enum ObjectType {
-        PLAYER = 256,
-        ENEMY = 512,
-        BULLET = 1024,
-        WALL = 2048,
-        POWER_UP = 4096
-    };
-
-}
+enum ObjectType {
+    PLAYER = 256,
+    ENEMY = 512,
+    BULLET = 1024,
+    WALL = 2048,
+    POWER_UP = 4096
+};

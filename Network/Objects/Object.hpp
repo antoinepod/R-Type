@@ -21,7 +21,7 @@ namespace Network {
         void setCelerity(float v) override;
         void setHealth(int health) override;
         void setStrength(int strength) override;
-        void setType(RType::ObjectType type) override;
+        void setType(ObjectType type) override;
         void setId(int id) override;
         void setDestroyable(bool destroyable) override;
 
@@ -31,7 +31,7 @@ namespace Network {
         float getCelerity() override;
         int getHealth() override;
         int getStrength() override;
-        RType::ObjectType getType() override;
+        ObjectType getType() override;
         int getId() override;
         bool getDestroyable() override;
 
@@ -41,7 +41,7 @@ namespace Network {
         float _v;
         int _health;
         int _strength;
-        RType::ObjectType _type;
+        ObjectType _type;
         int _id;
         bool _destroyable;
     };

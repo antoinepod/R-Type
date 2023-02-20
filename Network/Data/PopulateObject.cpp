@@ -17,7 +17,7 @@ Network::Player Network::Populate::Player(int playerNumber, float x, float y) {;
     player.setHealth(1);
     player.setStrength(1);
     player.setId(playerNumber);
-    player.setType(RType::ObjectType::PLAYER);
+    player.setType(ObjectType::PLAYER);
 
     return player;
 }
