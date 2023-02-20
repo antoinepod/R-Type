@@ -8,6 +8,7 @@
 #include <map>
 #include <iostream>
 #include <boost/asio.hpp>
+#include "UDPServer.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -16,7 +17,7 @@ public:
     Session(tcp::socket socket, std::map<std::string, int>& clients);
     ~Session();
 
-    void Start();
+    void Start(UDPServer& udpServer);
 
 private:
     void Write(const std::string& client_id);

@@ -7,21 +7,21 @@
 
 #include "TCPServer.hpp"
 
-Server::Server(boost::asio::io_service& io_service, short port) : _acceptor(io_service, tcp::endpoint(tcp::v4(), port)), _clients() {
-    this->Accept();
+TCPServer::TCPServer(boost::asio::io_service& io_service, short port, UDPServer& udpServer) : _acceptor(io_service, tcp::endpoint(tcp::v4(), port)), _clients() {
+    this->Accept(udpServer);
 }
 
-Server::~Server() = default;
+TCPServer::~TCPServer() = default;
 
-void Server::Accept() {
-    _acceptor.async_accept([this](boost::system::error_code ec, tcp::socket socket) {
+void TCPServer::Accept(UDPServer& udpServer) {
+    _acceptor.async_accept([this, &udpServer](boost::system::error_code ec, tcp::socket socket) {
         if (!ec) {
-            std::make_shared<Session>(std::move(socket), _clients)->Start();
+            std::make_shared<Session>(std::move(socket), _clients)->Start(udpServer);
         }
-        Accept();
+        Accept(udpServer);
     });
 }
 
-std::map<std::string, int> Server::getClients() const {
+std::map<std::string, int> TCPServer::getClients() const {
     return _clients;
 }

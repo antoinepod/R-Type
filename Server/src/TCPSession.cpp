@@ -7,11 +7,12 @@
 
 #include "TCPSession.hpp"
 
-Session::Session(tcp::socket socket, std::map<std::string, int>& clients) : _socket(std::move(socket)), _clients(clients) {};
+Session::Session(tcp::socket socket, std::map<std::string, int>& clients) : _socket(std::move(socket)), _clients(clients) {
+};
 
 Session::~Session() = default;
 
-void Session::Start() {
+void Session::Start(UDPServer& udpServer) {
 //    std::string client_id = GenerateId();
 //    _clients[client_id] = 0;
 //
@@ -27,6 +28,7 @@ void Session::Start() {
         // Generate a new ID for this client
         client_id = GenerateId();
         _clients[client_address] = std::stoi(client_id);
+        udpServer.CreateNewPlayer(client_address, std::stoi(client_id));
     }
     else {
         // Use the stored ID for this client

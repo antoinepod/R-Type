@@ -20,6 +20,8 @@ public:
     void Receive(const boost::system::error_code& error,std::size_t);
     void Send(boost::shared_ptr<std::string>,const boost::system::error_code&,std::size_t);
 
+    void CreateNewPlayer(const std::string& ip, int id);
+
 private:
     std::vector<Network::Object> gameObject;
     int p_Id = 0;

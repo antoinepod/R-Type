@@ -29,7 +29,7 @@ namespace Network {
     void Object::setStrength(int strength) {
         _strength = strength;
     }
-    void Object::setType(RType::ObjectType type) {
+    void Object::setType(ObjectType type) {
         _type = type;
     }
     void Object::setId(int id) {
@@ -55,7 +55,7 @@ namespace Network {
     int Object::getStrength() {
         return _strength;
     }
-    RType::ObjectType Object::getType() {
+    ObjectType Object::getType() {
         return _type;
     }
     int Object::getId() {

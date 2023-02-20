@@ -24,37 +24,29 @@ void UDPServer::StartReceive() {
 
     auto search = _myMap.find(_remoteEndpoint.address().to_string());
 
-    if ((_myMap.empty() || search == _myMap.end())) {
-        gameObject.push_back(Network::Populate::Player(p_Id, 100, 420));
-        _myMap[_remoteEndpoint.address().to_string()] = p_Id;
-        p_Id += 1;
-    }
+    if (!_myMap.empty() && search != _myMap.end()) {
 
-    for (auto& i : _myMap)
-        std::cout << i.first << "  " << i.second << std::endl;
+        for (auto &i: _myMap)
+            std::cout << i.first << "  " << i.second << std::endl;
 
-    switch (_recvBuffer.data()[0]) {
-        case RType::Actions::LEFT:
-            if (gameObject[search->second].getX() > 0)
-                gameObject[search->second].setX(
-                    gameObject[search->second].getX() - 4);
-            break;
-        case RType::Actions::RIGHT:
-            if (gameObject[search->second].getX() < 1500 - 66)
-                gameObject[search->second].setX(
-                    gameObject[search->second].getX() + 4);
-            break;
-        case RType::Actions::UP:
-            if (gameObject[search->second].getY() > 0)
-                gameObject[search->second].setY(
-                    gameObject[search->second].getY() - 4);
-            break;
-        case RType::Actions::DOWN:
-            if (gameObject[search->second].getY() < 900 - 34)
-                gameObject[search->second].setY(
-                    gameObject[search->second].getY() + 4);
-            break;
-    }
+        switch (_recvBuffer.data()[0]) {
+            case Actions::LEFT:
+                if (gameObject[search->second - 1].getX() > 0)
+                    gameObject[search->second - 1].setX(gameObject[search->second - 1].getX() - 4);
+                break;
+            case Actions::RIGHT:
+                if (gameObject[search->second - 1].getX() < 1500 - 66)
+                    gameObject[search->second - 1].setX(gameObject[search->second - 1].getX() + 4);
+                break;
+            case Actions::UP:
+                if (gameObject[search->second - 1].getY() > 0)
+                    gameObject[search->second - 1].setY(gameObject[search->second - 1].getY() - 4);
+                break;
+            case Actions::DOWN:
+                if (gameObject[search->second - 1].getY() < 900 - 34)
+                    gameObject[search->second - 1].setY(gameObject[search->second - 1].getY() + 4);
+                break;
+        }
         //}
 
         //if (_recvBuffer.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
@@ -66,6 +58,7 @@ void UDPServer::StartReceive() {
         //    }
         //}
         //        }
+    }
 }
 
 
@@ -83,3 +76,8 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
 }
 
 void UDPServer::Send(boost::shared_ptr<std::string>, const boost::system::error_code&,std::size_t) {}
+
+void UDPServer::CreateNewPlayer(const std::string& ip, int id) {
+    gameObject.push_back(Network::Populate::Player(id, 100, 420));
+    _myMap.insert(std::pair<std::string, int>(ip, id));
+}

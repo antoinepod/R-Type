@@ -24,9 +24,8 @@
 
 #define THREADS_NBR 4
 
-namespace RType {
-
     enum Actions {
+        NONE = 0,
         UP = 2,
         RIGHT = 4,
         DOWN = 8,
@@ -46,5 +45,3 @@ namespace RType {
         WALL = 2048,
         POWER_UP = 4096
     };
-
-}
