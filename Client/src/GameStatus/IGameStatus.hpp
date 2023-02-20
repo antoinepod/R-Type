@@ -36,20 +36,6 @@ enum GameStatus {
     CLOSE
 };
 
-enum Actions {
-    NONE = 0,
-    UP = 2,
-    RIGHT = 4,
-    DOWN = 8,
-    LEFT = 16,
-    EVENT = 32
-};
-
-enum Events {
-    SHOT = 64,
-    QUIT = 128
-};
-
 class IGameStatus {
 public:
     virtual ~IGameStatus() = default;
