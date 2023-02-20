@@ -20,6 +20,8 @@
 #include <SFML/Audio.hpp>
 #include <SFML/System.hpp>
 
+#include "Data/Enums.hpp"
+
 #define SCREEN_WIDTH 1500
 #define SCREEN_HEIGHT 900
 
