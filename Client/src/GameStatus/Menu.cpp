@@ -56,9 +56,9 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp) {
     _serverIp = serverIp;
 
     if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == MOVE_UP && _selectedButton > 0)
+        if (event.key.code == sf::Keyboard::Up && _selectedButton > 0)
             _selectedButton--;
-        if (event.key.code == MOVE_DOWN && _selectedButton < _buttons.size() - 1)
+        if (event.key.code == sf::Keyboard::Down && _selectedButton < _buttons.size() - 1)
             _selectedButton++;
         if (event.key.code == sf::Keyboard::Enter) {
             switch (_selectedButton) {

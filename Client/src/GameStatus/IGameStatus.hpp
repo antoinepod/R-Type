@@ -25,11 +25,6 @@
 #define SCREEN_WIDTH 1500
 #define SCREEN_HEIGHT 900
 
-#define MOVE_UP sf::Keyboard::Up
-#define MOVE_DOWN sf::Keyboard::Down
-#define MOVE_LEFT sf::Keyboard::Left
-#define MOVE_RIGHT sf::Keyboard::Right
-
 
 enum GameStatus {
     MENU,

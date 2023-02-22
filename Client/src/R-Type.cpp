@@ -21,6 +21,9 @@ RType::RType() {
     _fpsText = sf::Text("", _arcadeFont, 20);
     _fpsText.setPosition(10, 10);
     _fpsText.setFillColor(sf::Color::Green);
+
+    // Debug
+    _serverIp = "localhost";
 }
 
 RType::~RType() {

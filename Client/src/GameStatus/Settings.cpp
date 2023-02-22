@@ -14,12 +14,12 @@ Settings::Settings() {
     _title.setPosition(750 - (_title.getLocalBounds().width / 2), 50);
     _title.setFillColor(sf::Color::White);
 
-    _ipText = sf::Text("Server IP address :", _arcadeFont, 40);
+    _ipText = sf::Text("Server IP address:", _arcadeFont, 40);
     _ipText.setPosition(50, 200);
     _ipText.setFillColor(sf::Color::White);
 
     _ipNumber = sf::Text("", _arcadeFont, 40);
-    _ipNumber.setPosition(900, 200);
+    _ipNumber.setPosition(850, 200);
     _ipNumber.setFillColor(sf::Color::White);
 }
 
