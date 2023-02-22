@@ -17,6 +17,8 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
     size = getMeta(buffer, pos);
     //std::cout << "the buffer size is: " << size << std::endl;
     for (int i = 0; i < size; i++) {
+        // TODO
+        // gameObject.setName(getStringValue(buffer, pos));
         gameObject.setX(getFloatValue(buffer, pos));
         gameObject.setY(getFloatValue(buffer, pos));
         gameObject.setCelerity(getFloatValue(buffer, pos));
@@ -51,4 +53,12 @@ float Network::Deseria::getFloatValue(boost::array<char, 1024> buffer, std::size
     pos += sizeof(result);
     //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;
     return result;
+}
+
+std::string Network::Deseria::getStringValue(boost::array<char, 1024> buffer, std::size_t& pos) {
+    char result[] = "";
+    std::memcpy(&result, buffer.data() + pos, sizeof(result));
+    pos += sizeof(result);
+    //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;
+    return std::string(result);
 }

@@ -38,6 +38,9 @@ namespace Network {
     void Object::setDestroyable(bool destroyable) {
         _destroyable = destroyable;
     }
+    void Object::setName(const std::string &name) {
+        _name = name;
+    }
 
     // Getters
     float Object::getX() {
@@ -63,5 +66,8 @@ namespace Network {
     }
     bool Object::getDestroyable() {
         return _destroyable;
+    }
+    std::string Object::getName() {
+        return _name;
     }
 }

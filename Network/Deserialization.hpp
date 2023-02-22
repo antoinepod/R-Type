@@ -17,5 +17,6 @@
             static std::size_t getMeta(boost::array<char, 1024> buffer, std::size_t& pos);
             static int getIntValue(boost::array<char, 1024> buffer, std::size_t& pos);
             static float getFloatValue(boost::array<char, 1024> buffer, std::size_t& pos);
+            static std::string getStringValue(boost::array<char, 1024> buffer, std::size_t& pos);
         };
     }

@@ -24,6 +24,7 @@ namespace Network {
         void setType(ObjectType type) override;
         void setId(int id) override;
         void setDestroyable(bool destroyable) override;
+        void setName(const std::string &name) override;
 
         // Getters
         float getX() override;
@@ -34,6 +35,7 @@ namespace Network {
         ObjectType getType() override;
         int getId() override;
         bool getDestroyable() override;
+        std::string getName() override;
 
     private:
         float _x;
@@ -44,5 +46,6 @@ namespace Network {
         ObjectType _type;
         int _id;
         bool _destroyable;
+        std::string _name;
     };
 }

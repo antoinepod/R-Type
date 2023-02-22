@@ -23,6 +23,7 @@ namespace Network {
         virtual void setType(ObjectType type) = 0;
         virtual void setId(int id) = 0;
         virtual void setDestroyable(bool destroyable) = 0;
+        virtual void setName(const std::string &name) = 0;
 
         // Getters
         virtual float getX() = 0;
@@ -33,5 +34,6 @@ namespace Network {
         virtual ObjectType getType() = 0;
         virtual int getId() = 0;
         virtual bool getDestroyable() = 0;
+        virtual std::string getName() = 0;
     };
 }

@@ -122,8 +122,9 @@ int UDPServer::FindPlayer(int id) {
 
 void UDPServer::Send(boost::shared_ptr<std::string>, const boost::system::error_code&,std::size_t) {}
 
-void UDPServer::CreatePlayer(const std::string& ip, int id) {
+void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& name) {
     Network::Player player;
+    player.setName(name);
     player.setX(100);
     player.setY(420);
     player.setCelerity(4);

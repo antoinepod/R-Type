@@ -24,7 +24,7 @@ public:
     int FindPlayer(int id);
 
     // Create objects
-    void CreatePlayer(const std::string& ip, int id);
+    void CreatePlayer(const std::string& ip, int id, const std::string& name);
     void CreateBullet(Network::Object & sender, float x, float y);
 
 private:
