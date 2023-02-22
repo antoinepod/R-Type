@@ -84,7 +84,7 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         else
             buf = { Action::NONE };
 
-        // Handle joystick
+        // Handle Joystick
         float x = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
         float y = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
         if (x == 0 && y == -100)
