@@ -28,7 +28,7 @@ void Session::Start(UDPServer& udpServer) {
         // Generate a new ID for this client
         client_id = GenerateId();
         _clients[client_address] = std::stoi(client_id);
-        udpServer.CreateNewPlayer(client_address, std::stoi(client_id));
+        udpServer.CreatePlayer(client_address, std::stoi(client_id));
     }
     else {
         // Use the stored ID for this client

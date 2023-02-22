@@ -24,13 +24,13 @@
 
 #define THREADS_NBR 4
 
-enum Actions {
+enum Action {
     NONE = 0,
     UP = 2,
     RIGHT = 4,
     DOWN = 8,
     LEFT = 16,
-    EVENT = 32
+    SHOOT = 32
 };
 
 enum Events {
@@ -42,6 +42,5 @@ enum ObjectType {
     PLAYER = 256,
     ENEMY = 512,
     BULLET = 1024,
-    WALL = 2048,
-    POWER_UP = 4096
+    POWER_UP = 2048
 };

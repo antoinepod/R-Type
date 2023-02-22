@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Objects/Player.hpp"
+#include "Objects/Bullet.hpp"
 
     namespace Network {
         class Deseria {

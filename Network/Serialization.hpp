@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Data/PopulateObject.hpp"
+#include "Objects/Object.hpp"
 
     namespace Network {
         template <typename T>

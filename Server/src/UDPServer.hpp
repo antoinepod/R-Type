@@ -20,10 +20,16 @@ public:
     void Receive(const boost::system::error_code& error,std::size_t);
     void Send(boost::shared_ptr<std::string>,const boost::system::error_code&,std::size_t);
 
-    void CreateNewPlayer(const std::string& ip, int id);
+    void UpdateGame();
+    int FindPlayer(int id);
+
+    // Create objects
+    void CreatePlayer(const std::string& ip, int id);
+    void CreateBullet(Network::Object & sender, float x, float y);
 
 private:
-    std::vector<Network::Object> gameObject;
+    std::vector<Network::Object> _gameObject;
+    std::shared_ptr<boost::asio::deadline_timer> _timer;
     int p_Id = 0;
     boost::asio::ip::udp::socket _socket;
     boost::asio::ip::udp::endpoint _remoteEndpoint;
