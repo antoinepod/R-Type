@@ -15,8 +15,8 @@ public:
     explicit Menu();
     ~Menu() override;
 
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
     GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
 
 private:
     sf::Font _arcadeFont;

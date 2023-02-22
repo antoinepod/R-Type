@@ -35,6 +35,7 @@ Game::Game() {
     isRunning = false;
 
     _playerId = 0;
+    _canShoot = true;
 
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
@@ -44,8 +45,48 @@ Game::~Game() {
     _service.stop();
     if (isRunning) {
         isRunning = false;
-        _thread.join();
+        for (auto & thread : _threads)
+            thread.join();
     }
+}
+
+void Game::ShootTimer() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    _canShoot = true;
+}
+
+GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        return GameStatus::MENU;
+
+    if (!isRunning) {
+        _serverIp = serverIp;
+        isRunning = true;
+        _threads.emplace_back(&Game::ConnectToServer, this);
+    }
+
+    if (_playerId != 0) {
+        boost::array<unsigned char, 1> buf = { Action::NONE };
+
+        if (event.type == sf::Event::KeyPressed && event.key.code == _input[Action::SHOOT] && _canShoot) {
+            _canShoot = false;
+            buf = {Action::SHOOT};
+            _threads.emplace_back(&Game::ShootTimer, this);
+        } else if (sf::Keyboard::isKeyPressed(_input[Action::DOWN]))
+            buf = {Action::DOWN};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::LEFT]))
+            buf = {Action::LEFT};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::RIGHT]))
+            buf = {Action::RIGHT};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::UP]))
+            buf = {Action::UP};
+        else
+            buf = { Action::NONE };
+
+        _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
+    }
+
+    return GameStatus::GAME;
 }
 
 void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
@@ -64,6 +105,8 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
                 break;
             case POWER_UP:
                 UpdatePowerUp(object);
+                break;
+            default:
                 break;
         }
     }
@@ -103,39 +146,6 @@ void Game::UpdateBullet(Network::Object &bullet) {
 
 void Game::UpdatePowerUp(Network::Object &powerUp) {
     // TODO
-}
-
-
-GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-        return GameStatus::MENU;
-
-    if (!isRunning) {
-        _serverIp = serverIp;
-        isRunning = true;
-        _thread = std::thread(&Game::ConnectToServer, this);
-    }
-
-    if (_playerId != 0) {
-        boost::array<unsigned char, 1> buf = { Action::NONE };
-
-        if (event.type == sf::Event::KeyPressed && event.key.code == _input[Action::SHOOT])
-                buf = {Action::SHOOT};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::DOWN]))
-            buf = {Action::DOWN};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::LEFT]))
-            buf = {Action::LEFT};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::RIGHT]))
-            buf = {Action::RIGHT};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::UP]))
-            buf = {Action::UP};
-        else
-            buf = { Action::NONE };
-
-        _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
-    }
-
-    return GameStatus::GAME;
 }
 
 void Game::ConnectToServer() {

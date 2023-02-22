@@ -15,8 +15,8 @@ public:
     explicit Settings();
     ~Settings() override;
 
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
     GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
 
 private:
     std::string _ip;

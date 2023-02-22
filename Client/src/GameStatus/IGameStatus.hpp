@@ -37,6 +37,6 @@ class IGameStatus {
 public:
     virtual ~IGameStatus() = default;
 
-    virtual void Display(const std::shared_ptr<sf::RenderWindow>& window) = 0;
     virtual GameStatus ManageInput(sf::Event event, std::string &serverIp) = 0;
+    virtual void Display(const std::shared_ptr<sf::RenderWindow>& window) = 0;
 };

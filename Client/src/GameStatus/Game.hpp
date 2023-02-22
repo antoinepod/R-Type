@@ -17,8 +17,8 @@ public:
     ~Game() override;
 
     // SFML functions
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
     GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
 
     // Server connection
     void ConnectToServer();
@@ -28,6 +28,9 @@ public:
     void UpdateEnemy(Network::Object & enemy);
     void UpdateBullet(Network::Object & bullet);
     void UpdatePowerUp(Network::Object & powerUp);
+
+    // Timers
+    void ShootTimer();
 
     std::atomic_bool isRunning;
 
@@ -47,6 +50,7 @@ private:
     // Bullet assets
     sf::Texture _bulletTexture;
     sf::Sprite _bullet;
+    bool _canShoot;
 
     // PowerUp assets
     // TODO
@@ -54,7 +58,7 @@ private:
     std::vector<Network::Object> _objects;
 
     int _count;
-    std::thread _thread;
+    std::vector<std::thread> _threads;
     std::string _serverIp;
 
     boost::asio::io_service _tcpService;

@@ -26,31 +26,7 @@ Menu::Menu() {
     _serverIp = "";
 }
 
-Menu::~Menu() {
-}
-
-void Menu::Display(const std::shared_ptr<sf::RenderWindow>& window){
-    window->draw(_title);
-
-    for (int i = 0; i < _buttons.size(); i++) {
-        if (i == _selectedButton)
-            _buttons[i].setFillColor(sf::Color::Blue);
-        else
-            _buttons[i].setFillColor(sf::Color::White);
-        window->draw(_buttons[i]);
-    }
-
-    if (_selectedButton == 0) {
-        if (_serverIp.empty()) {
-            _serverIpInfo.setString("Server IP not set, please go to Settings.");
-            _serverIpInfo.setPosition(750 - (_serverIpInfo.getLocalBounds().width / 2), 500);
-        } else {
-            _serverIpInfo.setString(_serverIp);
-            _serverIpInfo.setPosition(750 - (_serverIpInfo.getLocalBounds().width / 2), 500);
-        }
-        window->draw(_serverIpInfo);
-    }
-}
+Menu::~Menu() = default;
 
 GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp) {
     _serverIp = serverIp;
@@ -79,3 +55,25 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp) {
     return GameStatus::MENU;
 }
 
+void Menu::Display(const std::shared_ptr<sf::RenderWindow>& window){
+    window->draw(_title);
+
+    for (int i = 0; i < _buttons.size(); i++) {
+        if (i == _selectedButton)
+            _buttons[i].setFillColor(sf::Color::Blue);
+        else
+            _buttons[i].setFillColor(sf::Color::White);
+        window->draw(_buttons[i]);
+    }
+
+    if (_selectedButton == 0) {
+        if (_serverIp.empty()) {
+            _serverIpInfo.setString("Server IP not set, please go to Settings.");
+            _serverIpInfo.setPosition(750 - (_serverIpInfo.getLocalBounds().width / 2), 500);
+        } else {
+            _serverIpInfo.setString(_serverIp);
+            _serverIpInfo.setPosition(750 - (_serverIpInfo.getLocalBounds().width / 2), 500);
+        }
+        window->draw(_serverIpInfo);
+    }
+}

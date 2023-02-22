@@ -23,15 +23,7 @@ Settings::Settings() {
     _ipNumber.setFillColor(sf::Color::White);
 }
 
-Settings::~Settings() {
-}
-
-void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window) {
-    window->draw(_title);
-
-    window->draw(_ipText);
-    window->draw(_ipNumber);
-}
+Settings::~Settings() = default;
 
 GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp) {
     _ipNumber.setString(serverIp);
@@ -47,4 +39,11 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp) {
     }
 
     return GameStatus::SETTINGS;
+}
+
+void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+    window->draw(_title);
+
+    window->draw(_ipText);
+    window->draw(_ipNumber);
 }
