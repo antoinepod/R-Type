@@ -28,30 +28,40 @@ Menu::Menu() {
 
 Menu::~Menu() = default;
 
-GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp) {
+GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) {
     _serverIp = serverIp;
 
+    // Handle keyboard
     if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Up && _selectedButton > 0)
+        if (inputs.GetUp() && _selectedButton > 0)
             _selectedButton--;
-        if (event.key.code == sf::Keyboard::Down && _selectedButton < _buttons.size() - 1)
+        if (inputs.GetDown() && _selectedButton < _buttons.size() - 1)
             _selectedButton++;
-        if (event.key.code == sf::Keyboard::Enter) {
-            switch (_selectedButton) {
-                case 0:
-                    if (_serverIp.empty())
-                        break;
-                    else
-                        return GameStatus::GAME;
-                case 1:
-                    return GameStatus::SETTINGS;
-                case 2:
-                    return GameStatus::CLOSE;
-                default:
-                    break;
-            }
-        }
+        if (inputs.GetOK())
+            return GetSelectedButton();
     }
+
+    // Handle joystick
+    if (event.type == sf::Event::JoystickButtonPressed || event.type == sf::Event::JoystickMoved) {
+        if (event.joystickMove.position == -100 && _selectedButton > 0)
+            _selectedButton--;
+        if (event.joystickMove.position == 100 && _selectedButton < _buttons.size() - 1)
+            _selectedButton++;
+        if (sf::Joystick::isButtonPressed(0, 0))
+            return GetSelectedButton();
+    }
+
+    if (event.type == sf::Event::JoystickConnected) {
+        std::cout << "Joystick connected" << std::endl;
+    }
+
+    if (event.type == sf::Event::JoystickMoved) {
+        std::cout << "Joystick moved" << std::endl;
+        std::cout << "Joystick ID: " << event.joystickMove.joystickId << std::endl;
+        std::cout << "Axis: " << event.joystickMove.axis << std::endl;
+        std::cout << "Position: " << event.joystickMove.position << std::endl;
+    }
+
     return GameStatus::MENU;
 }
 
@@ -76,4 +86,21 @@ void Menu::Display(const std::shared_ptr<sf::RenderWindow>& window){
         }
         window->draw(_serverIpInfo);
     }
+}
+
+GameStatus Menu::GetSelectedButton() const {
+    switch (_selectedButton) {
+        case 0:
+            if (_serverIp.empty())
+                break;
+            else
+                return GameStatus::GAME;
+        case 1:
+            return GameStatus::SETTINGS;
+        case 2:
+            return GameStatus::CLOSE;
+        default:
+            return GameStatus::MENU;
+    }
+    return GameStatus::MENU;
 }

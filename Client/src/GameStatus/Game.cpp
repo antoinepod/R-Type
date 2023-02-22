@@ -55,7 +55,7 @@ void Game::ShootTimer() {
     _canShoot = true;
 }
 
-GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
+GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         return GameStatus::MENU;
 
@@ -68,20 +68,38 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
     if (_playerId != 0) {
         boost::array<unsigned char, 1> buf = { Action::NONE };
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == _input[Action::SHOOT] && _canShoot) {
+        // Handle keyboard
+        if (inputs.GetOK() && _canShoot) {
             _canShoot = false;
             buf = {Action::SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this);
-        } else if (sf::Keyboard::isKeyPressed(_input[Action::DOWN]))
-            buf = {Action::DOWN};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::LEFT]))
-            buf = {Action::LEFT};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::RIGHT]))
-            buf = {Action::RIGHT};
-        else if (sf::Keyboard::isKeyPressed(_input[Action::UP]))
+        } else if (inputs.GetUp())
             buf = {Action::UP};
+        else if (inputs.GetDown())
+            buf = {Action::DOWN};
+        else if (inputs.GetLeft())
+            buf = {Action::LEFT};
+        else if (inputs.GetRight())
+            buf = {Action::RIGHT};
         else
             buf = { Action::NONE };
+
+        // Handle joystick
+        float x = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
+        float y = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
+        if (x == 0 && y == -100)
+            buf = {Action::UP};
+        if (x == 0 && y == 100)
+            buf = {Action::DOWN};
+        if (x == -100 && y == 0)
+            buf = {Action::LEFT};
+        if (x == 100 && y == 0)
+            buf = {Action::RIGHT};
+        if (sf::Joystick::isButtonPressed(0, 0) && _canShoot) {
+            _canShoot = false;
+            buf = {Action::SHOOT};
+            _threads.emplace_back(&Game::ShootTimer, this);
+        }
 
         _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
     }

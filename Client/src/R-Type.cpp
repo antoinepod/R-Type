@@ -31,6 +31,7 @@ RType::~RType() {
 }
 
 void RType::Start() {
+    Inputs inputs;
     while (_window->isOpen())
     {
         sf::Event event{};
@@ -38,7 +39,7 @@ void RType::Start() {
             _window->close();
             exit(0);
         }
-        _currentGameStatus = _gameStatus[_currentGameStatus]->ManageInput(event, _serverIp);
+        _currentGameStatus = _gameStatus[_currentGameStatus]->ManageInput(event, _serverIp, inputs);
 
         if (_currentGameStatus == GameStatus::CLOSE)
             break;

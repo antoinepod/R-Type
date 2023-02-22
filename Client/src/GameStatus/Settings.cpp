@@ -25,9 +25,10 @@ Settings::Settings() {
 
 Settings::~Settings() = default;
 
-GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp) {
+GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) {
     _ipNumber.setString(serverIp);
 
+    // Handle keyboard
     if (event.type == sf::Event::TextEntered && std::isprint((char)event.text.unicode))
         serverIp.push_back((char)event.text.unicode);
 
@@ -36,6 +37,12 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp) {
             return GameStatus::MENU;
         if (event.key.code == sf::Keyboard::BackSpace && !serverIp.empty())
             serverIp.pop_back();
+    }
+
+    // Handle joystick
+    if (event.type == sf::Event::JoystickButtonPressed) {
+        if (sf::Joystick::isButtonPressed(0, 1))
+            return GameStatus::MENU;
     }
 
     return GameStatus::SETTINGS;
