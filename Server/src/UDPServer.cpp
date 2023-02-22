@@ -139,7 +139,7 @@ void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
     Network::Bullet bullet;
     bullet.setX(x);
     bullet.setY(y);
-    bullet.setCelerity(8);
+    bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
     bullet.setId(0);
     _gameObject.push_back(bullet);
