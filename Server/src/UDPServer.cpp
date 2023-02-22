@@ -9,17 +9,18 @@
 
 
 UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8080)) {
-    _timer = std::make_shared<boost::asio::deadline_timer>(io_context, boost::posix_time::milliseconds(16));
+//    _timer = std::make_shared<boost::asio::deadline_timer>(io_context, boost::posix_time::milliseconds(16));
     StartReceive();
     for (int i = 0; i < THREADS_NBR; i++) {
         _threadPool.emplace_back(&UDPServer::StartReceive, this);
     }
+    _threadPool.emplace_back(&UDPServer::UpdateGame, this);
 }
 
 UDPServer::~UDPServer() = default;
 
 void UDPServer::StartReceive() {
-    _timer->async_wait(boost::bind(&UDPServer::UpdateGame, this));
+//    _timer->async_wait(boost::bind(&UDPServer::UpdateGame, this));
     _socket.async_receive_from(boost::asio::buffer(_recvBuffer), _remoteEndpoint,boost::bind(&UDPServer::Receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
     // Debug
     // std::cout << _remoteEndpoint.address().to_string() << ": " << std::to_string(_recvBuffer.data()[0]) << std::endl;
@@ -90,15 +91,19 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
 }
 
 void UDPServer::UpdateGame() {
-    for (auto & object : _gameObject) {
-//        std::cout << "Object: " << object->getType() << " pos: " << object->getX() << " " << object->getY() << std::endl;
-        if (object.getId() != -1 && object.getType() == ObjectType::BULLET) {
-            if (object.getX() > 0 && object.getX() < 1500)
-                object.setX(object.getX() + object.getCelerity());
-            else {
-                object.setId(-1);
+    while (true) {
+        for (auto &object: _gameObject) {
+            //        std::cout << "Object: " << object->getType() << " pos: " << object->getX() << " " << object->getY() << std::endl;
+            if (object.getId() != -1 &&
+                object.getType() == ObjectType::BULLET) {
+                if (object.getX() > 0 && object.getX() < 1500)
+                    object.setX(object.getX() + object.getCelerity());
+                else {
+                    object.setId(-1);
+                }
             }
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 
 //    for (auto it = _gameObject.begin(); it != _gameObject.end(); it++) {
