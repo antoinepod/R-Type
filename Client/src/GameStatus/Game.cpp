@@ -89,6 +89,7 @@ void Game::UpdatePlayer(Network::Object & player) {
         default:
             break;
     }
+    _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
 }
 
