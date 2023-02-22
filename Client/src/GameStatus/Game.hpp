@@ -16,18 +16,40 @@ public:
     explicit Game();
     ~Game() override;
 
+    // SFML functions
     void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
     GameStatus ManageInput(sf::Event event, std::string &serverIp) override;
 
+    // Server connection
     void ConnectToServer();
+
+    // Object updates
+    void UpdatePlayer(Network::Object & player);
+    void UpdateEnemy(Network::Object & enemy);
+    void UpdateBullet(Network::Object & bullet);
+    void UpdatePowerUp(Network::Object & powerUp);
 
     std::atomic_bool isRunning;
 
 private:
+    std::map<Action, sf::Keyboard::Key> _input;
+
     sf::Font _arcadeFont;
 
+    // Player assets
     sf::Texture _spaceShipTexture;
+    sf::IntRect _spaceShipRect;
     sf::Sprite _spaceShip;
+
+    // Enemy assets
+    // TODO
+
+    // Bullet assets
+    sf::Texture _bulletTexture;
+    sf::Sprite _bullet;
+
+    // PowerUp assets
+    // TODO
 
     std::vector<Network::Object> _objects;
 

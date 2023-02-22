@@ -9,12 +9,26 @@
 
 
 Game::Game() {
+    _input = {
+        {UP, sf::Keyboard::Up},
+        {DOWN, sf::Keyboard::Down},
+        {LEFT, sf::Keyboard::Left},
+        {RIGHT, sf::Keyboard::Right},
+        {SHOOT, sf::Keyboard::Space}
+    };
+
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
 
+    // Player assets initialization
     _spaceShipTexture.loadFromFile("assets/Images/spaceShip.png");
     _spaceShip.setTexture(_spaceShipTexture);
-    _spaceShip.setTextureRect(sf::IntRect(132, 0, 66, 34));
+    _spaceShipRect = {132, 0, 66, 34};
+    _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(100, 420);
+
+    // Bullet assets initialization
+    _bulletTexture.loadFromFile("assets/Images/simpleBullet.png");
+    _bullet.setTexture(_bulletTexture);
 
     _count = 0;
 
@@ -35,20 +49,63 @@ Game::~Game() {
 }
 
 void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
-    _spaceShip.setPosition(10, 10);
-    window->draw(_spaceShip);
-
-    for (auto & _object : _objects) {
-        if (_object.getType() == ObjectType::PLAYER) {
-            _spaceShip.setPosition(_object.getX(), _object.getY());
-            window->draw(_spaceShip);
+    for (auto & object : _objects) {
+        switch (object.getType()) {
+            case ObjectType::PLAYER:
+                UpdatePlayer(object);
+                window->draw(_spaceShip);
+                break;
+            case ENEMY:
+                UpdateEnemy(object);
+                break;
+            case BULLET:
+                UpdateBullet(object);
+                window->draw(_bullet);
+                break;
+            case POWER_UP:
+                UpdatePowerUp(object);
+                break;
         }
     }
+    _bullet.setPosition(100, 100);
+    _bullet.setScale(2, 2);
+    window->draw(_bullet);
 }
 
-GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
-    std::cout << "player " << _playerId << std::endl;
+void Game::UpdatePlayer(Network::Object & player) {
+    switch (player.getId()) {
+        case 1:
+            _spaceShipRect.top = 0;
+            break;
+        case 2:
+            _spaceShipRect.top = 34;
+            break;
+        case 3:
+            _spaceShipRect.top = 68;
+            break;
+        case 4:
+            _spaceShipRect.top = 102;
+            break;
+        default:
+            break;
+    }
+    _spaceShip.setPosition(player.getX(), player.getY());
+}
 
+void Game::UpdateEnemy(Network::Object &enemy) {
+    // TODO
+}
+
+void Game::UpdateBullet(Network::Object &bullet) {
+    _bullet.setPosition(bullet.getX(), bullet.getY());
+}
+
+void Game::UpdatePowerUp(Network::Object &powerUp) {
+    // TODO
+}
+
+
+GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         return GameStatus::MENU;
 
@@ -59,19 +116,20 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp) {
     }
 
     if (_playerId != 0) {
-        boost::array<unsigned char, 1> buf = { Actions::NONE };
+        boost::array<unsigned char, 1> buf = { Action::NONE };
 
-        if (sf::Keyboard::isKeyPressed(MOVE_LEFT))
-            buf = {Actions::LEFT};
-        else if (sf::Keyboard::isKeyPressed(MOVE_RIGHT))
-            //        _spaceShipPos.x += 4;
-            buf = {Actions::RIGHT};
-        else if (sf::Keyboard::isKeyPressed(MOVE_UP))
-            buf = {Actions::UP};
-        else if (sf::Keyboard::isKeyPressed(MOVE_DOWN))
-            buf = {Actions::DOWN};
+        if (event.type == sf::Event::KeyPressed && event.key.code == _input[Action::SHOOT])
+                buf = {Action::SHOOT};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::DOWN]))
+            buf = {Action::DOWN};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::LEFT]))
+            buf = {Action::LEFT};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::RIGHT]))
+            buf = {Action::RIGHT};
+        else if (sf::Keyboard::isKeyPressed(_input[Action::UP]))
+            buf = {Action::UP};
         else
-            buf = { Actions::NONE };
+            buf = { Action::NONE };
 
         _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
     }
@@ -110,64 +168,20 @@ void Game::ConnectToServer() {
 
 
     _serverEndpoint = *boost::asio::ip::udp::resolver(_service).resolve({ boost::asio::ip::udp::v4(), _serverIp, std::to_string(8080) });
-
     _service.run();
 
     while (isRunning)
     {
-        //        std::vector<float> send_vec = {_spaceShipPos.x, _spaceShipPos.y};
-        //        _socket->send_to(boost::asio::buffer(send_vec), _serverEndpoint);
-
-        //        boost::asio::deadline_timer timer(service, boost::posix_time::seconds(3));
-        //        timer.async_wait(& {
-        //            if (error != boost::asio::error::operation_aborted) {
-        //                std::cout << "Disconnected from server (timeout)" << std::endl;
-        //                _isRunning = false;
-        //
-        //                return;
-        //            }
-        //        });
-
         boost::array<char, 1024> recv_buf{};
         boost::asio::ip::udp::endpoint sender_endpoint;
         size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 
-        std::cout << "Received message from " << sender_endpoint << ": ";
         _objects = Network::Deseria::D_eserialize(recv_buf);
 
-        for (auto& object : _objects) {
-            std::cout << "Object=" << object.getType() << " id=" << object.getId() << " x=" << object.getX() << " y=" << object.getY() << std::endl;
-        }
-
-        //        while (_spaceShip.size() < data.size()) {
-        //            int i = _spaceShip.size();
-        //            _spaceShipTexture.emplace_back();
-        //            _spaceShipTexture[i].loadFromFile("assets/Images/spaceShip.png");
-        //            _spaceShip.emplace_back(_spaceShipTexture[i]);
-        //            _spaceShipRect.emplace_back(132, 0, 66, 34);
-        //            _spaceShip[i].setTextureRect(_spaceShipRect[i]);
-        //            _spaceShip[i].setPosition(_spaceShipPos[i]);
-        //        }
-        //        for (auto& player : data) {
-        //            std::cout << "Player " << player.getType() << " n°" << player.getId() << ", x=" << player.getX() << " y=" << player.getY() << std::endl;
-        //            _spaceShipPos[player.getId()].x = player.getX();
-        //            _spaceShipPos[player.getId()].y = player.getY();
-        //        }
-
-
-        //        socket.async_receive_from(boost::asio::buffer(recv_buf), sender_endpoint, &recv_buf, &sender_endpoint {
-        //            if (ec) {
-        //                std::cout << "Error: " << ec.message() << std::endl;
-        //            } else {
-        //                std::cout << "Received message from " << sender_endpoint << ": ";
-        //                std::cout.write(recv_buf.data(), bytes_recvd);
-        //                std::cout << std::endl;
-        //            }
-        //        });
-        //
-        //        service.run();
-
-        //        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        //        std::this_thread::sleep_for(std::chrono::seconds(3));
+        // Debug
+//        std::cout << "Received message from " << sender_endpoint << ": ";
+//                for (auto& object : _objects) {
+//            std::cout << "Object=" << object.getType() << " id=" << object.getId() << " x=" << object.getX() << " y=" << object.getY() << std::endl;
+//        }
     }
 }
