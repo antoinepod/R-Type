@@ -9,14 +9,6 @@
 
 
 Game::Game() {
-    _input = {
-        {UP, sf::Keyboard::Up},
-        {DOWN, sf::Keyboard::Down},
-        {LEFT, sf::Keyboard::Left},
-        {RIGHT, sf::Keyboard::Right},
-        {SHOOT, sf::Keyboard::Space}
-    };
-
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
 
     // Player assets initialization
@@ -30,7 +22,11 @@ Game::Game() {
     _bulletTexture.loadFromFile("assets/Images/simpleBullet.png");
     _bullet.setTexture(_bulletTexture);
 
-    _count = 0;
+    // TODO
+    // _playerName.setFont(_arcadeFont);
+    // _playerName.setCharacterSize(20);
+    // _playerName.setFillColor(sf::Color::White);
+    // _playerName.setPosition(100, 400);
 
     isRunning = false;
 
@@ -84,7 +80,7 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         else
             buf = { Action::NONE };
 
-        // Handle Joystick
+        // Handle joystick
         float x = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
         float y = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
         if (x == 0 && y == -100)
@@ -113,6 +109,8 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
             case ObjectType::PLAYER:
                 UpdatePlayer(object);
                 window->draw(_spaceShip);
+                // TODO
+                // window->draw(_playerName);
                 break;
             case ENEMY:
                 UpdateEnemy(object);
@@ -152,6 +150,9 @@ void Game::UpdatePlayer(Network::Object & player) {
     }
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
+    // TODO
+    // _playerName.setString(player.getName());
+    // _playerName.setPosition(player.getX(), player.getY() - 20);
 }
 
 void Game::UpdateEnemy(Network::Object &enemy) {
@@ -190,6 +191,7 @@ void Game::ConnectToServer() {
         std::cout << "Response from server: " << response << std::endl;
         _playerId = response[0] - 88;
         std::cout << "Player ID = " << _playerId << std::endl;
+        boost::asio::write(socket, boost::asio::buffer(request, sizeof(request)));
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;

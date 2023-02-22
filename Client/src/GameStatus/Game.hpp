@@ -35,14 +35,13 @@ public:
     std::atomic_bool isRunning;
 
 private:
-    std::map<Action, sf::Keyboard::Key> _input;
-
     sf::Font _arcadeFont;
 
     // Player assets
     sf::Texture _spaceShipTexture;
     sf::IntRect _spaceShipRect;
     sf::Sprite _spaceShip;
+    sf::Text _playerName;
 
     // Enemy assets
     // TODO
@@ -57,7 +56,6 @@ private:
 
     std::vector<Network::Object> _objects;
 
-    int _count;
     std::vector<std::thread> _threads;
     std::string _serverIp;
 
