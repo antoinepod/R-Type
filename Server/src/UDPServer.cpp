@@ -33,6 +33,7 @@ void UDPServer::StartReceive() {
 
         int playerIndex = FindPlayer(search->second);
 
+        _mutex.lock();
         switch (_recvBuffer.data()[0]) {
             case Action::SHOOT:
                 CreateBullet(_gameObject[playerIndex], _gameObject[playerIndex].getX(), _gameObject[playerIndex].getY());
@@ -54,6 +55,7 @@ void UDPServer::StartReceive() {
                     _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() + 4);
                 break;
         }
+        _mutex.unlock();
 
         //if (_recvBuffer.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
         //    _myMap.erase(_remoteEndpoint.address().to_string());
@@ -79,7 +81,9 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
     if (!error) {
 //        if (_gameObject.size() > 1)
 //            _gameObject[1].setX(_gameObject[1].getX() + _gameObject[1].getCelerity());
+        _mutex.lock();
         Network::Seria::S_erialize(_gameObject, &_buf);
+        _mutex.unlock();
         std::string strBuf(boost::asio::buffers_begin(_buf.data()),boost::asio::buffers_end(_buf.data()));
         boost::shared_ptr<std::string> message(new std::string(strBuf));
         //            std::cout << "" << *message << std::endl;
@@ -92,10 +96,10 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
 
 void UDPServer::UpdateGame() {
     while (true) {
+        _mutex.lock();
         for (auto &object: _gameObject) {
-                    std::cout << "Object: " << object.getType() << " pos: " << object.getX() << " " << object.getY() << std::endl;
-            if (object.getId() != -1 &&
-                object.getType() == ObjectType::BULLET) {
+            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
+            if (object.getId() != -1 && object.getType() == ObjectType::BULLET) {
                 if (object.getX() > 0 && object.getX() < 1500)
                     object.setX(object.getX() + object.getCelerity());
                 else {
@@ -103,6 +107,7 @@ void UDPServer::UpdateGame() {
                 }
             }
         }
+        _mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 
@@ -138,8 +143,8 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
 
 void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
     Network::Bullet bullet;
-    bullet.setX(x);
-    bullet.setY(y);
+    bullet.setX(x + 50);
+    bullet.setY(y + 15);
     bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
     bullet.setId(0);

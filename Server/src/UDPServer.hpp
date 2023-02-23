@@ -37,4 +37,5 @@ private:
     boost::asio::streambuf _buf;
     std::vector<std::thread> _threadPool;
     std::map<std::string, int> _myMap;
+    std::mutex _mutex;
 };
