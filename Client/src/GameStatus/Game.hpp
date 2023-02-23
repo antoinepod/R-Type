@@ -59,6 +59,8 @@ private:
     std::vector<std::thread> _threads;
     std::string _serverIp;
 
+    std::mutex _mutex;
+
     boost::asio::io_service _tcpService;
     boost::asio::io_service _service;
     std::shared_ptr<boost::asio::ip::udp::socket> _socket;

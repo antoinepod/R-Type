@@ -19,6 +19,6 @@
 
         class Seria {
         public:
-            static void S_erialize(std::vector<Network::Object> gameObject, boost::asio::streambuf *buf);
+            static void S_erialize(std::vector<Network::Object> & gameObject, boost::asio::streambuf *buf);
         };
     }

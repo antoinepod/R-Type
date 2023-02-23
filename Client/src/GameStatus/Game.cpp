@@ -23,10 +23,10 @@ Game::Game() {
     _bullet.setTexture(_bulletTexture);
 
     // TODO
-    // _playerName.setFont(_arcadeFont);
-    // _playerName.setCharacterSize(20);
-    // _playerName.setFillColor(sf::Color::White);
-    // _playerName.setPosition(100, 400);
+     _playerName.setFont(_arcadeFont);
+     _playerName.setCharacterSize(12);
+     _playerName.setFillColor(sf::Color::White);
+     _playerName.setPosition(90, 400);
 
     isRunning = false;
 
@@ -104,13 +104,14 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
 }
 
 void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+    _mutex.lock();
     for (auto & object : _objects) {
+        std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
         switch (object.getType()) {
             case ObjectType::PLAYER:
                 UpdatePlayer(object);
+                window->draw(_playerName);
                 window->draw(_spaceShip);
-                // TODO
-                // window->draw(_playerName);
                 break;
             case ENEMY:
                 UpdateEnemy(object);
@@ -126,6 +127,7 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
                 break;
         }
     }
+    _mutex.unlock();
     _bullet.setPosition(100, 100);
     _bullet.setScale(2, 2);
     window->draw(_bullet);
@@ -150,20 +152,22 @@ void Game::UpdatePlayer(Network::Object & player) {
     }
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
-    // TODO
-    // _playerName.setString(player.getName());
-    // _playerName.setPosition(player.getX(), player.getY() - 20);
+
+    _playerName.setString("Player " + std::to_string(_playerId));
+    _playerName.setPosition(player.getX() - 10, player.getY() - 20);
+    if (player.getId() == _playerId)
+        _playerName.setFillColor(sf::Color::White);
 }
 
-void Game::UpdateEnemy(Network::Object &enemy) {
+void Game::UpdateEnemy(Network::Object & enemy) {
     // TODO
 }
 
-void Game::UpdateBullet(Network::Object &bullet) {
+void Game::UpdateBullet(Network::Object & bullet) {
     _bullet.setPosition(bullet.getX(), bullet.getY());
 }
 
-void Game::UpdatePowerUp(Network::Object &powerUp) {
+void Game::UpdatePowerUp(Network::Object & powerUp) {
     // TODO
 }
 
@@ -207,7 +211,9 @@ void Game::ConnectToServer() {
         boost::asio::ip::udp::endpoint sender_endpoint;
         size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 
+        _mutex.lock();
         _objects = Network::Deseria::D_eserialize(recv_buf);
+        _mutex.unlock();
 
         // Debug
 //        std::cout << "Received message from " << sender_endpoint << ": ";

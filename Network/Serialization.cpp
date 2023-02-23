@@ -8,10 +8,10 @@
 #include "Serialization.hpp"
 
 
-void Network::Seria::S_erialize(std::vector<Network::Object> gameObject, boost::asio::streambuf *buf) {
+void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost::asio::streambuf *buf) {
     serialize(*buf, gameObject.size());
     for (auto& a : gameObject) {
-        if (a.getId() != -1) {
+//        if (a.getId() != -1) {
             // TODO
             // serialize(*buf, a.getName());
             serialize(*buf, a.getX());
@@ -21,7 +21,7 @@ void Network::Seria::S_erialize(std::vector<Network::Object> gameObject, boost::
             serialize(*buf, a.getStrength());
             serialize(*buf, a.getId());
             serialize(*buf, a.getType());
-        }
+//        }
     }
     //std::cout << "Serialized data size: " << buf->size() << std::endl;
 }

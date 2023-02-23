@@ -93,7 +93,7 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
 void UDPServer::UpdateGame() {
     while (true) {
         for (auto &object: _gameObject) {
-            //        std::cout << "Object: " << object->getType() << " pos: " << object->getX() << " " << object->getY() << std::endl;
+                    std::cout << "Object: " << object.getType() << " pos: " << object.getX() << " " << object.getY() << std::endl;
             if (object.getId() != -1 &&
                 object.getType() == ObjectType::BULLET) {
                 if (object.getX() > 0 && object.getX() < 1500)
