@@ -98,7 +98,8 @@ void UDPServer::UpdateGame() {
     while (true) {
         _mutex.lock();
         for (auto &object: _gameObject) {
-            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
+            // Debug
+//            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
             if (object.getId() != -1 && object.getType() == ObjectType::BULLET) {
                 if (object.getX() > 0 && object.getX() < 1500)
                     object.setX(object.getX() + object.getCelerity());
@@ -136,17 +137,31 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     player.setHealth(200);
     player.setId(id);
     player.setType(ObjectType::PLAYER);
-    _gameObject.push_back(player);
 
+    _mutex.lock();
+    _gameObject.push_back(player);
+    _mutex.unlock();
     _myMap.insert(std::pair<std::string, int>(ip, id));
 }
 
 void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
+    for (auto & object: _gameObject) {
+        if (object.getId() == -1) {
+            object.setX(x + 50);
+            object.setY(y + 15);
+            object.setCelerity(15);
+            object.setType(ObjectType::BULLET);
+            object.setId(100);
+            return;
+        }
+    }
+
     Network::Bullet bullet;
     bullet.setX(x + 50);
     bullet.setY(y + 15);
     bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
-    bullet.setId(0);
+    bullet.setId(100);
+
     _gameObject.push_back(bullet);
 }

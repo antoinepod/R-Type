@@ -11,17 +11,16 @@
 void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost::asio::streambuf *buf) {
     serialize(*buf, gameObject.size());
     for (auto& a : gameObject) {
-        if (a.getId() != -1) {
-            // TODO
-            // serialize(*buf, a.getName());
-            serialize(*buf, a.getX());
-            serialize(*buf, a.getY());
-            serialize(*buf, a.getCelerity());
-            serialize(*buf, a.getHealth());
-            serialize(*buf, a.getStrength());
-            serialize(*buf, a.getId());
-            serialize(*buf, a.getType());
-        }
+        std::cout << "ggggObject: " << a.getType() << " id:" << a.getId() << " pos: " << a.getX() << " " << a.getY() << std::endl;
+        // TODO
+        // serialize(*buf, a.getName());
+        serialize(*buf, a.getX());
+        serialize(*buf, a.getY());
+        serialize(*buf, a.getCelerity());
+        serialize(*buf, a.getHealth());
+        serialize(*buf, a.getStrength());
+        serialize(*buf, a.getId());
+        serialize(*buf, a.getType());
     }
     //std::cout << "Serialized data size: " << buf->size() << std::endl;
 }
