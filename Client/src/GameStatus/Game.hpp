@@ -24,12 +24,13 @@ public:
     void ConnectToServer();
 
     // Object updates
-    void UpdatePlayer(Network::Object & player);
-    void UpdateEnemy(Network::Object & enemy);
-    void UpdateBullet(Network::Object & bullet);
-    void UpdatePowerUp(Network::Object & powerUp);
+    void UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player);
+    void UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy);
+    void UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet);
+    void UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp);
 
-    // Timers
+    void UpdateData(std::vector<Network::Object> objects);
+        // Timers
     void ShootTimer();
 
     std::atomic_bool isRunning;

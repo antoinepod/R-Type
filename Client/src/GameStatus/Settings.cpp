@@ -40,10 +40,8 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp, Inputs 
     }
 
     // Handle joystick
-    if (event.type == sf::Event::JoystickButtonPressed) {
-        if (sf::Joystick::isButtonPressed(0, 1))
+    if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))
             return GameStatus::MENU;
-    }
 
     return GameStatus::SETTINGS;
 }

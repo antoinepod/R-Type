@@ -42,14 +42,14 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inp
     }
 
     // Handle joystick
-    if (event.type == sf::Event::JoystickButtonPressed || event.type == sf::Event::JoystickMoved) {
+    if (event.type == sf::Event::JoystickMoved) {
         if (event.joystickMove.position == -100 && _selectedButton > 0)
             _selectedButton--;
-        if (event.joystickMove.position == 100 && _selectedButton < _buttons.size() - 1)
+        if (event.joystickMove.position == 100 &&
+            _selectedButton < _buttons.size() - 1)
             _selectedButton++;
-        if (sf::Joystick::isButtonPressed(0, 0))
+    } if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 0))
             return GetSelectedButton();
-    }
 
     if (event.type == sf::Event::JoystickConnected) {
         std::cout << "Joystick connected" << std::endl;

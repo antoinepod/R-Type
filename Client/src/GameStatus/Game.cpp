@@ -7,6 +7,8 @@
 
 #include "Game.hpp"
 
+#include <utility>
+
 
 Game::Game() {
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
@@ -21,6 +23,7 @@ Game::Game() {
     // Bullet assets initialization
     _bulletTexture.loadFromFile("assets/Images/simpleBullet.png");
     _bullet.setTexture(_bulletTexture);
+    _bullet.setScale(2, 2);
 
     // TODO
      _playerName.setFont(_arcadeFont);
@@ -54,6 +57,8 @@ void Game::ShootTimer() {
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         return GameStatus::MENU;
+    if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))
+            return GameStatus::MENU;
 
     if (!isRunning) {
         _serverIp = serverIp;
@@ -81,15 +86,17 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
             buf = { Action::NONE };
 
         // Handle joystick
-        float x = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
-        float y = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
-        if (x == 0 && y == -100)
+        float PovX = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
+        float PovY = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
+        float AxisX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+        float AxisY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+        if ((PovX == 0 && PovY == -100) || (AxisX > -100 && AxisX < 100 && AxisY < 0))
             buf = {Action::UP};
-        if (x == 0 && y == 100)
+        if ((PovX == 0 && PovY == 100) || (AxisX > -100 && AxisX < 100 && AxisY > 0))
             buf = {Action::DOWN};
-        if (x == -100 && y == 0)
+        if ((PovX == -100 && PovY == 0) || (AxisX < 0 && AxisY > -100 && AxisY < 100))
             buf = {Action::LEFT};
-        if (x == 100 && y == 0)
+        if ((PovX == 100 && PovY == 0) || (AxisX > 0 && AxisY > -100 && AxisY < 100))
             buf = {Action::RIGHT};
         if (sf::Joystick::isButtonPressed(0, 0) && _canShoot) {
             _canShoot = false;
@@ -109,31 +116,25 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
         std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
         switch (object.getType()) {
             case ObjectType::PLAYER:
-                UpdatePlayer(object);
-                window->draw(_playerName);
-                window->draw(_spaceShip);
+                UpdatePlayer(window, object);
                 break;
             case ENEMY:
-                UpdateEnemy(object);
+                UpdateEnemy(window, object);
                 break;
             case BULLET:
-                UpdateBullet(object);
-                window->draw(_bullet);
+                UpdateBullet(window, object);
                 break;
             case POWER_UP:
-                UpdatePowerUp(object);
+                UpdatePowerUp(window, object);
                 break;
             default:
                 break;
         }
     }
     _mutex.unlock();
-    _bullet.setPosition(100, 100);
-    _bullet.setScale(2, 2);
-    window->draw(_bullet);
 }
 
-void Game::UpdatePlayer(Network::Object & player) {
+void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player) {
     switch (player.getId()) {
         case 1:
             _spaceShipRect.top = 0;
@@ -157,17 +158,22 @@ void Game::UpdatePlayer(Network::Object & player) {
     _playerName.setPosition(player.getX() - 10, player.getY() - 20);
     if (player.getId() == _playerId)
         _playerName.setFillColor(sf::Color::White);
+
+    window->draw(_playerName);
+    window->draw(_spaceShip);
 }
 
-void Game::UpdateEnemy(Network::Object & enemy) {
+void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy) {
     // TODO
 }
 
-void Game::UpdateBullet(Network::Object & bullet) {
+void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet) {
     _bullet.setPosition(bullet.getX(), bullet.getY());
+
+    window->draw(_bullet);
 }
 
-void Game::UpdatePowerUp(Network::Object & powerUp) {
+void Game::UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp) {
     // TODO
 }
 
@@ -211,9 +217,7 @@ void Game::ConnectToServer() {
         boost::asio::ip::udp::endpoint sender_endpoint;
         size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 
-        _mutex.lock();
-        _objects = Network::Deseria::D_eserialize(recv_buf);
-        _mutex.unlock();
+        UpdateData(Network::Deseria::D_eserialize(recv_buf));
 
         // Debug
 //        std::cout << "Received message from " << sender_endpoint << ": ";
@@ -221,4 +225,14 @@ void Game::ConnectToServer() {
 //            std::cout << "Object=" << object.getType() << " id=" << object.getId() << " x=" << object.getX() << " y=" << object.getY() << std::endl;
 //        }
     }
+}
+
+void Game::UpdateData(std::vector<Network::Object> objects) {
+    _mutex.lock();
+//    for (auto & object : objects) {
+//        std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
+//    }
+//    _objects.clear();
+    _objects = std::move(objects);
+    _mutex.unlock();
 }
