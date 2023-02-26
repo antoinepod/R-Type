@@ -27,7 +27,7 @@ RType::RType() {
         _planets.emplace_back();
         _planets[i].setTexture(*_planetTextures[i]);
         _planets[i].setPosition(_planetPositions[i]);
-        _planets[i].setScale(3, 3);
+        _planets[i].setScale((i + 2) / 2, (i + 2) / 2);
     }
 
     _gameStatus[GameStatus::MENU] = std::make_shared<Menu>();
@@ -88,7 +88,7 @@ void RType::DrawBackground() {
         _backgroundPosition.x = 0;
 
     for (int i = 0; i < 5; i++) {
-        _planetPositions[i].x -= (i + 1) * 1.1;
+        _planetPositions[i].x -= (i + 2) * 0.7;
         _planets[i].setPosition(_planetPositions[i]);
         _window->draw(_planets[i]);
         if (_planetPositions[i].x < -250)

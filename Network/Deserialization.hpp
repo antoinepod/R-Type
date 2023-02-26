@@ -11,6 +11,7 @@
 #include "Objects/Bullet.hpp"
 #include "Objects/Enemy.hpp"
 #include "Objects/PowerUp.hpp"
+#include "Objects/Explosion.hpp"
 
 namespace Network {
     class Deseria {

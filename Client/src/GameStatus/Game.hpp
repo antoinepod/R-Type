@@ -28,6 +28,7 @@ public:
     void UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy);
     void UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet);
     void UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp);
+    void UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::Object & explosion);
 
     void UpdateData(std::vector<Network::Object> objects);
         // Timers
@@ -38,6 +39,9 @@ public:
 private:
     sf::Font _arcadeFont;
 
+    bool _drawError;
+    sf::Text _errorText;
+
     // Player assets
     sf::Texture _spaceShipTexture;
     sf::IntRect _spaceShipRect;
@@ -45,7 +49,9 @@ private:
     sf::Text _playerName;
 
     // Enemy assets
-    // TODO
+    std::vector<sf::Sprite> _enemies;
+    std::vector<std::shared_ptr<sf::Texture>> _enemyTextures;
+    std::vector<float> _enemiesScale;
 
     // Bullet assets
     sf::Texture _bulletTexture;
@@ -54,6 +60,12 @@ private:
 
     // PowerUp assets
     // TODO
+
+    // Explosion assets
+    std::map<ExplosionType, sf::Sprite> _explosion;
+    std::map<ExplosionType ,std::shared_ptr<sf::Texture>> _explosionTexture;
+    sf::IntRect _explosionRect;
+    int _explosionTmp;
 
     std::vector<Network::Object> _objects;
 

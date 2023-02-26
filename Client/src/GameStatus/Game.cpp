@@ -13,23 +13,46 @@
 Game::Game() {
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
 
+    _drawError = false;
+    _errorText.setFont(_arcadeFont);
+    _errorText.setCharacterSize(25);
+    _errorText.setFillColor(sf::Color::Red);
+    _errorText.setPosition(300, 400);
+
     // Player assets initialization
     _spaceShipTexture.loadFromFile("assets/Images/spaceShip.png");
     _spaceShip.setTexture(_spaceShipTexture);
     _spaceShipRect = {132, 0, 66, 34};
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(100, 420);
+    _playerName.setFont(_arcadeFont);
+    _playerName.setCharacterSize(12);
+    _playerName.setFillColor(sf::Color::White);
+    _playerName.setPosition(90, 400);
+
+    // Enemy assets initialization
+    _enemiesScale = {2};
+    for (int i = 0; i < 1; i++) {
+        _enemyTextures.push_back(std::make_shared<sf::Texture>());
+        _enemyTextures[i]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i + 1) + ".png");
+        _enemies.emplace_back();
+        _enemies[i].setTexture(*_enemyTextures[i]);
+        _enemies[i].setScale(_enemiesScale[i], _enemiesScale[i]);
+
+    }
 
     // Bullet assets initialization
     _bulletTexture.loadFromFile("assets/Images/simpleBullet.png");
     _bullet.setTexture(_bulletTexture);
     _bullet.setScale(2, 2);
 
-    // TODO
-     _playerName.setFont(_arcadeFont);
-     _playerName.setCharacterSize(12);
-     _playerName.setFillColor(sf::Color::White);
-     _playerName.setPosition(90, 400);
+    // Explosion assets initialization
+    _explosionTexture[ExplosionType::SMALL] = std::make_shared<sf::Texture>();
+    _explosionTexture[ExplosionType::SMALL]->loadFromFile("assets/Images/simpleExplosion.png");
+    _explosion[ExplosionType::SMALL].setTexture(*_explosionTexture[ExplosionType::SMALL]);
+    _explosionRect = {0, 0, 16, 14};
+    _explosion[ExplosionType::SMALL].setTextureRect(_explosionRect);
+    _explosion[ExplosionType::SMALL].setScale(4, 4);
 
     isRunning = false;
 
@@ -55,10 +78,14 @@ void Game::ShootTimer() {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        isRunning = false;
         return GameStatus::MENU;
-    if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))
-            return GameStatus::MENU;
+    }
+    if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1)) {
+        isRunning = false;
+        return GameStatus::MENU;
+    }
 
     if (!isRunning) {
         _serverIp = serverIp;
@@ -111,27 +138,36 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
 }
 
 void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
-    _mutex.lock();
-    for (auto & object : _objects) {
-        std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
-        switch (object.getType()) {
-            case ObjectType::PLAYER:
-                UpdatePlayer(window, object);
-                break;
-            case ENEMY:
-                UpdateEnemy(window, object);
-                break;
-            case BULLET:
-                UpdateBullet(window, object);
-                break;
-            case POWER_UP:
-                UpdatePowerUp(window, object);
-                break;
-            default:
-                break;
+    if (_drawError) {
+        _errorText.setString("Impossible to connect to " + _serverIp);
+        window->draw(_errorText);
+    } else {
+        _mutex.lock();
+        for (auto &object: _objects) {
+            std::cout << "Object type: " << object.getType() << " position: "
+                      << object.getX() << " " << object.getY() << std::endl;
+            switch (object.getType()) {
+                case ObjectType::PLAYER:
+                    UpdatePlayer(window, object);
+                    break;
+                case ObjectType::ENEMY:
+                    UpdateEnemy(window, object);
+                    break;
+                case ObjectType::BULLET:
+                    UpdateBullet(window, object);
+                    break;
+                case ObjectType::POWER_UP:
+                    UpdatePowerUp(window, object);
+                    break;
+                case ObjectType::EXPLOSION:
+                    UpdateExplosion(window, object);
+                    break;
+                default:
+                    break;
+            }
         }
+        _mutex.unlock();
     }
-    _mutex.unlock();
 }
 
 void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player) {
@@ -151,7 +187,11 @@ void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network
 }
 
 void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy) {
-    // TODO
+    int enemyId = enemy.getId();
+
+    _enemies[enemyId].setPosition(enemy.getX(), enemy.getY());
+
+    window->draw(_enemies[enemyId]);
 }
 
 void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet) {
@@ -162,6 +202,17 @@ void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network
 
 void Game::UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp) {
     // TODO
+}
+
+void Game::UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::Object & explosion) {
+    ExplosionType type = explosion.getExplosion();
+
+    _explosion[type].setPosition(explosion.getX(), explosion.getY());
+    _explosionRect.left = explosion.getFrame() * 16;
+    _explosion[type].setTextureRect(_explosionRect);
+    _explosion[type].setScale(5, 5);
+
+    window->draw(_explosion[type]);
 }
 
 void Game::ConnectToServer() {
@@ -189,13 +240,19 @@ void Game::ConnectToServer() {
         _playerId = response[0] - 88;
         std::cout << "Player ID = " << _playerId << std::endl;
         boost::asio::write(socket, boost::asio::buffer(request, sizeof(request)));
+        _drawError = false;
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
+        _drawError = true;
     }
 
-
-    _serverEndpoint = *boost::asio::ip::udp::resolver(_service).resolve({ boost::asio::ip::udp::v4(), _serverIp, std::to_string(8080) });
+    try {
+        _serverEndpoint = *boost::asio::ip::udp::resolver(_service).resolve({boost::asio::ip::udp::v4(), _serverIp, std::to_string(8080)});
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        _drawError = true;
+    }
     _service.run();
 
     while (isRunning)

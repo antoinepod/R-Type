@@ -43,5 +43,12 @@ enum ObjectType {
     PLAYER = 256,
     ENEMY = 512,
     BULLET = 1024,
-    POWER_UP = 2048
+    POWER_UP = 2048,
+    EXPLOSION = 4096
+};
+
+enum ExplosionType {
+    SMALL = 8192,
+    MEDIUM = 16384,
+    BIG = 32768
 };
