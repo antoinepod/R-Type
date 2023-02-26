@@ -26,6 +26,7 @@ namespace Network {
         void setDestroyable(bool destroyable) override;
         void setName(const std::string &name) override;
         void setFrame(int frame) override;
+        void setExplosion(ExplosionType explosion) override;
 
         // Getters
         float getX() override;
@@ -38,6 +39,7 @@ namespace Network {
         bool getDestroyable() override;
         std::string getName() override;
         int getFrame() override;
+        ExplosionType getExplosion() override;
 
     private:
         float _x;
@@ -50,5 +52,6 @@ namespace Network {
         bool _destroyable;
         std::string _name;
         int _frame;
+        ExplosionType _explosion;
     };
 }

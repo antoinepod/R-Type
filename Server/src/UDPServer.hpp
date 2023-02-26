@@ -25,8 +25,17 @@ public:
 
     // Create objects
     void CreatePlayer(const std::string& ip, int id, const std::string& name);
-    void CreateBullet(Network::Object & sender, float x, float y);
     void CreateEnemy(int id, float x, float y);
+    void CreateBullet(Network::Object & sender, float x, float y, float celerity);
+    void CreateExplosion(Network::Object & deadObject, float x, float y);
+
+    // Update objects
+    void UpdateEnemy(Network::Object & bullet);
+    void UpdateBullet(Network::Object & bullet);
+    void UpdatePowerUp(Network::Object & powerUp);
+    void UpdateExplosion(Network::Object & explosion);
+
+    bool CheckCollision(Network::Object & object, Network::Object & bullet);
 
 private:
     std::vector<Network::Object> _gameObject;
@@ -40,7 +49,8 @@ private:
     std::map<std::string, int> _myMap;
     std::mutex _mutex;
     std::map<int, int> _playerFrames;
+    std::map<int, int> _explosionFrames;
 
     int _bulletId = 0;
-    int _enemyId = 0;
+    int _explosionId = 0;
 };

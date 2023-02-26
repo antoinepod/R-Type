@@ -9,7 +9,18 @@
 
 
 namespace Network {
-    Object::Object() = default;
+    Object::Object() {
+        _x = 0;
+        _y = 0;
+        _v = 0;
+        _health = 0;
+        _strength = 0;
+        _type = ObjectType::UNDEFINED;
+        _id = 0;
+        _destroyable = false;
+        _name = "";
+        _frame = 0;
+    };
 
     Object::~Object() = default;
 
@@ -44,6 +55,9 @@ namespace Network {
     void Object::setFrame(int frame) {
         _frame = frame;
     }
+    void Object::setExplosion(ExplosionType explosion) {
+        _explosion = explosion;
+    }
 
     // Getters
     float Object::getX() {
@@ -75,5 +89,8 @@ namespace Network {
     }
     int Object::getFrame() {
         return _frame;
+    }
+    ExplosionType Object::getExplosion() {
+        return _explosion;
     }
 }

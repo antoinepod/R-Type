@@ -22,6 +22,7 @@ void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost
         serialize(*buf, a.getType());
         // serialize(*buf, a.getName());
         serialize(*buf, a.getFrame());
+        serialize(*buf, a.getExplosion());
     }
     //std::cout << "Serialized data size: " << buf->size() << std::endl;
 }

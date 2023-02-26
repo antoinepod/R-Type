@@ -14,7 +14,12 @@ UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, 
         _threadPool.emplace_back(&UDPServer::StartReceive, this);
     }
     _threadPool.emplace_back(&UDPServer::UpdateGame, this);
-    CreateEnemy(0, 700, 700);
+
+    CreateEnemy(0, 1350, rand() % 800 + 50);
+    CreateEnemy(0, 1350, rand() % 800 + 50);
+    CreateEnemy(0, 1350, rand() % 800 + 50);
+    CreateEnemy(0, 1350, rand() % 800 + 50);
+    CreateEnemy(0, 1350, rand() % 800 + 50);
 
     _playerFrames[1] = 0;
     _playerFrames[2] = 0;
@@ -41,7 +46,7 @@ void UDPServer::StartReceive() {
         _mutex.lock();
         switch (_recvBuffer.data()[0]) {
             case Action::SHOOT:
-                CreateBullet(_gameObject[playerIndex], _gameObject[playerIndex].getX(), _gameObject[playerIndex].getY());
+                CreateBullet(_gameObject[playerIndex], _gameObject[playerIndex].getX(), _gameObject[playerIndex].getY(), 15);
                 break;
             case Action::LEFT:
                 if (_gameObject[playerIndex].getX() > 0) {
@@ -114,25 +119,6 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
     }
 }
 
-void UDPServer::UpdateGame() {
-    while (true) {
-        _mutex.lock();
-        for (auto &object: _gameObject) {
-            // Debug
-//            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
-            if (object.getType() == ObjectType::BULLET) {
-                if (object.getX() > 0 && object.getX() < 1500)
-                    object.setX(object.getX() + object.getCelerity());
-                else {
-                    object.setType(ObjectType::UNDEFINED);
-                }
-            }
-        }
-        _mutex.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
-}
-
 int UDPServer::FindPlayer(int id) {
     for (int i = 0; i < _gameObject.size(); i++) {
         if (_gameObject[i].getType() == ObjectType::PLAYER && _gameObject[i].getId() == id)
@@ -153,6 +139,7 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     player.setId(id);
     player.setType(ObjectType::PLAYER);
     player.setFrame(0);
+    player.setStrength(10);
 
     _mutex.lock();
     _gameObject.push_back(player);
@@ -160,14 +147,15 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     _myMap.insert(std::pair<std::string, int>(ip, id));
 }
 
-void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
+void UDPServer::CreateBullet(Network::Object & sender, float x, float y, float celerity) {
     for (auto & object: _gameObject) {
         if (object.getType() == ObjectType::UNDEFINED) {
             object.setX(x + 50);
             object.setY(y + 15);
-            object.setCelerity(15);
+            object.setCelerity(celerity);
             object.setType(ObjectType::BULLET);
             object.setId(_bulletId++);
+            object.setStrength(sender.getStrength());
             return;
         }
     }
@@ -178,6 +166,7 @@ void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
     bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
     bullet.setId(_bulletId++);
+    bullet.setStrength(sender.getStrength());
 
     _gameObject.push_back(bullet);
 }
@@ -190,6 +179,7 @@ void UDPServer::CreateEnemy(int id, float x, float y) {
             object.setCelerity(1);
             object.setHealth(100);
             object.setType(ObjectType::ENEMY);
+            object.setExplosion(ExplosionType::SMALL);
             object.setId(id);
             return;
         }
@@ -198,10 +188,109 @@ void UDPServer::CreateEnemy(int id, float x, float y) {
     Network::Enemy enemy;
     enemy.setX(x);
     enemy.setY(y);
-    enemy.setCelerity(1);
+    enemy.setCelerity(1.1);
     enemy.setHealth(100);
     enemy.setType(ObjectType::ENEMY);
+    enemy.setExplosion(ExplosionType::SMALL);
     enemy.setId(id);
 
     _gameObject.push_back(enemy);
+}
+
+void UDPServer::CreateExplosion(Network::Object & deadObject, float x, float y) {
+    for (auto & object: _gameObject) {
+        if (object.getType() == ObjectType::UNDEFINED) {
+            object.setX(x);
+            object.setY(y);
+            object.setType(ObjectType::EXPLOSION);
+            object.setFrame(0);
+            object.setExplosion(deadObject.getExplosion());
+            object.setId(_explosionId++);
+            _explosionFrames[_explosionId] = 0;
+            return;
+        }
+    }
+
+    Network::Explosion explosion;
+    explosion.setX(x);
+    explosion.setY(y);
+    explosion.setType(ObjectType::EXPLOSION);
+    explosion.setFrame(0);
+    explosion.setExplosion(deadObject.getExplosion());
+    explosion.setId(_explosionId++);
+    _explosionFrames[_explosionId] = 0;
+
+    _gameObject.push_back(explosion);
+}
+
+void UDPServer::UpdateGame() {
+    while (true) {
+        _mutex.lock();
+        for (auto &object: _gameObject) {
+            // Debug
+            //            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
+            switch (object.getType()) {
+                case ObjectType::BULLET:
+                    UpdateBullet(object);
+                    break;
+                case ObjectType::ENEMY:
+                    UpdateEnemy(object);
+                    break;
+                case ObjectType::POWER_UP:
+                    break;
+                case ObjectType::EXPLOSION:
+                    UpdateExplosion(object);
+                    break;
+                default:
+                    break;
+            }
+        }
+        _mutex.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
+}
+
+void UDPServer::UpdateEnemy(Network::Object & enemy) {
+//    if (enemy.getX() > -50)
+//        enemy.setX(enemy.getX() - enemy.getCelerity());
+//    else
+//        enemy.setType(ObjectType::UNDEFINED);
+}
+
+void UDPServer::UpdateBullet(Network::Object & bullet) {
+    if (bullet.getX() > 0 && bullet.getX() < 1500)
+        bullet.setX(bullet.getX() + bullet.getCelerity());
+    else
+        bullet.setType(ObjectType::UNDEFINED);
+
+    for (auto &object: _gameObject) {
+        if (object.getType() == ObjectType::ENEMY) {
+            if (CheckCollision(object, bullet)) {
+                object.setHealth(object.getHealth() - bullet.getStrength());
+                if (object.getHealth() <= 0) {
+                    object.setType(ObjectType::UNDEFINED);
+                    CreateExplosion(object, object.getX(), object.getY());
+                }
+                bullet.setType(ObjectType::UNDEFINED);
+            }
+        }
+    }
+}
+
+void UDPServer::UpdatePowerUp(Network::Object & powerUp) {
+}
+
+bool UDPServer::CheckCollision(Network::Object & object, Network::Object & bullet) {
+    return (object.getX() < bullet.getX() + 10 &&
+            object.getX() + 50 > bullet.getX() &&
+            object.getY() < bullet.getY() + 10 &&
+            object.getY() + 50 > bullet.getY());
+}
+
+void UDPServer::UpdateExplosion(Network::Object &explosion) {
+    if (_explosionFrames[explosion.getId()] < 50) {
+        _explosionFrames[explosion.getId()]++;
+        explosion.setFrame(_explosionFrames[explosion.getId()] / 10);
+    } else
+        explosion.setType(ObjectType::UNDEFINED);
 }
