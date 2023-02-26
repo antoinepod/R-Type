@@ -50,7 +50,7 @@ Game::~Game() {
 }
 
 void Game::ShootTimer() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     _canShoot = true;
 }
 
