@@ -7,7 +7,6 @@
 
 #include "UDPServer.hpp"
 
-
 UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8080)) {
 //    _timer = std::make_shared<boost::asio::deadline_timer>(io_context, boost::posix_time::milliseconds(16));
     StartReceive();
@@ -15,6 +14,12 @@ UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, 
         _threadPool.emplace_back(&UDPServer::StartReceive, this);
     }
     _threadPool.emplace_back(&UDPServer::UpdateGame, this);
+    CreateEnemy(0, 700, 700);
+
+    _playerFrames[1] = 0;
+    _playerFrames[2] = 0;
+    _playerFrames[3] = 0;
+    _playerFrames[4] = 0;
 }
 
 UDPServer::~UDPServer() = default;
@@ -39,20 +44,42 @@ void UDPServer::StartReceive() {
                 CreateBullet(_gameObject[playerIndex], _gameObject[playerIndex].getX(), _gameObject[playerIndex].getY());
                 break;
             case Action::LEFT:
-                if (_gameObject[playerIndex].getX() > 0)
+                if (_gameObject[playerIndex].getX() > 0) {
                     _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() - 4);
+                    _playerFrames[search->second] = 0;
+                    _gameObject[playerIndex].setFrame(0);
+                }
                 break;
             case Action::RIGHT:
-                if (_gameObject[playerIndex].getX() < 1500 - 66)
+                if (_gameObject[playerIndex].getX() < 1500 - 66) {
                     _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() + 4);
+                    _playerFrames[search->second] = 0;
+                    _gameObject[playerIndex].setFrame(0);
+                }
                 break;
             case Action::UP:
-                if (_gameObject[playerIndex].getY() > 0)
+                if (_gameObject[playerIndex].getY() > 0) {
                     _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() - 4);
+                    _playerFrames[search->second]++;
+                    if (_playerFrames[search->second] >= 10)
+                        _gameObject[playerIndex].setFrame(2);
+                    else
+                        _gameObject[playerIndex].setFrame(1);
+                }
                 break;
             case Action::DOWN:
-                if (_gameObject[playerIndex].getY() < 900 - 34)
+                if (_gameObject[playerIndex].getY() < 900 - 34) {
                     _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() + 4);
+                    _playerFrames[search->second]++;
+                    if (_playerFrames[search->second] >= 10)
+                        _gameObject[playerIndex].setFrame(-2);
+                    else
+                        _gameObject[playerIndex].setFrame(-1);
+                }
+                break;
+            case Action::NONE:
+                _playerFrames[search->second] = 0;
+                _gameObject[playerIndex].setFrame(0);
                 break;
         }
         _mutex.unlock();
@@ -67,13 +94,6 @@ void UDPServer::StartReceive() {
         //}
         //        }
     }
-//    for (auto & object : _gameObject) {
-//        if (object.getType() == ObjectType::BULLET) {
-//            if (object.getX() > 1500 || object.getX() < 0 || object.getY() > 900 || object.getY() < 0) {
-//                object.setX(object.getX() + object.getCelerity());
-//            }
-//        }
-//    }
 }
 
 
@@ -100,22 +120,17 @@ void UDPServer::UpdateGame() {
         for (auto &object: _gameObject) {
             // Debug
 //            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
-            if (object.getId() != -1 && object.getType() == ObjectType::BULLET) {
+            if (object.getType() == ObjectType::BULLET) {
                 if (object.getX() > 0 && object.getX() < 1500)
                     object.setX(object.getX() + object.getCelerity());
                 else {
-                    object.setId(-1);
+                    object.setType(ObjectType::UNDEFINED);
                 }
             }
         }
         _mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-
-//    for (auto it = _gameObject.begin(); it != _gameObject.end(); it++) {
-//        if (it->getType() == ObjectType::BULLET && it->getId() == -1)
-//            _gameObject.erase(it);
-//    }
 }
 
 int UDPServer::FindPlayer(int id) {
@@ -137,6 +152,7 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     player.setHealth(200);
     player.setId(id);
     player.setType(ObjectType::PLAYER);
+    player.setFrame(0);
 
     _mutex.lock();
     _gameObject.push_back(player);
@@ -146,12 +162,12 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
 
 void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
     for (auto & object: _gameObject) {
-        if (object.getId() == -1) {
+        if (object.getType() == ObjectType::UNDEFINED) {
             object.setX(x + 50);
             object.setY(y + 15);
             object.setCelerity(15);
             object.setType(ObjectType::BULLET);
-            object.setId(100);
+            object.setId(_bulletId++);
             return;
         }
     }
@@ -161,7 +177,31 @@ void UDPServer::CreateBullet(Network::Object & sender, float x, float y) {
     bullet.setY(y + 15);
     bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
-    bullet.setId(100);
+    bullet.setId(_bulletId++);
 
     _gameObject.push_back(bullet);
+}
+
+void UDPServer::CreateEnemy(int id, float x, float y) {
+    for (auto & object: _gameObject) {
+        if (object.getType() == ObjectType::UNDEFINED) {
+            object.setX(x);
+            object.setY(y);
+            object.setCelerity(1);
+            object.setHealth(100);
+            object.setType(ObjectType::ENEMY);
+            object.setId(id);
+            return;
+        }
+    }
+
+    Network::Enemy enemy;
+    enemy.setX(x);
+    enemy.setY(y);
+    enemy.setCelerity(1);
+    enemy.setHealth(100);
+    enemy.setType(ObjectType::ENEMY);
+    enemy.setId(id);
+
+    _gameObject.push_back(enemy);
 }

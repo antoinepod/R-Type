@@ -26,6 +26,7 @@ public:
     // Create objects
     void CreatePlayer(const std::string& ip, int id, const std::string& name);
     void CreateBullet(Network::Object & sender, float x, float y);
+    void CreateEnemy(int id, float x, float y);
 
 private:
     std::vector<Network::Object> _gameObject;
@@ -38,4 +39,8 @@ private:
     std::vector<std::thread> _threadPool;
     std::map<std::string, int> _myMap;
     std::mutex _mutex;
+    std::map<int, int> _playerFrames;
+
+    int _bulletId = 0;
+    int _enemyId = 0;
 };
