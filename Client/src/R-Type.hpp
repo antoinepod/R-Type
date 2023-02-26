@@ -23,6 +23,7 @@ public:
 
     void Start();
     void DrawFps();
+    void DrawBackground();
 
 protected:
 private:
@@ -39,4 +40,12 @@ private:
     float _currentTime;
     float _fps;
     sf::Text _fpsText;
+
+    sf::Sprite _background;
+    sf::Texture _backgroundTexture;
+    sf::Vector2f _backgroundPosition;
+
+    std::vector<sf::Sprite> _planets;
+    std::vector<std::shared_ptr<sf::Texture>> _planetTextures;
+    std::vector<sf::Vector2f> _planetPositions;
 };
