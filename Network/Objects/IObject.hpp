@@ -24,6 +24,7 @@ namespace Network {
         virtual void setId(int id) = 0;
         virtual void setDestroyable(bool destroyable) = 0;
         virtual void setName(const std::string &name) = 0;
+        virtual void setFrame(int frame) = 0;
 
         // Getters
         virtual float getX() = 0;
@@ -35,5 +36,6 @@ namespace Network {
         virtual int getId() = 0;
         virtual bool getDestroyable() = 0;
         virtual std::string getName() = 0;
+        virtual int getFrame() = 0;
     };
 }

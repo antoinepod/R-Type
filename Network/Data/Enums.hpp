@@ -39,6 +39,7 @@ enum Events {
 };
 
 enum ObjectType {
+    UNDEFINED = 0,
     PLAYER = 256,
     ENEMY = 512,
     BULLET = 1024,

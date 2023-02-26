@@ -13,7 +13,6 @@ void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost
     for (auto& a : gameObject) {
         std::cout << "ggggObject: " << a.getType() << " id:" << a.getId() << " pos: " << a.getX() << " " << a.getY() << std::endl;
         // TODO
-        // serialize(*buf, a.getName());
         serialize(*buf, a.getX());
         serialize(*buf, a.getY());
         serialize(*buf, a.getCelerity());
@@ -21,6 +20,8 @@ void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost
         serialize(*buf, a.getStrength());
         serialize(*buf, a.getId());
         serialize(*buf, a.getType());
+        // serialize(*buf, a.getName());
+        serialize(*buf, a.getFrame());
     }
     //std::cout << "Serialized data size: " << buf->size() << std::endl;
 }

@@ -26,6 +26,7 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
         gameObject.setStrength(getIntValue(buffer, pos));
         gameObject.setId(getIntValue(buffer, pos));
         gameObject.setType((ObjectType)getIntValue(buffer, pos));
+        gameObject.setFrame(getIntValue(buffer, pos));
         gameObjectHolder.push_back(gameObject);
     }
     return gameObjectHolder;

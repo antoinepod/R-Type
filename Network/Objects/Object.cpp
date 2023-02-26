@@ -41,6 +41,9 @@ namespace Network {
     void Object::setName(const std::string &name) {
         _name = name;
     }
+    void Object::setFrame(int frame) {
+        _frame = frame;
+    }
 
     // Getters
     float Object::getX() {
@@ -69,5 +72,8 @@ namespace Network {
     }
     std::string Object::getName() {
         return _name;
+    }
+    int Object::getFrame() {
+        return _frame;
     }
 }

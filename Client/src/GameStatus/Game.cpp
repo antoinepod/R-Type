@@ -135,22 +135,9 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
 }
 
 void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player) {
-    switch (player.getId()) {
-        case 1:
-            _spaceShipRect.top = 0;
-            break;
-        case 2:
-            _spaceShipRect.top = 34;
-            break;
-        case 3:
-            _spaceShipRect.top = 68;
-            break;
-        case 4:
-            _spaceShipRect.top = 102;
-            break;
-        default:
-            break;
-    }
+    _spaceShipRect.top = (player.getId() - 1) * 34;
+    _spaceShipRect.left = 132 + (player.getFrame() * 66);
+
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
 

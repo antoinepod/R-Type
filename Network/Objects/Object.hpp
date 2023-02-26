@@ -25,6 +25,7 @@ namespace Network {
         void setId(int id) override;
         void setDestroyable(bool destroyable) override;
         void setName(const std::string &name) override;
+        void setFrame(int frame) override;
 
         // Getters
         float getX() override;
@@ -36,6 +37,7 @@ namespace Network {
         int getId() override;
         bool getDestroyable() override;
         std::string getName() override;
+        int getFrame() override;
 
     private:
         float _x;
@@ -47,5 +49,6 @@ namespace Network {
         int _id;
         bool _destroyable;
         std::string _name;
+        int _frame;
     };
 }
