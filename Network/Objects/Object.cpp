@@ -61,6 +61,9 @@ namespace Network {
     void Object::setBullet(BulletType bullet) {
         _bullet = bullet;
     }
+    void Object::setSound(SoundType sound) {
+        _sound = sound;
+    }
 
     // Getters
     float Object::getX() {
@@ -98,5 +101,8 @@ namespace Network {
     }
     BulletType Object::getBullet() {
         return _bullet;
+    }
+    SoundType Object::getSound() {
+        return _sound;
     }
 }

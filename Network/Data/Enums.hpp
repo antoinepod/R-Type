@@ -40,21 +40,36 @@ enum Events {
 
 enum ObjectType {
     UNDEFINED = 0,
-    PLAYER = 256,
-    ENEMY = 512,
-    BULLET = 1024,
-    POWER_UP = 2048,
-    EXPLOSION = 4096
+    PLAYER = 2,
+    ENEMY = 4,
+    BULLET = 8,
+    POWER_UP = 16,
+    EXPLOSION = 32,
+    SOUND = 64
 };
 
 enum ExplosionType {
-    SMALL = 8192,
-    MEDIUM = 16384,
-    BIG = 32768
+    SMALL = 2,
+    MEDIUM = 4,
+    BIG = 8
 };
 
 enum BulletType {
-    SIMPLE = 65536,
-    LASER = 131072,
-    ROCKET = 262144
+    SIMPLE = 2,
+    LASER = 4,
+    ROCKET = 8
+};
+
+enum SoundType {
+    SHOOT_SIMPLE = 2,
+    SHOOT_LASER = 4,
+    SHOOT_ROCKET = 8,
+    EXPLOSION_SMALL = 16,
+    EXPLOSION_MEDIUM = 32,
+    EXPLOSION_BIG = 64
+};
+
+enum MusicType {
+    MENU_MUSIC = 2,
+    GAME_MUSIC = 4
 };

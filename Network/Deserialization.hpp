@@ -12,6 +12,7 @@
 #include "Objects/Enemy.hpp"
 #include "Objects/PowerUp.hpp"
 #include "Objects/Explosion.hpp"
+#include "Objects/Sound.hpp"
 
 namespace Network {
     class Deseria {

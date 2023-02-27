@@ -27,6 +27,7 @@ namespace Network {
         virtual void setFrame(int frame) = 0;
         virtual void setExplosion(ExplosionType explosion) = 0;
         virtual void setBullet(BulletType bullet) = 0;
+        virtual void setSound(SoundType sound) = 0;
 
         // Getters
         virtual float getX() = 0;
@@ -41,5 +42,6 @@ namespace Network {
         virtual int getFrame() = 0;
         virtual ExplosionType getExplosion() = 0;
         virtual BulletType getBullet() = 0;
+        virtual SoundType getSound() = 0;
     };
 }

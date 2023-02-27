@@ -28,6 +28,7 @@ namespace Network {
         void setFrame(int frame) override;
         void setExplosion(ExplosionType explosion) override;
         void setBullet(BulletType bullet) override;
+        void setSound(SoundType sound) override;
 
         // Getters
         float getX() override;
@@ -42,6 +43,7 @@ namespace Network {
         int getFrame() override;
         ExplosionType getExplosion() override;
         BulletType getBullet() override;
+        SoundType getSound() override;
 
     private:
         float _x;
@@ -56,5 +58,6 @@ namespace Network {
         int _frame;
         ExplosionType _explosion;
         BulletType _bullet;
+        SoundType _sound;
     };
 }

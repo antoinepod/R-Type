@@ -26,14 +26,16 @@ public:
     // Create objects
     void CreatePlayer(const std::string& ip, int id, const std::string& name);
     void CreateEnemy(int id, float x, float y);
-    void CreateBullet(Network::Object & sender, float x, float y, float celerity);
+    void CreateBullet(Network::Object & sender, BulletType bulletType);
     void CreateExplosion(Network::Object & deadObject, float x, float y);
+    void CreateSound(SoundType soundType);
 
     // Update objects
     void UpdateEnemy(Network::Object & bullet);
     void UpdateBullet(Network::Object & bullet);
     void UpdatePowerUp(Network::Object & powerUp);
     void UpdateExplosion(Network::Object & explosion);
+    void UpdateSound(Network::Object & sound);
 
     bool CheckCollision(Network::Object & object, Network::Object & bullet);
 

@@ -48,7 +48,7 @@ void UDPServer::StartReceive() {
         _mutex.lock();
         switch (_recvBuffer.data()[0]) {
             case Action::SHOOT:
-                CreateBullet(_gameObject[playerIndex], _gameObject[playerIndex].getX(), _gameObject[playerIndex].getY(), 15);
+                CreateBullet(_gameObject[playerIndex], BulletType::SIMPLE);
                 break;
             case Action::LEFT:
                 if (_gameObject[playerIndex].getX() > 0) {
@@ -150,28 +150,40 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     _myMap.insert(std::pair<std::string, int>(ip, id));
 }
 
-void UDPServer::CreateBullet(Network::Object & sender, float x, float y, float celerity) {
+void UDPServer::CreateBullet(Network::Object & sender, BulletType bulletType) {
+    switch (bulletType) {
+        case BulletType::SIMPLE:
+            CreateSound(SoundType::SHOOT_SIMPLE);
+            break;
+        case BulletType::LASER:
+            CreateSound(SoundType::SHOOT_LASER);
+            break;
+        case BulletType::ROCKET:
+            CreateSound(SoundType::SHOOT_ROCKET);
+            break;
+    }
+
     for (auto & object: _gameObject) {
         if (object.getType() == ObjectType::UNDEFINED) {
-            object.setX(x + 50);
-            object.setY(y + 15);
-            object.setCelerity(celerity);
+            object.setX(sender.getX() + 50);
+            object.setY(sender.getY() + 15);
+            object.setCelerity(15);
             object.setType(ObjectType::BULLET);
             object.setId(_bulletId++);
             object.setStrength(sender.getStrength());
-            object.setBullet(sender.getBullet());
+            object.setBullet(bulletType);
             return;
         }
     }
 
     Network::Bullet bullet;
-    bullet.setX(x + 50);
-    bullet.setY(y + 15);
+    bullet.setX(sender.getX() + 50);
+    bullet.setY(sender.getY() + 15);
     bullet.setCelerity(15);
     bullet.setType(ObjectType::BULLET);
     bullet.setId(_bulletId++);
     bullet.setStrength(sender.getStrength());
-    bullet.setBullet(sender.getBullet());
+    bullet.setBullet(bulletType);
 
     _gameObject.push_back(bullet);
 }
@@ -230,6 +242,24 @@ void UDPServer::CreateExplosion(Network::Object & deadObject, float x, float y) 
     _gameObject.push_back(explosion);
 }
 
+void UDPServer::CreateSound(SoundType soundType) {
+    for (auto & object: _gameObject) {
+        if (object.getType() == ObjectType::UNDEFINED) {
+            object.setType(ObjectType::SOUND);
+            object.setId(0);
+            object.setSound(soundType);
+            return;
+        }
+    }
+
+    Network::Sound sound;
+    sound.setType(ObjectType::SOUND);
+    sound.setId(0);
+    sound.setSound(soundType);
+
+    _gameObject.push_back(sound);
+}
+
 void UDPServer::UpdateGame() {
     while (true) {
         _mutex.lock();
@@ -247,6 +277,9 @@ void UDPServer::UpdateGame() {
                     break;
                 case ObjectType::EXPLOSION:
                     UpdateExplosion(object);
+                    break;
+                case ObjectType::SOUND:
+                    UpdateSound(object);
                     break;
                 default:
                     break;
@@ -294,10 +327,17 @@ bool UDPServer::CheckCollision(Network::Object & object, Network::Object & bulle
             object.getY() + 50 > bullet.getY());
 }
 
-void UDPServer::UpdateExplosion(Network::Object &explosion) {
+void UDPServer::UpdateExplosion(Network::Object & explosion) {
     if (_explosionFrames[explosion.getId()] < 50) {
         _explosionFrames[explosion.getId()]++;
         explosion.setFrame(_explosionFrames[explosion.getId()] / 10);
     } else
         explosion.setType(ObjectType::UNDEFINED);
+}
+
+void UDPServer::UpdateSound(Network::Object & sound) {
+    if (sound.getId() == 0)
+        sound.setId(1);
+    else
+        sound.setType(ObjectType::UNDEFINED);
 }

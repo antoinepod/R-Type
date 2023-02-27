@@ -29,6 +29,7 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
         gameObject.setFrame(getIntValue(buffer, pos));
         gameObject.setExplosion((ExplosionType)getIntValue(buffer, pos));
         gameObject.setBullet((BulletType)getIntValue(buffer, pos));
+        gameObject.setSound((SoundType)getIntValue(buffer, pos));
         gameObjectHolder.push_back(gameObject);
     }
     return gameObjectHolder;
