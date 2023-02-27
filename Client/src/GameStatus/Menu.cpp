@@ -19,7 +19,7 @@ Menu::Menu() {
     _serverIpInfo.setFillColor(sf::Color(128,128,128,255));
 
     std::vector<std::string> buttonNames = {"Play", "Settings", "Quit"};
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < buttonNames.size(); i++) {
         _buttons.emplace_back(buttonNames[i], _arcadeFont, 40);
         _buttons[i].setPosition(750 - (_buttons[i].getLocalBounds().width / 2), (float)(450 + (i * 100)));
     }
@@ -45,7 +45,7 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inp
             _selectedButton--;
         if (inputs.GetDown() && _selectedButton < _buttons.size() - 1)
             _selectedButton++;
-        if (inputs.GetOK())
+        if (event.key.code == sf::Keyboard::Enter)
             return GetSelectedButton();
     }
 
@@ -53,8 +53,7 @@ GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inp
     if (event.type == sf::Event::JoystickMoved) {
         if (event.joystickMove.position == -100 && _selectedButton > 0)
             _selectedButton--;
-        if (event.joystickMove.position == 100 &&
-            _selectedButton < _buttons.size() - 1)
+        if (event.joystickMove.position == 100 && _selectedButton < _buttons.size() - 1)
             _selectedButton++;
     } if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 0))
             return GetSelectedButton();

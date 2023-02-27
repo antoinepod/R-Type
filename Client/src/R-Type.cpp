@@ -11,6 +11,8 @@
 RType::RType() {
     srand((int)time(0));
 
+    sf::Listener::setGlobalVolume(50);
+
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
     _window = std::make_shared<sf::RenderWindow>(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "R-Type");
     _window->setFramerateLimit(60);

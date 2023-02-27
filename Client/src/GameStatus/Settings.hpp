@@ -23,7 +23,11 @@ private:
 
     sf::Font _arcadeFont;
     sf::Text _title;
-    sf::Text _ipText;
-    sf::Text _ipNumber;
+
+    std::vector<sf::Text> _texts;
+
+    float _volume;
+
+    int _selectedText;
 };
 

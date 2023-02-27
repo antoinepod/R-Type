@@ -12,7 +12,7 @@ Inputs::Inputs() {
     _down = sf::Keyboard::Down;
     _left = sf::Keyboard::Left;
     _right = sf::Keyboard::Right;
-    _ok = sf::Keyboard::Enter;
+    _ok = sf::Keyboard::Space;
 }
 
 Inputs::~Inputs() = default;
