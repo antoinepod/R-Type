@@ -14,6 +14,8 @@ RType::RType() {
     sf::Listener::setGlobalVolume(50);
 
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
+    _audio = std::make_shared<Audio>();
+
     _window = std::make_shared<sf::RenderWindow>(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "R-Type");
     _window->setFramerateLimit(60);
 
@@ -46,6 +48,7 @@ RType::RType() {
 }
 
 RType::~RType() {
+    _audio.reset();
     _window->close();
 }
 
@@ -65,11 +68,10 @@ void RType::Start() {
 
         _window->clear(sf::Color::Black);
         DrawBackground();
-        _gameStatus[_currentGameStatus]->Display(_window);
+        _gameStatus[_currentGameStatus]->Display(_window, _audio);
         DrawFps();
         _window->display();
     }
-    _gameStatus[GameStatus::GAME].reset();
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
 }
 

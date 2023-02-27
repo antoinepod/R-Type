@@ -35,6 +35,7 @@ private:
     std::string _serverIp;
 
     sf::Font _arcadeFont;
+    std::shared_ptr<Audio> _audio;
 
     sf::Clock _clock;
     float _currentTime;

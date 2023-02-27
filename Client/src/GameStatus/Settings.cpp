@@ -22,7 +22,6 @@ Settings::Settings() {
     _texts[1].setPosition(50, 500);
     _texts[1].setFillColor(sf::Color::White);
 
-    _volume = 50;
     _selectedText = 0;
 }
 
@@ -45,11 +44,10 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp, Inputs 
             _selectedText--;
         else if (inputs.GetDown() && _selectedText < _texts.size() - 1)
             _selectedText++;
-        else if (inputs.GetLeft() && _selectedText == 1 && _volume >= 10)
-            _volume -= 10;
-        else if (inputs.GetRight() && _selectedText == 1 && _volume <= 90)
-            _volume += 10;
-
+        else if (inputs.GetLeft() && _selectedText == 1 && sf::Listener::getGlobalVolume() >= 10)
+            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() - 10);
+        else if (inputs.GetRight() && _selectedText == 1 && sf::Listener::getGlobalVolume() <= 90)
+            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() + 10);
     }
 
     // Handle joystick
@@ -64,18 +62,17 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp, Inputs 
         _selectedText--;
     if (((PovX == 0 && PovY == 100) || (AxisX > -100 && AxisX < 100 && AxisY > 0)) && _selectedText < _texts.size() - 1)
         _selectedText++;
-    if (((PovX == -100 && PovY == 0) || (AxisX < 0 && AxisY > -100 && AxisY < 100)) && _selectedText == 1 && _volume >= 10)
-        _volume -= 10;
-    if (((PovX == 100 && PovY == 0) || (AxisX > 0 && AxisY > -100 && AxisY < 100)) && _selectedText == 1 && _volume <= 90)
-        _volume += 10;
+    if (((PovX == -100 && PovY == 0) || (AxisX < 0 && AxisY > -100 && AxisY < 100)) && _selectedText == 1 && sf::Listener::getGlobalVolume() >= 10)
+        sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() - 10);
+    if (((PovX == 100 && PovY == 0) || (AxisX > 0 && AxisY > -100 && AxisY < 100)) && _selectedText == 1 && sf::Listener::getGlobalVolume() <= 90)
+        sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() + 10);
 
-    sf::Listener::setGlobalVolume(_volume);
-    _texts[1].setString("Volume:  " + std::to_string(int(_volume)) + "%");
+    _texts[1].setString("Volume:  " + std::to_string(int(sf::Listener::getGlobalVolume())) + "%");
 
     return GameStatus::SETTINGS;
 }
 
-void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) {
     window->draw(_title);
 
     for (int i = 0; i < _texts.size(); i++) {

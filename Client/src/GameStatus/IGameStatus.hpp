@@ -21,7 +21,8 @@
 #include <SFML/System.hpp>
 
 #include "Data/Enums.hpp"
-#include "Inputs.hpp"
+#include "Utils/Audio.hpp"
+#include "Utils/Inputs.hpp"
 
 #define SCREEN_WIDTH 1500
 #define SCREEN_HEIGHT 900
@@ -39,5 +40,5 @@ public:
     virtual ~IGameStatus() = default;
 
     virtual GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) = 0;
-    virtual void Display(const std::shared_ptr<sf::RenderWindow>& window) = 0;
+    virtual void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) = 0;
 };

@@ -16,12 +16,11 @@ public:
     ~Menu() override;
 
     GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) override;
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) override;
 
     GameStatus GetSelectedButton();
 
 private:
-    sf::Music _menuMusic;
     sf::Font _arcadeFont;
     std::vector<sf::Text> _buttons;
     sf::Text _title;

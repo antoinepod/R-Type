@@ -16,7 +16,7 @@ public:
     ~Settings() override;
 
     GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) override;
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) override;
 
 private:
     std::string _ip;
@@ -25,8 +25,6 @@ private:
     sf::Text _title;
 
     std::vector<sf::Text> _texts;
-
-    float _volume;
 
     int _selectedText;
 };

@@ -11,8 +11,6 @@
 
 
 Game::Game() {
-    _gameMusic.openFromFile("assets/Sounds/GameMusic.ogg");
-    _gameMusic.setLoop(true);
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
 
     _drawError = false;
@@ -40,7 +38,6 @@ Game::Game() {
         _enemies.emplace_back();
         _enemies[i].setTexture(*_enemyTextures[i]);
         _enemies[i].setScale(_enemiesScale[i], _enemiesScale[i]);
-
     }
 
     // Bullet assets initialization
@@ -65,22 +62,17 @@ Game::Game() {
     _playerId = 0;
 
     _canShoot = true;
-    _shootSoundBuffer.loadFromFile("assets/Sounds/simpleBullet.wav");
-    _shootSound.setBuffer(_shootSoundBuffer);
 
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
 }
 
 Game::~Game() {
-    if (_gameMusic.getStatus() == sf::SoundSource::Status::Playing)
-        _gameMusic.stop();
-
     _service.stop();
     if (isRunning) {
         isRunning = false;
         for (auto & thread : _threads)
-            thread.join();
+             thread.~thread();
     }
 }
 
@@ -90,16 +82,11 @@ void Game::ShootTimer() {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
-    if (_gameMusic.getStatus() != sf::SoundSource::Status::Playing)
-        _gameMusic.play();
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         isRunning = false;
-        _gameMusic.stop();
         return GameStatus::MENU;
     } if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1)) {
         isRunning = false;
-        _gameMusic.stop();
         return GameStatus::MENU;
     }
 
@@ -116,7 +103,6 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         if (inputs.GetOK() && _canShoot) {
             _canShoot = false;
             buf = {Action::SHOOT};
-            _shootSound.play();
             _threads.emplace_back(&Game::ShootTimer, this);
         } else if (inputs.GetUp())
             buf = {Action::UP};
@@ -154,7 +140,9 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
     return GameStatus::GAME;
 }
 
-void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
+void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) {
+    audio->StopMusic(MusicType::MENU_MUSIC);
+    audio->PlayMusic(MusicType::GAME_MUSIC);
     if (_drawError) {
         _errorText.setString("Impossible to connect to " + _serverIp);
         window->draw(_errorText);
@@ -177,6 +165,9 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
                     break;
                 case ObjectType::EXPLOSION:
                     UpdateExplosion(window, object);
+                    break;
+                case ObjectType::SOUND:
+                    UpdateSound(audio, object);
                     break;
                 default:
                     break;
@@ -231,6 +222,11 @@ void Game::UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Net
     _explosion[type].setScale(5, 5);
 
     window->draw(_explosion[type]);
+}
+
+void Game::UpdateSound(const std::shared_ptr<Audio>& audio, Network::Object & sound) {
+    if (sound.getId() == 1)
+        audio->PlaySound(sound.getSound());
 }
 
 void Game::ConnectToServer() {

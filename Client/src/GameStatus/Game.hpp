@@ -9,6 +9,7 @@
 
 #include "IGameStatus.hpp"
 #include "Deserialization.hpp"
+#include "Utils/Audio.hpp"
 
 
 class Game : public IGameStatus {
@@ -18,7 +19,7 @@ public:
 
     // SFML functions
     GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) override;
-    void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
+    void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) override;
 
     // Server connection
     void ConnectToServer();
@@ -29,6 +30,7 @@ public:
     void UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet);
     void UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp);
     void UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::Object & explosion);
+    void UpdateSound(const std::shared_ptr<Audio>& audio, Network::Object & explosion);
 
     void UpdateData(std::vector<Network::Object> objects);
         // Timers
@@ -37,7 +39,6 @@ public:
     std::atomic_bool isRunning;
 
 private:
-    sf::Music _gameMusic;
     sf::Font _arcadeFont;
 
     bool _drawError;
@@ -79,9 +80,6 @@ private:
     boost::asio::io_service _service;
     std::shared_ptr<boost::asio::ip::udp::socket> _socket;
     boost::asio::ip::udp::endpoint _serverEndpoint;
-
-    sf::Sound _shootSound;
-    sf::SoundBuffer _shootSoundBuffer;
 
     int _playerId;
 };
