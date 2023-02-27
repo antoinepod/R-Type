@@ -37,6 +37,7 @@ public:
     std::atomic_bool isRunning;
 
 private:
+    sf::Music _gameMusic;
     sf::Font _arcadeFont;
 
     bool _drawError;
@@ -54,8 +55,8 @@ private:
     std::vector<float> _enemiesScale;
 
     // Bullet assets
-    sf::Texture _bulletTexture;
-    sf::Sprite _bullet;
+    std::map<BulletType, sf::Sprite> _bullet;
+    std::map<BulletType ,std::shared_ptr<sf::Texture>> _bulletTexture;
     bool _canShoot;
 
     // PowerUp assets
@@ -78,6 +79,9 @@ private:
     boost::asio::io_service _service;
     std::shared_ptr<boost::asio::ip::udp::socket> _socket;
     boost::asio::ip::udp::endpoint _serverEndpoint;
+
+    sf::Sound _shootSound;
+    sf::SoundBuffer _shootSoundBuffer;
 
     int _playerId;
 };

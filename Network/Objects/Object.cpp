@@ -58,6 +58,9 @@ namespace Network {
     void Object::setExplosion(ExplosionType explosion) {
         _explosion = explosion;
     }
+    void Object::setBullet(BulletType bullet) {
+        _bullet = bullet;
+    }
 
     // Getters
     float Object::getX() {
@@ -92,5 +95,8 @@ namespace Network {
     }
     ExplosionType Object::getExplosion() {
         return _explosion;
+    }
+    BulletType Object::getBullet() {
+        return _bullet;
     }
 }

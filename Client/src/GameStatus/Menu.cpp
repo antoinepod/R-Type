@@ -8,6 +8,8 @@
 #include "Menu.hpp"
 
 Menu::Menu() {
+    _menuMusic.openFromFile("assets/Sounds/MenuMusic.ogg");
+    _menuMusic.setLoop(true);
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
     _title = sf::Text("R-Type", _arcadeFont, 80);
     _title.setPosition(750 - (_title.getLocalBounds().width / 2), 200);
@@ -26,10 +28,16 @@ Menu::Menu() {
     _serverIp = "";
 }
 
-Menu::~Menu() = default;
+Menu::~Menu() {
+    if (_menuMusic.getStatus() == sf::Music::Playing)
+        _menuMusic.stop();
+};
 
 GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) {
     _serverIp = serverIp;
+
+    if (_menuMusic.getStatus() != sf::Music::Playing)
+        _menuMusic.play();
 
     // Handle keyboard
     if (event.type == sf::Event::KeyPressed) {
@@ -88,13 +96,15 @@ void Menu::Display(const std::shared_ptr<sf::RenderWindow>& window){
     }
 }
 
-GameStatus Menu::GetSelectedButton() const {
+GameStatus Menu::GetSelectedButton() {
     switch (_selectedButton) {
         case 0:
             if (_serverIp.empty())
                 break;
-            else
+            else {
+                _menuMusic.stop();
                 return GameStatus::GAME;
+            }
         case 1:
             return GameStatus::SETTINGS;
         case 2:

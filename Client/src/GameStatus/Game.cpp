@@ -11,6 +11,8 @@
 
 
 Game::Game() {
+    _gameMusic.openFromFile("assets/Sounds/GameMusic.ogg");
+    _gameMusic.setLoop(true);
     _arcadeFont.loadFromFile("assets/Fonts/PublicPixel.ttf");
 
     _drawError = false;
@@ -42,28 +44,38 @@ Game::Game() {
     }
 
     // Bullet assets initialization
-    _bulletTexture.loadFromFile("assets/Images/simpleBullet.png");
-    _bullet.setTexture(_bulletTexture);
-    _bullet.setScale(2, 2);
+    for (int i = 1; i <= 1; i++) {
+        _bulletTexture[(BulletType)(i * BulletType::SIMPLE)] = std::make_shared<sf::Texture>();
+        _bulletTexture[(BulletType)(i * BulletType::SIMPLE)]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
+        _bullet[(BulletType)(i * BulletType::SIMPLE)].setTexture(*_bulletTexture[(BulletType)(i * BulletType::SIMPLE)]);
+    }
 
     // Explosion assets initialization
-    _explosionTexture[ExplosionType::SMALL] = std::make_shared<sf::Texture>();
-    _explosionTexture[ExplosionType::SMALL]->loadFromFile("assets/Images/simpleExplosion.png");
-    _explosion[ExplosionType::SMALL].setTexture(*_explosionTexture[ExplosionType::SMALL]);
-    _explosionRect = {0, 0, 16, 14};
-    _explosion[ExplosionType::SMALL].setTextureRect(_explosionRect);
-    _explosion[ExplosionType::SMALL].setScale(4, 4);
+    for (int i = 1; i < 2; i++) {
+        _explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)] = std::make_shared<sf::Texture>();
+        _explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
+        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setTexture(*_explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)]);
+        _explosionRect = {0, 0, 16, 14};
+        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setTextureRect(_explosionRect);
+        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setScale(4, 4);
+    }
 
     isRunning = false;
 
     _playerId = 0;
+
     _canShoot = true;
+    _shootSoundBuffer.loadFromFile("assets/Sounds/simpleBullet.wav");
+    _shootSound.setBuffer(_shootSoundBuffer);
 
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
 }
 
 Game::~Game() {
+    if (_gameMusic.getStatus() == sf::SoundSource::Status::Playing)
+        _gameMusic.stop();
+
     _service.stop();
     if (isRunning) {
         isRunning = false;
@@ -78,12 +90,16 @@ void Game::ShootTimer() {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
+    if (_gameMusic.getStatus() != sf::SoundSource::Status::Playing)
+        _gameMusic.play();
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         isRunning = false;
+        _gameMusic.stop();
         return GameStatus::MENU;
-    }
-    if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1)) {
+    } if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1)) {
         isRunning = false;
+        _gameMusic.stop();
         return GameStatus::MENU;
     }
 
@@ -100,6 +116,7 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         if (inputs.GetOK() && _canShoot) {
             _canShoot = false;
             buf = {Action::SHOOT};
+            _shootSound.play();
             _threads.emplace_back(&Game::ShootTimer, this);
         } else if (inputs.GetUp())
             buf = {Action::UP};
@@ -144,8 +161,7 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window) {
     } else {
         _mutex.lock();
         for (auto &object: _objects) {
-            std::cout << "Object type: " << object.getType() << " position: "
-                      << object.getX() << " " << object.getY() << std::endl;
+            std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
             switch (object.getType()) {
                 case ObjectType::PLAYER:
                     UpdatePlayer(window, object);
@@ -195,9 +211,11 @@ void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network:
 }
 
 void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet) {
-    _bullet.setPosition(bullet.getX(), bullet.getY());
+    BulletType type = bullet.getBullet();
 
-    window->draw(_bullet);
+    _bullet[type].setPosition(bullet.getX(), bullet.getY());
+
+    window->draw(_bullet[type]);
 }
 
 void Game::UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp) {

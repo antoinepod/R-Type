@@ -26,6 +26,7 @@ namespace Network {
         virtual void setName(const std::string &name) = 0;
         virtual void setFrame(int frame) = 0;
         virtual void setExplosion(ExplosionType explosion) = 0;
+        virtual void setBullet(BulletType bullet) = 0;
 
         // Getters
         virtual float getX() = 0;
@@ -39,5 +40,6 @@ namespace Network {
         virtual std::string getName() = 0;
         virtual int getFrame() = 0;
         virtual ExplosionType getExplosion() = 0;
+        virtual BulletType getBullet() = 0;
     };
 }

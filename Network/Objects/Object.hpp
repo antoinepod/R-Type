@@ -27,6 +27,7 @@ namespace Network {
         void setName(const std::string &name) override;
         void setFrame(int frame) override;
         void setExplosion(ExplosionType explosion) override;
+        void setBullet(BulletType bullet) override;
 
         // Getters
         float getX() override;
@@ -40,6 +41,7 @@ namespace Network {
         std::string getName() override;
         int getFrame() override;
         ExplosionType getExplosion() override;
+        BulletType getBullet() override;
 
     private:
         float _x;
@@ -53,5 +55,6 @@ namespace Network {
         std::string _name;
         int _frame;
         ExplosionType _explosion;
+        BulletType _bullet;
     };
 }

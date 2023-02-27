@@ -18,9 +18,10 @@ public:
     GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) override;
     void Display(const std::shared_ptr<sf::RenderWindow>& window) override;
 
-    GameStatus GetSelectedButton() const;
+    GameStatus GetSelectedButton();
 
 private:
+    sf::Music _menuMusic;
     sf::Font _arcadeFont;
     std::vector<sf::Text> _buttons;
     sf::Text _title;
