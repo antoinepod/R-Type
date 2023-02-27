@@ -39,6 +39,10 @@ Game::Game() {
         _enemies[i].setTexture(*_enemyTextures[i]);
         _enemies[i].setScale(_enemiesScale[i], _enemiesScale[i]);
     }
+    _healthBarTexture.loadFromFile("assets/Images/HealthBar.png");
+    _healthBar.setTexture(_healthBarTexture);
+    _healthBar.setScale(0.3, 0.3);
+    _healthBar.setTextureRect({0, 0, 178, 37});
 
     // Bullet assets initialization
     for (int i = 1; i <= 1; i++) {
@@ -184,7 +188,7 @@ void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
 
-    _playerName.setString("Player " + std::to_string(_playerId));
+    _playerName.setString("Player " + std::to_string(player.getId()));
     _playerName.setPosition(player.getX() - 10, player.getY() - 20);
     if (player.getId() == _playerId)
         _playerName.setFillColor(sf::Color::White);
@@ -198,7 +202,14 @@ void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network:
 
     _enemies[enemyId].setPosition(enemy.getX(), enemy.getY());
 
+    int rectLeft = 712 - 178 * (enemy.getHealth() / 20 - 1);
+    if (rectLeft > 712)
+        rectLeft = 712;
+    _healthBar.setTextureRect({rectLeft, 0, 178, 37});
+    _healthBar.setPosition(enemy.getX(), enemy.getY() - 15);
+
     window->draw(_enemies[enemyId]);
+    window->draw(_healthBar);
 }
 
 void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet) {

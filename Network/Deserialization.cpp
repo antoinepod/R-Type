@@ -26,6 +26,7 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
         gameObject.setStrength(getIntValue(buffer, pos));
         gameObject.setId(getIntValue(buffer, pos));
         gameObject.setType((ObjectType)getIntValue(buffer, pos));
+//            gameObject.setName(getStringValue(buffer, pos));
         gameObject.setFrame(getIntValue(buffer, pos));
         gameObject.setExplosion((ExplosionType)getIntValue(buffer, pos));
         gameObject.setBullet((BulletType)getIntValue(buffer, pos));
@@ -60,7 +61,7 @@ float Network::Deseria::getFloatValue(boost::array<char, 1024> buffer, std::size
 }
 
 std::string Network::Deseria::getStringValue(boost::array<char, 1024> buffer, std::size_t& pos) {
-    char result[] = "";
+    char result[1024];
     std::memcpy(&result, buffer.data() + pos, sizeof(result));
     pos += sizeof(result);
     //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;

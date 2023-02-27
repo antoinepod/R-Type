@@ -54,6 +54,8 @@ private:
     std::vector<sf::Sprite> _enemies;
     std::vector<std::shared_ptr<sf::Texture>> _enemyTextures;
     std::vector<float> _enemiesScale;
+    sf::Sprite _healthBar;
+    sf::Texture _healthBarTexture;
 
     // Bullet assets
     std::map<BulletType, sf::Sprite> _bullet;
