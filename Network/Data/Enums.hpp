@@ -52,3 +52,9 @@ enum ExplosionType {
     MEDIUM = 16384,
     BIG = 32768
 };
+
+enum BulletType {
+    SIMPLE = 65536,
+    LASER = 131072,
+    ROCKET = 262144
+};

@@ -9,6 +9,8 @@
 
 UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8080)) {
 //    _timer = std::make_shared<boost::asio::deadline_timer>(io_context, boost::posix_time::milliseconds(16));
+    srand((int)time(0));
+
     StartReceive();
     for (int i = 0; i < THREADS_NBR; i++) {
         _threadPool.emplace_back(&UDPServer::StartReceive, this);
@@ -140,6 +142,7 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     player.setType(ObjectType::PLAYER);
     player.setFrame(0);
     player.setStrength(10);
+    player.setBullet(BulletType::SIMPLE);
 
     _mutex.lock();
     _gameObject.push_back(player);
@@ -156,6 +159,7 @@ void UDPServer::CreateBullet(Network::Object & sender, float x, float y, float c
             object.setType(ObjectType::BULLET);
             object.setId(_bulletId++);
             object.setStrength(sender.getStrength());
+            object.setBullet(sender.getBullet());
             return;
         }
     }
@@ -167,6 +171,7 @@ void UDPServer::CreateBullet(Network::Object & sender, float x, float y, float c
     bullet.setType(ObjectType::BULLET);
     bullet.setId(_bulletId++);
     bullet.setStrength(sender.getStrength());
+    bullet.setBullet(sender.getBullet());
 
     _gameObject.push_back(bullet);
 }
@@ -180,6 +185,7 @@ void UDPServer::CreateEnemy(int id, float x, float y) {
             object.setHealth(100);
             object.setType(ObjectType::ENEMY);
             object.setExplosion(ExplosionType::SMALL);
+            object.setBullet(BulletType::SIMPLE);
             object.setId(id);
             return;
         }
@@ -192,6 +198,7 @@ void UDPServer::CreateEnemy(int id, float x, float y) {
     enemy.setHealth(100);
     enemy.setType(ObjectType::ENEMY);
     enemy.setExplosion(ExplosionType::SMALL);
+    enemy.setBullet(BulletType::SIMPLE);
     enemy.setId(id);
 
     _gameObject.push_back(enemy);
