@@ -15,6 +15,7 @@ namespace Network {
         virtual ~IObject() = default;
 
         // Setters
+        virtual void setGameState(GameState gameState) = 0;
         virtual void setX(float x) = 0;
         virtual void setY(float y) = 0;
         virtual void setCelerity(float v) = 0;
@@ -30,6 +31,7 @@ namespace Network {
         virtual void setSound(SoundType sound) = 0;
 
         // Getters
+        virtual GameState getGameState() = 0;
         virtual float getX() = 0;
         virtual float getY() = 0;
         virtual float getCelerity() = 0;

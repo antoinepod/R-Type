@@ -25,6 +25,9 @@ namespace Network {
     Object::~Object() = default;
 
     // Setters
+    void Object::setGameState(GameState gameState) {
+        _gameState = gameState;
+    }
     void Object::setX(float x) {
         _x = x;
     }
@@ -66,6 +69,9 @@ namespace Network {
     }
 
     // Getters
+    GameState Object::getGameState() {
+        return _gameState;
+    }
     float Object::getX() {
         return _x;
     }

@@ -24,6 +24,7 @@ public:
     int FindPlayer(int id);
 
     // Create objects
+    void CreateGameState();
     void CreatePlayer(const std::string& ip, int id, const std::string& name);
     void CreateEnemy(int id, float x, float y);
     void CreateBullet(Network::Object & sender, BulletType bulletType);
@@ -31,6 +32,7 @@ public:
     void CreateSound(SoundType soundType);
 
     // Update objects
+    void UpdateGameState(Network::Object & gameState);
     void UpdateEnemy(Network::Object & bullet);
     void UpdateBullet(Network::Object & bullet);
     void UpdatePowerUp(Network::Object & powerUp);
@@ -38,6 +40,7 @@ public:
     void UpdateSound(Network::Object & sound);
 
     bool CheckCollision(Network::Object & object, Network::Object & bullet);
+    void KillObject(Network::Object & object);
 
 private:
     std::vector<Network::Object> _gameObject;
@@ -52,6 +55,8 @@ private:
     std::mutex _mutex;
     std::map<int, int> _playerFrames;
     std::map<int, int> _explosionFrames;
+
+    int _nbEnemy;
 
     int _bulletId = 0;
     int _explosionId = 0;

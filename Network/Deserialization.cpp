@@ -17,8 +17,7 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
     size = getMeta(buffer, pos);
     //std::cout << "the buffer size is: " << size << std::endl;
     for (int i = 0; i < size; i++) {
-        // TODO
-        // gameObject.setName(getStringValue(buffer, pos));
+        gameObject.setGameState((GameState)getIntValue(buffer, pos));
         gameObject.setX(getFloatValue(buffer, pos));
         gameObject.setY(getFloatValue(buffer, pos));
         gameObject.setCelerity(getFloatValue(buffer, pos));

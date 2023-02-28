@@ -16,6 +16,7 @@ namespace Network {
         ~Object() override;
 
         // Setters
+        void setGameState(GameState gameState) override;
         void setX(float x) override;
         void setY(float y) override;
         void setCelerity(float v) override;
@@ -31,6 +32,7 @@ namespace Network {
         void setSound(SoundType sound) override;
 
         // Getters
+        GameState getGameState() override;
         float getX() override;
         float getY() override;
         float getCelerity() override;
@@ -46,6 +48,7 @@ namespace Network {
         SoundType getSound() override;
 
     private:
+        GameState _gameState;
         float _x;
         float _y;
         float _v;
