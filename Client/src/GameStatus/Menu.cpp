@@ -26,17 +26,23 @@ Menu::Menu() {
     _serverIp = "";
 }
 
-Menu::~Menu() = default;
+Menu::~Menu() {};
 
 GameStatus Menu::ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) {
     _serverIp = serverIp;
 
     // Handle keyboard
     if (event.type == sf::Event::KeyPressed) {
-        if (inputs.GetUp() && _selectedButton > 0)
-            _selectedButton--;
-        if (inputs.GetDown() && _selectedButton < _buttons.size() - 1)
-            _selectedButton++;
+        switch (inputs.GetAction()) {
+            case Action::UP:
+                if (_selectedButton > 0)
+                    _selectedButton--;
+                break;
+            case Action::DOWN:
+                if (_selectedButton < _buttons.size() - 1)
+                    _selectedButton++;
+        }
+
         if (event.key.code == sf::Keyboard::Enter)
             return GetSelectedButton();
     }

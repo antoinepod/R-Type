@@ -19,6 +19,16 @@ Game::Game() {
     _errorText.setFillColor(sf::Color::Red);
     _errorText.setPosition(300, 400);
 
+    // GameState assets initialization
+    _gameStateText.setFont(_arcadeFont);
+    _gameStateText.setCharacterSize(30);
+    _gameStateText.setFillColor(sf::Color::White);
+    _gameStateText.setPosition(300, 75);
+    _helpText.setFont(_arcadeFont);
+    _helpText.setCharacterSize(20);
+    _helpText.setFillColor(sf::Color::White);
+    _helpText.setPosition(300, 200);
+
     // Player assets initialization
     _spaceShipTexture.loadFromFile("assets/Images/spaceShip.png");
     _spaceShip.setTexture(_spaceShipTexture);
@@ -45,28 +55,26 @@ Game::Game() {
     _healthBar.setTextureRect({0, 0, 178, 37});
 
     // Bullet assets initialization
-    for (int i = 1; i <= 1; i++) {
-        _bulletTexture[(BulletType)(i * BulletType::SIMPLE)] = std::make_shared<sf::Texture>();
-        _bulletTexture[(BulletType)(i * BulletType::SIMPLE)]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
-        _bullet[(BulletType)(i * BulletType::SIMPLE)].setTexture(*_bulletTexture[(BulletType)(i * BulletType::SIMPLE)]);
+    for (int i = 1; i <= 3; i++) {
+        _bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))] = std::make_shared<sf::Texture>();
+        _bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
+        _bullet[(BulletType)(pow(BulletType::SIMPLE, i))].setTexture(*_bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]);
     }
 
     // Explosion assets initialization
-    for (int i = 1; i < 2; i++) {
-        _explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)] = std::make_shared<sf::Texture>();
-        _explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
-        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setTexture(*_explosionTexture[(ExplosionType) (i * ExplosionType::SMALL)]);
+    for (int i = 1; i <= 1; i++) {
+        _explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))] = std::make_shared<sf::Texture>();
+        _explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
+        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setTexture(*_explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))]);
         _explosionRect = {0, 0, 16, 14};
-        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setTextureRect(_explosionRect);
-        _explosion[(ExplosionType) (i * ExplosionType::SMALL)].setScale(4, 4);
+        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setTextureRect(_explosionRect);
+        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setScale(4, 4);
     }
 
-    isRunning = false;
-
     _playerId = 0;
-
     _canShoot = true;
 
+    isRunning = false;
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
 }
@@ -86,10 +94,8 @@ void Game::ShootTimer() {
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        isRunning = false;
-        return GameStatus::MENU;
-    } if (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) ||
+    (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))) {
         isRunning = false;
         return GameStatus::MENU;
     }
@@ -104,20 +110,27 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         boost::array<unsigned char, 1> buf = { Action::NONE };
 
         // Handle keyboard
-        if (inputs.GetOK() && _canShoot) {
+        buf = {(unsigned char) inputs.GetShoot()};
+        if (buf[0] != Action::NONE && _canShoot) {
             _canShoot = false;
-            buf = {Action::SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this);
-        } else if (inputs.GetUp())
-            buf = {Action::UP};
-        else if (inputs.GetDown())
-            buf = {Action::DOWN};
-        else if (inputs.GetLeft())
-            buf = {Action::LEFT};
-        else if (inputs.GetRight())
-            buf = {Action::RIGHT};
-        else
-            buf = { Action::NONE };
+        } else {
+            buf = {(unsigned char) inputs.GetAction()};
+        }
+//        if (inputs.GetSimpleShoot() && _canShoot) {
+//            _canShoot = false;
+//            buf = {Action::SIMPLE_SHOOT};
+//            _threads.emplace_back(&Game::ShootTimer, this);
+//        } else if (inputs.GetUp())
+//            buf = {Action::UP};
+//        else if (inputs.GetDown())
+//            buf = {Action::DOWN};
+//        else if (inputs.GetLeft())
+//            buf = {Action::LEFT};
+//        else if (inputs.GetRight())
+//            buf = {Action::RIGHT};
+//        else
+//            buf = {Action::NONE};
 
         // Handle joystick
         float PovX = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
@@ -134,7 +147,7 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
             buf = {Action::RIGHT};
         if (sf::Joystick::isButtonPressed(0, 0) && _canShoot) {
             _canShoot = false;
-            buf = {Action::SHOOT};
+            buf = {Action::SIMPLE_SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this);
         }
 
@@ -145,6 +158,10 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
 }
 
 void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        audio->PlaySound(SoundType::EXPLOSION_MISSILE);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+        audio->PlaySound(SoundType::EXPLOSION_SMALL);
     audio->StopMusic(MusicType::MENU_MUSIC);
     audio->PlayMusic(MusicType::GAME_MUSIC);
     if (_drawError) {
@@ -155,6 +172,9 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
         for (auto &object: _objects) {
             std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
             switch (object.getType()) {
+                case ObjectType::GAME_STATE:
+                    UpdateGameState(window, object);
+                    break;
                 case ObjectType::PLAYER:
                     UpdatePlayer(window, object);
                     break;
@@ -179,6 +199,23 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
         }
         _mutex.unlock();
     }
+}
+
+void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Network::Object &gameState) {
+    switch (gameState.getGameState()) {
+        case GameState::WAITING:
+            _gameStateText.setString("Waiting for other players...");
+            _helpText.setString("Press '1' to start Level 1, '2' to start Level 2, '3' to start Level 3");
+            break;
+        default:
+            _gameStateText.setString("Work in progress");
+            break;
+    }
+
+    Utils::HorizontalCenterText(_gameStateText, 75);
+    Utils::HorizontalCenterText(_helpText, 200);
+    window->draw(_gameStateText);
+    window->draw(_helpText);
 }
 
 void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player) {

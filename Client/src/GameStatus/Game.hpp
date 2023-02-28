@@ -25,6 +25,7 @@ public:
     void ConnectToServer();
 
     // Object updates
+    void UpdateGameState(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & gameState);
     void UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player);
     void UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy);
     void UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet);
@@ -43,6 +44,10 @@ private:
 
     bool _drawError;
     sf::Text _errorText;
+
+    // GameState assets
+    sf::Text _gameStateText;
+    sf::Text _helpText;
 
     // Player assets
     sf::Texture _spaceShipTexture;

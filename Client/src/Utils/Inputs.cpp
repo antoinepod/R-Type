@@ -8,51 +8,43 @@
 #include "Inputs.hpp"
 
 Inputs::Inputs() {
-    _up = sf::Keyboard::Up;
-    _down = sf::Keyboard::Down;
-    _left = sf::Keyboard::Left;
-    _right = sf::Keyboard::Right;
-    _ok = sf::Keyboard::Space;
+    _keys[Action::SIMPLE_SHOOT] = sf::Keyboard::Space;
+    _keys[Action::LASER_SHOOT] = sf::Keyboard::X;
+    _keys[Action::ROCKET_SHOOT] = sf::Keyboard::C;
+    _keys[Action::UP] = sf::Keyboard::Up;
+    _keys[Action::DOWN] = sf::Keyboard::Down;
+    _keys[Action::LEFT] = sf::Keyboard::Left;
+    _keys[Action::RIGHT] = sf::Keyboard::Right,
+    _keys[Action::LEVEL1] = sf::Keyboard::Num1;
+    _keys[Action::LEVEL2] = sf::Keyboard::Num2;
+    _keys[Action::LEVEL3] = sf::Keyboard::Num3;
+    _keys[Action::LEVEL4] = sf::Keyboard::Num4;
+    _keys[Action::LEVEL5] = sf::Keyboard::Num5;
 }
 
 Inputs::~Inputs() = default;
 
-bool Inputs::GetUp() const {
-    return sf::Keyboard::isKeyPressed(_up) ;
+Action Inputs::GetAction() {
+    for (auto &key : _keys) {
+        if (sf::Keyboard::isKeyPressed(key.second) && key.first != Action::SIMPLE_SHOOT
+        && key.first != Action::LASER_SHOOT && key.first != Action::ROCKET_SHOOT)
+            return key.first;
+    }
+    return Action::NONE;
 }
 
-bool Inputs::GetDown() const {
-    return sf::Keyboard::isKeyPressed(_down);
+void Inputs::SetKey(Action action, sf::Keyboard::Key key) {
+    _keys[action] = key;
 }
 
-bool Inputs::GetLeft() const {
-    return sf::Keyboard::isKeyPressed(_left);
-}
+Action Inputs::GetShoot() {
+    if (sf::Keyboard::isKeyPressed(_keys[SIMPLE_SHOOT]))
+        return Action::SIMPLE_SHOOT;
+    else if (sf::Keyboard::isKeyPressed(_keys[LASER_SHOOT]))
+        return Action::LASER_SHOOT;
+    else if (sf::Keyboard::isKeyPressed(_keys[ROCKET_SHOOT]))
+        return Action::ROCKET_SHOOT;
+    else
+        return Action::NONE;
 
-bool Inputs::GetRight() const {
-    return sf::Keyboard::isKeyPressed(_right);
-}
-
-bool Inputs::GetOK() const {
-    return sf::Keyboard::isKeyPressed(_ok);
-}
-
-void Inputs::SetUp(sf::Keyboard::Key key) {
-    _up = key;
-}
-
-void Inputs::SetDown(sf::Keyboard::Key key) {
-    _down = key;
-}
-
-void Inputs::SetLeft(sf::Keyboard::Key key) {
-    _left = key;
-}
-
-void Inputs::SetRight(sf::Keyboard::Key key) {
-    _right = key;
-}
-
-void Inputs::SetOK(sf::Keyboard::Key key) {
-    _ok = key;
 }

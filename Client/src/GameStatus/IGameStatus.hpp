@@ -23,6 +23,7 @@
 #include "Data/Enums.hpp"
 #include "Utils/Audio.hpp"
 #include "Utils/Inputs.hpp"
+#include "Utils/Utils.hpp"
 
 #define SCREEN_WIDTH 1500
 #define SCREEN_HEIGHT 900

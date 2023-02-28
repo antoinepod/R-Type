@@ -8,6 +8,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "Data/Enums.hpp"
 
 
 class Inputs {
@@ -15,24 +16,14 @@ public:
     Inputs();
     ~Inputs();
 
+
     // Getters
-    bool GetUp() const;
-    bool GetDown() const;
-    bool GetLeft() const;
-    bool GetRight() const;
-    bool GetOK() const;
+    Action GetAction();
+    Action GetShoot();
 
     // Setters
-    void SetUp(sf::Keyboard::Key key);
-    void SetDown(sf::Keyboard::Key key);
-    void SetLeft(sf::Keyboard::Key key);
-    void SetRight(sf::Keyboard::Key key);
-    void SetOK(sf::Keyboard::Key key);
+    void SetKey(Action, sf::Keyboard::Key key);
 
 private:
-    sf::Keyboard::Key _up;
-    sf::Keyboard::Key _down;
-    sf::Keyboard::Key _left;
-    sf::Keyboard::Key _right;
-    sf::Keyboard::Key _ok;
+    std::map<Action, sf::Keyboard::Key> _keys;
 };

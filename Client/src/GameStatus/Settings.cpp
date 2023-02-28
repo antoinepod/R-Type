@@ -40,14 +40,35 @@ GameStatus Settings::ManageInput(sf::Event event, std::string &serverIp, Inputs 
         if (_selectedText == 0 && event.key.code == sf::Keyboard::BackSpace && !serverIp.empty())
             serverIp.pop_back();
 
-        if (inputs.GetUp() && _selectedText > 0)
-            _selectedText--;
-        else if (inputs.GetDown() && _selectedText < _texts.size() - 1)
-            _selectedText++;
-        else if (inputs.GetLeft() && _selectedText == 1 && sf::Listener::getGlobalVolume() >= 10)
-            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() - 10);
-        else if (inputs.GetRight() && _selectedText == 1 && sf::Listener::getGlobalVolume() <= 90)
-            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() + 10);
+        switch (inputs.GetAction()) {
+            case Action::UP:
+                if (_selectedText > 0)
+                    _selectedText--;
+                break;
+            case Action::DOWN:
+                if (_selectedText < _texts.size() - 1)
+                    _selectedText++;
+                break;
+            case Action::LEFT:
+                if (_selectedText == 1 && sf::Listener::getGlobalVolume() >= 10)
+                    sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() - 10);
+                break;
+            case Action::RIGHT:
+                if (_selectedText == 1 && sf::Listener::getGlobalVolume() <= 90)
+                    sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() + 10);
+                break;
+            default:
+                break;
+        }
+
+//        if (inputs.GetUp() && _selectedText > 0)
+//            _selectedText--;
+//        else if (inputs.GetDown() && _selectedText < _texts.size() - 1)
+//            _selectedText++;
+//        else if (inputs.GetLeft() && _selectedText == 1 && sf::Listener::getGlobalVolume() >= 10)
+//            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() - 10);
+//        else if (inputs.GetRight() && _selectedText == 1 && sf::Listener::getGlobalVolume() <= 90)
+//            sf::Listener::setGlobalVolume(sf::Listener::getGlobalVolume() + 10);
     }
 
     // Handle joystick

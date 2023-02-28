@@ -57,10 +57,8 @@ void RType::Start() {
     while (_window->isOpen())
     {
         sf::Event event{};
-        if (_window->pollEvent(event) && event.type == sf::Event::Closed) {
-            _window->close();
-            exit(0);
-        }
+        if (_window->pollEvent(event) && event.type == sf::Event::Closed)
+            break;
         _currentGameStatus = _gameStatus[_currentGameStatus]->ManageInput(event, _serverIp, inputs);
 
         if (_currentGameStatus == GameStatus::CLOSE)

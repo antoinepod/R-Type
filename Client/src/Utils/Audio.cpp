@@ -16,10 +16,21 @@ Audio::Audio() {
     _music[MusicType::GAME_MUSIC]->openFromFile("assets/Sounds/GameMusic.ogg");
     _music[MusicType::GAME_MUSIC]->setLoop(true);
 
-    // Sounds
-    _soundBuffer[SoundType::SHOOT_SIMPLE] = std::make_shared<sf::SoundBuffer>();
-    _soundBuffer[SoundType::SHOOT_SIMPLE]->loadFromFile("assets/Sounds/simpleBullet.wav");
-    _sound[SoundType::SHOOT_SIMPLE].setBuffer(*_soundBuffer[SoundType::SHOOT_SIMPLE]);
+    // Bullet Sounds
+    for (int i = 1; i <= 3; i++) {
+        _soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))] = std::make_shared<sf::SoundBuffer>();
+        _soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))]->loadFromFile("assets/Sounds/Bullet" + std::to_string(i) + ".wav");
+        _sound[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))].setBuffer(*_soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))]);
+    }
+    _sound[SoundType::SHOOT_LASER].setVolume(150);
+    _sound[SoundType::SHOOT_ROCKET].setVolume(200);
+
+    // Explosion Sounds
+    for (int i = 1; i <= 4; i++) {
+        _soundBuffer[(SoundType)(8 * pow(2, i))] = std::make_shared<sf::SoundBuffer>();
+        _soundBuffer[(SoundType)(8 * pow(2, i))]->loadFromFile("assets/Sounds/Explosion" + std::to_string(i) + ".wav");
+        _sound[(SoundType)(8 * pow(2, i))].setBuffer(*_soundBuffer[(SoundType)(8 * pow(2, i))]);
+    }
 }
 
 Audio::~Audio() {
@@ -31,6 +42,10 @@ Audio::~Audio() {
     }
 
     // Sounds
+    for (auto &sound : _sound)
+        sound.second.resetBuffer();
+
+    // Sound Buffers
     for (auto &sound : _soundBuffer)
         sound.second.reset();
 }
