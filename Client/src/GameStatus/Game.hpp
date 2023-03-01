@@ -35,7 +35,7 @@ public:
 
     void UpdateData(std::vector<Network::Object> objects);
         // Timers
-    void ShootTimer();
+    void ShootTimer(Action action);
 
     std::atomic_bool isRunning;
 
@@ -65,7 +65,7 @@ private:
     // Bullet assets
     std::map<BulletType, sf::Sprite> _bullet;
     std::map<BulletType ,std::shared_ptr<sf::Texture>> _bulletTexture;
-    bool _canShoot;
+    std::map<Action, std::atomic_bool> _canShoot;
 
     // PowerUp assets
     // TODO

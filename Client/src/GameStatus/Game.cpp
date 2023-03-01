@@ -60,19 +60,21 @@ Game::Game() {
         _bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
         _bullet[(BulletType)(pow(BulletType::SIMPLE, i))].setTexture(*_bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]);
     }
+    _canShoot[Action::SIMPLE_SHOOT] = true;
+    _canShoot[Action::LASER_SHOOT] = true;
+    _canShoot[Action::ROCKET_SHOOT] = true;
 
     // Explosion assets initialization
     for (int i = 1; i <= 1; i++) {
-        _explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))] = std::make_shared<sf::Texture>();
-        _explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
-        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setTexture(*_explosionTexture[(ExplosionType) (pow(ExplosionType::SMALL, i))]);
+        _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))] = std::make_shared<sf::Texture>();
+        _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
+        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTexture(*_explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]);
         _explosionRect = {0, 0, 16, 14};
-        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setTextureRect(_explosionRect);
-        _explosion[(ExplosionType) (pow(ExplosionType::SMALL, i))].setScale(4, 4);
+        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTextureRect(_explosionRect);
+        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setScale(4, 4);
     }
 
     _playerId = 0;
-    _canShoot = true;
 
     isRunning = false;
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
@@ -88,9 +90,21 @@ Game::~Game() {
     }
 }
 
-void Game::ShootTimer() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    _canShoot = true;
+void Game::ShootTimer(Action action) {
+    switch (action) {
+        case Action::SIMPLE_SHOOT:
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            break;
+        case Action::LASER_SHOOT:
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            break;
+        case Action::ROCKET_SHOOT:
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+            break;
+        default:
+            break;
+    }
+    _canShoot[action] = true;
 }
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
@@ -107,15 +121,15 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
     }
 
     if (_playerId != 0) {
-        boost::array<unsigned char, 1> buf = { Action::NONE };
+        boost::array<unsigned int, 1> buf = { Action::NONE };
 
         // Handle keyboard
-        buf = {(unsigned char) inputs.GetShoot()};
-        if (buf[0] != Action::NONE && _canShoot) {
-            _canShoot = false;
-            _threads.emplace_back(&Game::ShootTimer, this);
+        buf = {(unsigned int)inputs.GetShoot()};
+        if (buf[0] != Action::NONE && _canShoot[(Action)buf[0]]) {
+            _canShoot[(Action)buf[0]] = false;
+            _threads.emplace_back(&Game::ShootTimer, this, (Action)buf[0]);
         } else {
-            buf = {(unsigned char) inputs.GetAction()};
+            buf = {(unsigned int) inputs.GetAction()};
         }
 //        if (inputs.GetSimpleShoot() && _canShoot) {
 //            _canShoot = false;
@@ -145,10 +159,18 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
             buf = {Action::LEFT};
         if ((PovX == 100 && PovY == 0) || (AxisX > 0 && AxisY > -100 && AxisY < 100))
             buf = {Action::RIGHT};
-        if (sf::Joystick::isButtonPressed(0, 0) && _canShoot) {
-            _canShoot = false;
+        if (sf::Joystick::isButtonPressed(0, 0) && _canShoot[Action::SIMPLE_SHOOT]) {
+            _canShoot[Action::SIMPLE_SHOOT] = false;
             buf = {Action::SIMPLE_SHOOT};
-            _threads.emplace_back(&Game::ShootTimer, this);
+            _threads.emplace_back(&Game::ShootTimer, this, Action::SIMPLE_SHOOT);
+        } if (sf::Joystick::isButtonPressed(0, 3) && _canShoot[Action::LASER_SHOOT]) {
+            _canShoot[Action::LASER_SHOOT] = false;
+            buf = {Action::LASER_SHOOT};
+            _threads.emplace_back(&Game::ShootTimer, this, Action::LASER_SHOOT);
+        } if (sf::Joystick::isButtonPressed(0, 2) && _canShoot[Action::ROCKET_SHOOT]) {
+            _canShoot[Action::ROCKET_SHOOT] = false;
+            buf = {Action::ROCKET_SHOOT};
+            _threads.emplace_back(&Game::ShootTimer, this, Action::ROCKET_SHOOT);
         }
 
         _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
@@ -198,6 +220,9 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
             }
         }
         _mutex.unlock();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+            std::cout << "LEVEL 1111111" << std::endl;
     }
 }
 
