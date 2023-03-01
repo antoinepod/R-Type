@@ -20,6 +20,10 @@ namespace Network {
         _destroyable = false;
         _name = "";
         _frame = 0;
+        _explosion = (ExplosionType)0;
+        _bullet = (BulletType)0;
+        _sound = (SoundType)0;
+        _gameState = (GameState)0;
     };
 
     Object::~Object() = default;

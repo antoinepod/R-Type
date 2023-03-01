@@ -20,18 +20,18 @@ public:
     void Receive(const boost::system::error_code& error,std::size_t);
     void Send(boost::shared_ptr<std::string>,const boost::system::error_code&,std::size_t);
 
-    void UpdateGame();
     int FindPlayer(int id);
 
-    // Create objects
+    // Create GameObjects
     void CreateGameState();
     void CreatePlayer(const std::string& ip, int id, const std::string& name);
     void CreateEnemy(int id, float x, float y);
-    void CreateBullet(Network::Object & sender, BulletType bulletType);
-    void CreateExplosion(Network::Object & deadObject, float x, float y);
+    void CreateBullet(Network::Object sender, BulletType bulletType);
+    void CreateExplosion(ExplosionType explosionType, float x, float y);
     void CreateSound(SoundType soundType);
 
-    // Update objects
+    // Update GameObjects
+    void UpdateGame();
     void UpdateGameState(Network::Object & gameState);
     void UpdateEnemy(Network::Object & bullet);
     void UpdateBullet(Network::Object & bullet);
@@ -40,7 +40,13 @@ public:
     void UpdateSound(Network::Object & sound);
 
     bool CheckCollision(Network::Object & object, Network::Object & bullet);
-    void KillObject(Network::Object & object);
+    void KillObject(Network::Object object);
+
+    void Level_1();
+    void Level_2();
+    void Level_3();
+    void Level_4();
+    void Level_5();
 
 private:
     std::vector<Network::Object> _gameObject;
@@ -48,7 +54,7 @@ private:
     int p_Id = 0;
     boost::asio::ip::udp::socket _socket;
     boost::asio::ip::udp::endpoint _remoteEndpoint;
-    boost::array<unsigned char, 1> _recvBuffer;
+    boost::array<unsigned int, 1> _recvBuffer;
     boost::asio::streambuf _buf;
     std::vector<std::thread> _threadPool;
     std::map<std::string, int> _myMap;
