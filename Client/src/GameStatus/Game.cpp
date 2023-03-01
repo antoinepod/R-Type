@@ -85,8 +85,8 @@ Game::~Game() {
     _service.stop();
     if (isRunning) {
         isRunning = false;
-        for (auto & thread : _threads)
-             thread.~thread();
+//        for (auto & thread : _threads)
+//             thread.detach();
     }
 }
 
@@ -118,6 +118,7 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         _serverIp = serverIp;
         isRunning = true;
         _threads.emplace_back(&Game::ConnectToServer, this);
+        _threads.back().detach();
     }
 
     if (_playerId != 0) {
@@ -128,23 +129,10 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
         if (buf[0] != Action::NONE && _canShoot[(Action)buf[0]]) {
             _canShoot[(Action)buf[0]] = false;
             _threads.emplace_back(&Game::ShootTimer, this, (Action)buf[0]);
+            _threads.back().detach();
         } else {
             buf = {(unsigned int) inputs.GetAction()};
         }
-//        if (inputs.GetSimpleShoot() && _canShoot) {
-//            _canShoot = false;
-//            buf = {Action::SIMPLE_SHOOT};
-//            _threads.emplace_back(&Game::ShootTimer, this);
-//        } else if (inputs.GetUp())
-//            buf = {Action::UP};
-//        else if (inputs.GetDown())
-//            buf = {Action::DOWN};
-//        else if (inputs.GetLeft())
-//            buf = {Action::LEFT};
-//        else if (inputs.GetRight())
-//            buf = {Action::RIGHT};
-//        else
-//            buf = {Action::NONE};
 
         // Handle joystick
         float PovX = sf::Joystick::getAxisPosition(0, sf::Joystick::PovX);
@@ -163,14 +151,17 @@ GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inp
             _canShoot[Action::SIMPLE_SHOOT] = false;
             buf = {Action::SIMPLE_SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this, Action::SIMPLE_SHOOT);
+            _threads.back().detach();
         } if (sf::Joystick::isButtonPressed(0, 3) && _canShoot[Action::LASER_SHOOT]) {
             _canShoot[Action::LASER_SHOOT] = false;
             buf = {Action::LASER_SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this, Action::LASER_SHOOT);
+            _threads.back().detach();
         } if (sf::Joystick::isButtonPressed(0, 2) && _canShoot[Action::ROCKET_SHOOT]) {
             _canShoot[Action::ROCKET_SHOOT] = false;
             buf = {Action::ROCKET_SHOOT};
             _threads.emplace_back(&Game::ShootTimer, this, Action::ROCKET_SHOOT);
+            _threads.back().detach();
         }
 
         _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);

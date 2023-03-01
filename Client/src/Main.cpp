@@ -7,9 +7,13 @@
 
 #include "R-Type.hpp"
 
-int main() {
-    std::shared_ptr<RType> game = std::make_shared<RType>();
 
-    game->Start();
-    return 0;
+int main() {
+    try {
+        std::shared_ptr<RType> game = std::make_shared<RType>();
+
+        game->Start();
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
 }

@@ -64,5 +64,5 @@ std::string Network::Deseria::getStringValue(boost::array<char, 1024> buffer, st
     std::memcpy(&result, buffer.data() + pos, sizeof(result));
     pos += sizeof(result);
     //std::cout << "double value: " << result << "and pos is: " << pos << std::endl;
-    return std::string(result);
+    return {result};
 }
