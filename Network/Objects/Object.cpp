@@ -71,6 +71,9 @@ namespace Network {
     void Object::setSound(SoundType sound) {
         _sound = sound;
     }
+    void Object::setEnemy(EnemyType enemyType) {
+        _enemyType = enemyType;
+    }
 
     // Getters
     GameState Object::getGameState() {
@@ -114,5 +117,8 @@ namespace Network {
     }
     SoundType Object::getSound() {
         return _sound;
+    }
+    EnemyType Object::getEnemy() {
+        return _enemyType;
     }
 }

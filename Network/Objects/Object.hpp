@@ -30,6 +30,7 @@ namespace Network {
         void setExplosion(ExplosionType explosion) override;
         void setBullet(BulletType bullet) override;
         void setSound(SoundType sound) override;
+        void setEnemy(EnemyType enemyType) override;
 
         // Getters
         GameState getGameState() override;
@@ -46,6 +47,7 @@ namespace Network {
         ExplosionType getExplosion() override;
         BulletType getBullet() override;
         SoundType getSound() override;
+        EnemyType getEnemy() override;
 
     private:
         GameState _gameState;
@@ -62,5 +64,6 @@ namespace Network {
         ExplosionType _explosion;
         BulletType _bullet;
         SoundType _sound;
+        EnemyType _enemyType;
     };
 }

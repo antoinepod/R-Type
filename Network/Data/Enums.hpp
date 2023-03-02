@@ -94,3 +94,9 @@ enum GameState {
     WIN = 128,
     LOOSE = 256
 };
+
+enum EnemyType {
+    ENEMY_1 = 2,
+    ENEMY_2 = 4,
+    ENEMY_3 = 8
+};

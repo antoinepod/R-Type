@@ -56,9 +56,8 @@ private:
     sf::Text _playerName;
 
     // Enemy assets
-    std::vector<sf::Sprite> _enemies;
-    std::vector<std::shared_ptr<sf::Texture>> _enemyTextures;
-    std::vector<float> _enemiesScale;
+    std::map<EnemyType, sf::Sprite> _enemies;
+    std::map<EnemyType, std::shared_ptr<sf::Texture>> _enemyTextures;
     sf::Sprite _healthBar;
     sf::Texture _healthBarTexture;
 
@@ -73,7 +72,7 @@ private:
     // Explosion assets
     std::map<ExplosionType, sf::Sprite> _explosion;
     std::map<ExplosionType ,std::shared_ptr<sf::Texture>> _explosionTexture;
-    sf::IntRect _explosionRect;
+    std::map<ExplosionType ,sf::IntRect> _explosionRect;
     int _explosionTmp;
 
     std::vector<Network::Object> _objects;

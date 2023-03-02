@@ -41,14 +41,15 @@ Game::Game() {
     _playerName.setPosition(90, 400);
 
     // Enemy assets initialization
-    _enemiesScale = {2};
-    for (int i = 0; i < 1; i++) {
-        _enemyTextures.push_back(std::make_shared<sf::Texture>());
-        _enemyTextures[i]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i + 1) + ".png");
-        _enemies.emplace_back();
-        _enemies[i].setTexture(*_enemyTextures[i]);
-        _enemies[i].setScale(_enemiesScale[i], _enemiesScale[i]);
-    }
+    for (int i = 1; i<= 3; i++) {
+        _enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))] = std::make_shared<sf::Texture>();
+        _enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i) + ".png");
+        _enemies[(EnemyType)(pow(EnemyType::ENEMY_1, i))].setTexture(*_enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))]);
+    };
+    _enemies[EnemyType::ENEMY_1].setScale(2, 2);
+    _enemies[EnemyType::ENEMY_2].setScale(2, 2);
+    _enemies[EnemyType::ENEMY_3].setScale(1.2, 1.2);
+    // HealthBar assets initialization
     _healthBarTexture.loadFromFile("assets/Images/HealthBar.png");
     _healthBar.setTexture(_healthBarTexture);
     _healthBar.setScale(0.3, 0.3);
@@ -65,14 +66,19 @@ Game::Game() {
     _canShoot[Action::ROCKET_SHOOT] = true;
 
     // Explosion assets initialization
-    for (int i = 1; i <= 1; i++) {
+    _explosionRect[ExplosionType::MISSILE] = {0, 0, 16, 14};
+    _explosionRect[ExplosionType::SMALL] = {0, 0, 32, 30};
+    _explosionRect[ExplosionType::MEDIUM] = {0, 0, 32, 32};
+    for (int i = 1; i <= 3; i++) {
         _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))] = std::make_shared<sf::Texture>();
         _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
         _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTexture(*_explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]);
-        _explosionRect = {0, 0, 16, 14};
-        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTextureRect(_explosionRect);
-        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setScale(4, 4);
+        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTextureRect(_explosionRect[(ExplosionType) (pow(ExplosionType::MISSILE, i))]);
+//        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setScale(4, 4);
     }
+    _explosion[ExplosionType::MISSILE].setScale(6, 6);
+    _explosion[ExplosionType::SMALL].setScale(2, 2);
+    _explosion[ExplosionType::MEDIUM].setScale(3, 3);
 
     _playerId = 0;
 
@@ -251,9 +257,9 @@ void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network
 }
 
 void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy) {
-    int enemyId = enemy.getId();
+    EnemyType type = enemy.getEnemy();
 
-    _enemies[enemyId].setPosition(enemy.getX(), enemy.getY());
+    _enemies[type].setPosition(enemy.getX(), enemy.getY());
 
     int rectLeft = 712 - 178 * (enemy.getHealth() / 20 - 1);
     if (rectLeft > 712)
@@ -261,7 +267,7 @@ void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network:
     _healthBar.setTextureRect({rectLeft, 0, 178, 37});
     _healthBar.setPosition(enemy.getX(), enemy.getY() - 15);
 
-    window->draw(_enemies[enemyId]);
+    window->draw(_enemies[type]);
     window->draw(_healthBar);
 }
 
@@ -281,9 +287,8 @@ void Game::UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Net
     ExplosionType type = explosion.getExplosion();
 
     _explosion[type].setPosition(explosion.getX(), explosion.getY());
-    _explosionRect.left = explosion.getFrame() * 16;
-    _explosion[type].setTextureRect(_explosionRect);
-    _explosion[type].setScale(5, 5);
+    _explosionRect[type].left = explosion.getFrame() * _explosionRect[type].width;
+    _explosion[type].setTextureRect(_explosionRect[type]);
 
     window->draw(_explosion[type]);
 }

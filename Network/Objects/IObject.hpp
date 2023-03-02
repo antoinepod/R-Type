@@ -29,6 +29,7 @@ namespace Network {
         virtual void setExplosion(ExplosionType explosion) = 0;
         virtual void setBullet(BulletType bullet) = 0;
         virtual void setSound(SoundType sound) = 0;
+        virtual void setEnemy(EnemyType enemyType) = 0;
 
         // Getters
         virtual GameState getGameState() = 0;
@@ -45,5 +46,6 @@ namespace Network {
         virtual ExplosionType getExplosion() = 0;
         virtual BulletType getBullet() = 0;
         virtual SoundType getSound() = 0;
+        virtual EnemyType getEnemy() = 0;
     };
 }
