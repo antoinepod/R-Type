@@ -250,19 +250,44 @@ void UDPServer::CreateBullet(Network::Object sender, BulletType bulletType) {
     _gameObject.push_back(bullet);
 }
 
-void UDPServer::CreateEnemy(int id, float x, float y) {
+void UDPServer::CreateEnemy(EnemyType type, float x, float y) {
     _nbEnemy++;
+
+    float celerity = 0;
+    int health = 0;
+    BulletType bullet;
+    ExplosionType explosion;
+    switch (type) {
+        case EnemyType::ENEMY_1:
+            health = 100;
+            celerity = 2;
+            bullet = BulletType::SIMPLE;
+            explosion = ExplosionType::SMALL;
+            break;
+        case EnemyType::ENEMY_2:
+            health = 250;
+            celerity = 1;
+            bullet = BulletType::SIMPLE;
+            explosion = ExplosionType::MEDIUM;
+            break;
+        case EnemyType::ENEMY_3:
+            health = 450;
+            celerity = 3;
+            bullet = BulletType::LASER;
+            explosion = ExplosionType::MEDIUM;
+            break;
+    }
 
     for (auto & object: _gameObject) {
         if (object.getType() == ObjectType::UNDEFINED) {
             object.setX(x);
             object.setY(y);
-            object.setCelerity(1);
-            object.setHealth(100);
+            object.setCelerity(celerity);
+            object.setHealth(health);
             object.setType(ObjectType::ENEMY);
-            object.setExplosion(ExplosionType::SMALL);
-            object.setBullet(BulletType::SIMPLE);
-            object.setId(id);
+            object.setExplosion(explosion);
+            object.setBullet(bullet);
+            object.setEnemy(type);
             return;
         }
     }
@@ -270,12 +295,12 @@ void UDPServer::CreateEnemy(int id, float x, float y) {
     Network::Enemy enemy;
     enemy.setX(x);
     enemy.setY(y);
-    enemy.setCelerity(1.1);
-    enemy.setHealth(200);
+    enemy.setCelerity(celerity);
+    enemy.setHealth(health);
     enemy.setType(ObjectType::ENEMY);
-    enemy.setExplosion(ExplosionType::SMALL);
-    enemy.setBullet(BulletType::SIMPLE);
-    enemy.setId(id);
+    enemy.setExplosion(explosion);
+    enemy.setBullet(bullet);
+    enemy.setEnemy(type);
 
     _gameObject.push_back(enemy);
 }
@@ -290,6 +315,8 @@ void UDPServer::CreateExplosion(ExplosionType explosionType, float x, float y) {
             break;
         case ExplosionType::MEDIUM:
             CreateSound(SoundType::EXPLOSION_MEDIUM);
+            x -= 15;
+            y -= 15;
             break;
         case ExplosionType::BIG:
             CreateSound(SoundType::EXPLOSION_BIG);
@@ -397,7 +424,7 @@ void UDPServer::UpdateBullet(Network::Object & bullet) {
         if (object.getType() == ObjectType::ENEMY) {
             if (CheckCollision(object, bullet)) {
                 if (bullet.getBullet() == BulletType::ROCKET)
-                    CreateExplosion(ExplosionType::MISSILE, object.getX() - 30, object.getY());
+                    CreateExplosion(ExplosionType::MISSILE, bullet.getX() - 30, bullet.getY() - 30);
                 object.setHealth(object.getHealth() - bullet.getStrength());
                 bullet.setType(ObjectType::UNDEFINED);
                 if (object.getHealth() <= 0) {
@@ -412,8 +439,8 @@ void UDPServer::UpdateBullet(Network::Object & bullet) {
 }
 
 bool UDPServer::CheckCollision(Network::Object & object, Network::Object & bullet) {
-    return (object.getX() < bullet.getX() + 10 && object.getX() + 50 > bullet.getX()
-            && object.getY() < bullet.getY() + 10 && object.getY() + 50 > bullet.getY());
+    return (object.getX() < bullet.getX() && object.getX() + 60 > bullet.getX()
+            && object.getY() < bullet.getY() + 10 && object.getY() + 60 > bullet.getY());
 }
 
 void UDPServer::KillObject(Network::Object object) {
@@ -445,7 +472,7 @@ void UDPServer::Level_1() {
     std::cout << "Level 1" << std::endl;
 
     if (_nbEnemy == 0) {
-        CreateEnemy(0, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
     }
 }
 
@@ -453,8 +480,8 @@ void UDPServer::Level_2() {
     std::cout << "Level 2" << std::endl;
 
     if (_nbEnemy == 0) {
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
     }
 }
 
@@ -462,9 +489,9 @@ void UDPServer::Level_3() {
     std::cout << "Level 3" << std::endl;
 
     if (_nbEnemy == 0) {
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
     }
 }
 
@@ -472,10 +499,10 @@ void UDPServer::Level_4() {
     std::cout << "Level 4" << std::endl;
 
     if (_nbEnemy == 0) {
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
     }
 }
 
@@ -483,10 +510,10 @@ void UDPServer::Level_5() {
     std::cout << "Level 5" << std::endl;
 
     if (_nbEnemy == 0) {
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
-        CreateEnemy(0, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+        CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
     }
 }
