@@ -42,9 +42,9 @@ Game::Game() {
 
     // Enemy assets initialization
     for (int i = 1; i<= 3; i++) {
-        _enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))] = std::make_shared<sf::Texture>();
-        _enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i) + ".png");
-        _enemies[(EnemyType)(pow(EnemyType::ENEMY_1, i))].setTexture(*_enemyTextures[(EnemyType)(pow(EnemyType::ENEMY_1, i))]);
+        _enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))] = std::make_shared<sf::Texture>();
+        _enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i) + ".png");
+        _enemies[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))].setTexture(*_enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))]);
     };
     _enemies[EnemyType::ENEMY_1].setScale(2, 2);
     _enemies[EnemyType::ENEMY_2].setScale(2, 2);
@@ -57,9 +57,9 @@ Game::Game() {
 
     // Bullet assets initialization
     for (int i = 1; i <= 3; i++) {
-        _bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))] = std::make_shared<sf::Texture>();
-        _bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
-        _bullet[(BulletType)(pow(BulletType::SIMPLE, i))].setTexture(*_bulletTexture[(BulletType)(pow(BulletType::SIMPLE, i))]);
+        _bulletTexture[(BulletType)(pow((double)BulletType::SIMPLE, i))] = std::make_shared<sf::Texture>();
+        _bulletTexture[(BulletType)(pow((double)BulletType::SIMPLE, i))]->loadFromFile("assets/Images/Bullets/Bullet" + std::to_string(i) + ".png");
+        _bullet[(BulletType)(pow((double)BulletType::SIMPLE, i))].setTexture(*_bulletTexture[(BulletType)(pow((double)BulletType::SIMPLE, i))]);
     }
     _canShoot[Action::SIMPLE_SHOOT] = true;
     _canShoot[Action::LASER_SHOOT] = true;
@@ -70,11 +70,11 @@ Game::Game() {
     _explosionRect[ExplosionType::SMALL] = {0, 0, 32, 30};
     _explosionRect[ExplosionType::MEDIUM] = {0, 0, 32, 32};
     for (int i = 1; i <= 3; i++) {
-        _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))] = std::make_shared<sf::Texture>();
-        _explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
-        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTexture(*_explosionTexture[(ExplosionType) (pow(ExplosionType::MISSILE, i))]);
-        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setTextureRect(_explosionRect[(ExplosionType) (pow(ExplosionType::MISSILE, i))]);
-//        _explosion[(ExplosionType) (pow(ExplosionType::MISSILE, i))].setScale(4, 4);
+        _explosionTexture[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))] = std::make_shared<sf::Texture>();
+        _explosionTexture[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))]->loadFromFile("assets/Images/Explosions/Explosion" + std::to_string(i) + ".png");
+        _explosion[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))].setTexture(*_explosionTexture[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))]);
+        _explosion[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))].setTextureRect(_explosionRect[(ExplosionType) (pow((double)ExplosionType::MISSILE, i))]);
+//        _explosion[(ExplosionType) ((double)pow(ExplosionType::MISSILE, i))].setScale(4, 4);
     }
     _explosion[ExplosionType::MISSILE].setScale(6, 6);
     _explosion[ExplosionType::SMALL].setScale(2, 2);
@@ -279,7 +279,7 @@ void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network
     window->draw(_bullet[type]);
 }
 
-void Game::UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp) {
+void Game::UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & PowerUp) {
     // TODO
 }
 

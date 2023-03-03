@@ -29,7 +29,7 @@ public:
     void UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player);
     void UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy);
     void UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet);
-    void UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & powerUp);
+    void UpdatePowerUp(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & PowerUp);
     void UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::Object & explosion);
     void UpdateSound(const std::shared_ptr<Audio>& audio, Network::Object & explosion);
 

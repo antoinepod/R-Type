@@ -18,9 +18,9 @@ Audio::Audio() {
 
     // Bullet Sounds
     for (int i = 1; i <= 3; i++) {
-        _soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))] = std::make_shared<sf::SoundBuffer>();
-        _soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))]->loadFromFile("assets/Sounds/Bullet" + std::to_string(i) + ".wav");
-        _sound[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))].setBuffer(*_soundBuffer[(SoundType)(pow(SoundType::SHOOT_SIMPLE, i))]);
+        _soundBuffer[(SoundType)(pow((double)SoundType::SHOOT_SIMPLE, i))] = std::make_shared<sf::SoundBuffer>();
+        _soundBuffer[(SoundType)(pow((double)SoundType::SHOOT_SIMPLE, i))]->loadFromFile("assets/Sounds/Bullet" + std::to_string(i) + ".wav");
+        _sound[(SoundType)(pow((double)SoundType::SHOOT_SIMPLE, i))].setBuffer(*_soundBuffer[(SoundType)(pow((double)SoundType::SHOOT_SIMPLE, i))]);
     }
     _sound[SoundType::SHOOT_LASER].setVolume(150);
     _sound[SoundType::SHOOT_ROCKET].setVolume(200);
