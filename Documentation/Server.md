@@ -1,7 +1,5 @@
 EPITECH R-Type Server Protocol
 
-Each argument must be in double quotes.
-
 The commands from client to server that are implemented:
 
     NONE = 0
