@@ -53,19 +53,40 @@ Launch the R-Type server:
 
 
 ## 💻 How to play
+### Rules
+The rules are simple, you have to destroy all the enemies that are coming to you. You can shoot with your spaceship, and you can also use special weapons. You can play with friends in a multiplayer mode.
 
 ### ⌨️ Keys
 - `Arrows`: Up, Down, Left, Right
 - `Space`: Simple shoot
 - `X`: Laser shoot
 - `C`: Rocket shoot
+
 ### 🎮 Controller (DualShock 4 taken as an example)
 - `Left joystick`: Up, Down, Left, Right
 - `Cross`: Simple shoot
 - `Circle`: Laser shoot
 - `Triangle`: Rocket shoot
 
-[//]: # (contributors)
+[//]: # (Technical documentation)
+## 📚 Technical documentation
+### 📦 Dependencies
+- [SFML](https://www.sfml-dev.org/)
+- [Boost](https://www.boost.org/)
+- [CMake](https://cmake.org/)
+
+### 📁 Folder structure
+- `assets`: Contains all the assets of the game
+- `client`: Contains all the client files
+- `server`: Contains all the server files
+- `network`: Contains all the files for objects serialization and deserialization
+- `documentation`: Contains all the documentation files
+- `CMakeLists.txt`: CMake file
+
+### Class diagram
+
+### Network architecture
+
 ## 👥 Contributors
 - [Antoine Podvin](https://github.com/antoinepod)
 - [Antoine Paul](https://github.com/PAn-27)
