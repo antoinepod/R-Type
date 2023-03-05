@@ -11,7 +11,6 @@
 void Network::Seria::S_erialize(std::vector<Network::Object> & gameObject, boost::asio::streambuf *buf) {
     serialize(*buf, gameObject.size());
     for (auto& a : gameObject) {
-        std::cout << "ggggObject: " << a.getType() << " id:" << a.getId() << " pos: " << a.getX() << " " << a.getY() << std::endl;
         // TODO
         serialize(*buf, a.getGameState());
         serialize(*buf, a.getX());

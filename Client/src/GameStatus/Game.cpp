@@ -201,7 +201,6 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
     } else {
         _mutex.lock();
         for (auto &object: _objects) {
-            std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
             switch (object.getType()) {
                 case ObjectType::GAME_STATE:
                     UpdateGameState(window, object);
