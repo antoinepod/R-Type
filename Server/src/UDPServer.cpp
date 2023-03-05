@@ -8,7 +8,6 @@
 #include "UDPServer.hpp"
 
 UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8080)) {
-//    _timer = std::make_shared<boost::asio::deadline_timer>(io_context, boost::posix_time::milliseconds(16));
     srand((int)time(0));
 
     _nbEnemy = 0;
@@ -31,11 +30,8 @@ UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, 
 UDPServer::~UDPServer() = default;
 
 void UDPServer::StartReceive() {
-//    _timer->async_wait(boost::bind(&UDPServer::UpdateGame, this));
     if (_recvBuffer.size() > 0) {
         _socket.async_receive_from(boost::asio::buffer(_recvBuffer), _remoteEndpoint, boost::bind(&UDPServer::Receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)); {
-            // std::cout << _remoteEndpoint.address().to_string() << ": " << std::to_string(_recvBuffer.data()[0]) << std::endl;
-
             if (!_myMap.empty()) {
                 auto search = _myMap.find(_remoteEndpoint.address().to_string());
                 if (!_myMap.empty() && search != _myMap.end()) {
@@ -52,79 +48,99 @@ void UDPServer::StartReceive() {
                         return;
                     }
 
+                    _gameObject[playerIndex].setGameState(GameState::WIN);
+
                     switch (_recvBuffer.data()[0]) {
-                    case Action::SIMPLE_SHOOT:
-                        CreateBullet(_gameObject[playerIndex], BulletType::SIMPLE);
-                        break;
-                    case Action::LASER_SHOOT:
-                        CreateBullet(_gameObject[playerIndex], BulletType::LASER);
-                        break;
-                    case Action::ROCKET_SHOOT:
-                        CreateBullet(_gameObject[playerIndex], BulletType::ROCKET);
-                        break;
-                    case Action::LEFT:
-                        if (_gameObject[playerIndex].getX() > 0) {
-                            _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() - 4);
+                        case Action::SIMPLE_SHOOT:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                CreateBullet(_gameObject[playerIndex],
+                                             BulletType::SIMPLE);
+                            }
+                            break;
+                        case Action::LASER_SHOOT:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                CreateBullet(_gameObject[playerIndex],
+                                             BulletType::LASER);
+                            }
+                            break;
+                        case Action::ROCKET_SHOOT:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                CreateBullet(_gameObject[playerIndex],
+                                             BulletType::ROCKET);
+                            }
+                            break;
+                        case Action::LEFT:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                if (_gameObject[playerIndex].getX() > 0) {
+                                    _gameObject[playerIndex].setX(
+                                        _gameObject[playerIndex].getX() - 4);
+                                    _playerFrames[search->second] = 0;
+                                    _gameObject[playerIndex].setFrame(0);
+                                }
+                            }
+                            break;
+                        case Action::RIGHT:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                if (_gameObject[playerIndex].getX() <
+                                    1500 - 66) {
+                                    _gameObject[playerIndex].setX(
+                                        _gameObject[playerIndex].getX() + 4);
+                                    _playerFrames[search->second] = 0;
+                                    _gameObject[playerIndex].setFrame(0);
+                                }
+                            }
+                            break;
+                        case Action::UP:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                if (_gameObject[playerIndex].getY() > 0) {
+                                    _gameObject[playerIndex].setY(
+                                        _gameObject[playerIndex].getY() - 4);
+                                    _playerFrames[search->second]++;
+                                    if (_playerFrames[search->second] >= 10)
+                                        _gameObject[playerIndex].setFrame(2);
+                                    else
+                                        _gameObject[playerIndex].setFrame(1);
+                                }
+                            }
+                            break;
+                        case Action::DOWN:
+                            if (_gameObject[playerIndex].getHealth() > 0) {
+                                if (_gameObject[playerIndex].getY() <
+                                    900 - 34) {
+                                    _gameObject[playerIndex].setY(
+                                        _gameObject[playerIndex].getY() + 4);
+                                    _playerFrames[search->second]++;
+                                    if (_playerFrames[search->second] >= 10)
+                                        _gameObject[playerIndex].setFrame(-2);
+                                    else
+                                        _gameObject[playerIndex].setFrame(-1);
+                                }
+                            }
+                            break;
+                        case Action::NONE:
                             _playerFrames[search->second] = 0;
                             _gameObject[playerIndex].setFrame(0);
-                        }
-                        break;
-                    case Action::RIGHT:
-                        if (_gameObject[playerIndex].getX() < 1500 - 66) {
-                            _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() + 4);
-                            _playerFrames[search->second] = 0;
-                            _gameObject[playerIndex].setFrame(0);
-                        }
-                        break;
-                    case Action::UP:
-                        if (_gameObject[playerIndex].getY() > 0) {
-                            _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() - 4);
-                            _playerFrames[search->second]++;
-                            if (_playerFrames[search->second] >= 10)
-                                _gameObject[playerIndex].setFrame(2);
-                            else
-                                _gameObject[playerIndex].setFrame(1);
-                        }
-                        break;
-                    case Action::DOWN:
-                        if (_gameObject[playerIndex].getY() < 900 - 34) {
-                            _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() + 4);
-                            _playerFrames[search->second]++;
-                            if (_playerFrames[search->second] >= 10)
-                                _gameObject[playerIndex].setFrame(-2);
-                            else
-                                _gameObject[playerIndex].setFrame(-1);
-                        }
-                        break;
-                    case Action::NONE:
-                        _playerFrames[search->second] = 0;
-                        _gameObject[playerIndex].setFrame(0);
-                        break;
-                    case Action::LEVEL1:
-                        Level_1(_gameObject.front());
-                        break;
-                    case Action::LEVEL2:
-                        Level_2(_gameObject.front());
-                        break;
-                    case Action::LEVEL3:
-                        Level_3(_gameObject.front());
-                        break;
-                    case Action::DISCONNECT:
-                        _gameObject[playerIndex].setGameState(GameState::WAITING);
-                        std::cout << "Client " + std::to_string(search->second) + " (" + _remoteEndpoint.address().to_string() + ") disconnected" << std::endl;
-                        break;
+                            break;
+                        case Action::LEVEL1:
+                            Level_1(_gameObject.front());
+                            break;
+                        case Action::LEVEL2:
+                            Level_2(_gameObject.front());
+                            break;
+                        case Action::LEVEL3:
+                            Level_3(_gameObject.front());
+                            break;
+                        case Action::DISCONNECT:
+                            _gameObject[playerIndex].setGameState(
+                                GameState::WAITING);
+                            std::cout
+                                << "Client " + std::to_string(search->second) +
+                                   " (" +
+                                   _remoteEndpoint.address().to_string() +
+                                   ") disconnected" << std::endl;
+                            break;
                     }
                     _mutex.unlock();
-
-                    //if (_recvBuffer.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
-                    //    _myMap.erase(_remoteEndpoint.address().to_string());
-                    //    if (_myMap.size() == 0) {
-                    //        for (auto& t : _threadPool)
-                    //            t.join();
-                    //        return;
-                    //    }
-                    //}
-                    //        }
                 }
             }
         }
@@ -140,8 +156,6 @@ void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
         if (_buf.size() != 0) {
             std::string strBuf(boost::asio::buffers_begin(_buf.data()), boost::asio::buffers_end(_buf.data()));
             boost::shared_ptr<std::string> message(new std::string(strBuf));
-            //            std::cout << "" << *message << std::endl;
-            //std::cout << "Serialized data size: " << _buf.size() << "and mess length: " << message->length() << std::endl;
             _socket.async_send_to(boost::asio::buffer(*message), _remoteEndpoint, boost::bind(&UDPServer::Send, this, message, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
             _buf.consume(_buf.size());
             StartReceive();
@@ -179,12 +193,14 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
             object.setX(100);
             object.setY(420);
             object.setCelerity(4);
-            object.setHealth(200);
+            object.setHealth(300);
             object.setId(id);
             object.setType(ObjectType::PLAYER);
             object.setFrame(0);
             object.setStrength(10);
             object.setBullet(BulletType::SIMPLE);
+            object.setExplosion(ExplosionType::SMALL);
+            object.setFullHealth(300);
             _myMap.insert(std::pair<std::string, int>(ip, id));
             return;
         }
@@ -201,6 +217,8 @@ void UDPServer::CreatePlayer(const std::string& ip, int id, const std::string& n
     player.setFrame(0);
     player.setStrength(10);
     player.setBullet(BulletType::SIMPLE);
+    player.setExplosion(ExplosionType::SMALL);
+    player.setFullHealth(300);
 
     _myMap.insert(std::pair<std::string, int>(ip, id));
 
@@ -218,7 +236,7 @@ void UDPServer::CreateBullet(Network::Object sender, BulletType bulletType) {
     switch (bulletType) {
         case BulletType::SIMPLE:
             CreateSound(SoundType::SHOOT_SIMPLE);
-            strength = 10;
+            strength = 25;
             break;
         case BulletType::LASER:
             CreateSound(SoundType::SHOOT_LASER);
@@ -272,16 +290,34 @@ void UDPServer::CreateEnemy(EnemyType type, float x, float y) {
             explosion = ExplosionType::SMALL;
             break;
         case EnemyType::ENEMY_2:
-            health = 250;
+            health = 225;
             celerity = 1.5;
             bullet = BulletType::SIMPLE;
-            explosion = ExplosionType::MEDIUM;
+            explosion = ExplosionType::SMALL;
             break;
         case EnemyType::ENEMY_3:
-            health = 450;
+            health = 350;
             celerity = 2.5;
+            bullet = BulletType::SIMPLE;
+            explosion = ExplosionType::SMALL;
+            break;
+        case EnemyType::BOSS_1:
+            health = 1200;
+            celerity = 1.5;
             bullet = BulletType::LASER;
-            explosion = ExplosionType::MEDIUM;
+            explosion = ExplosionType::BIG;
+            break;
+        case EnemyType::BOSS_2:
+            health = 1600;
+            celerity = 2;
+            bullet = BulletType::ROCKET;
+            explosion = ExplosionType::BIG;
+            break;
+        case EnemyType::BOSS_3:
+            health = 2000;
+            celerity = 2.5;
+            bullet = BulletType::ROCKET;
+            explosion = ExplosionType::BIG;
             break;
     }
 
@@ -296,6 +332,7 @@ void UDPServer::CreateEnemy(EnemyType type, float x, float y) {
             object.setBullet(bullet);
             object.setEnemy(type);
             object.setFrame(rand() % 4);
+            object.setFullHealth(health);
             return;
         }
     }
@@ -310,6 +347,7 @@ void UDPServer::CreateEnemy(EnemyType type, float x, float y) {
     enemy.setBullet(bullet);
     enemy.setEnemy(type);
     enemy.setFrame(rand() % 4);
+    enemy.setFullHealth(health);
     _gameObject.push_back(enemy);
 }
 
@@ -374,18 +412,27 @@ void UDPServer::CreateSound(SoundType soundType) {
     _gameObject.push_back(sound);
 }
 
-
 //Update GameObjects
 
 void UDPServer::UpdateGame() {
+    int nbPlayer = 0;
+    int deadPlayer = 0;
+
     while (true) {
         _mutex.lock();
         for (auto &object: _gameObject) {
+            if (object.getType() < ObjectType::UNDEFINED || object.getType() > ObjectType::GAME_STATE)
+                object.setType(ObjectType::UNDEFINED);
             // Debug
             //            std::cout << "Object: " << object.getType() << " id:" << object.getId() << " pos: " << object.getX() << " " << object.getY() << std::endl;
             switch (object.getType()) {
                 case ObjectType::GAME_STATE:
                     UpdateGameState(object);
+                    break;
+                case ObjectType::PLAYER:
+                    nbPlayer++;
+                    if (object.getHealth() <= 0)
+                        deadPlayer++;
                     break;
                 case ObjectType::BULLET:
                     UpdateBullet(object);
@@ -405,51 +452,84 @@ void UDPServer::UpdateGame() {
                     break;
             }
         }
+        if (nbPlayer == deadPlayer && _gameObject.size() > 1)
+            _gameObject.front().setGameState(GameState::LOOSE);
         _mutex.unlock();
+        nbPlayer = 0;
+        deadPlayer = 0;
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
 
 void UDPServer::UpdateEnemy(Network::Object & enemy) {
-    if (enemy.getX() > 1400)
+    float spawn, x_min, x_max, y_min, y_max;
+    if (enemy.getEnemy() >= EnemyType::ENEMY_1 && enemy.getEnemy() <= EnemyType::ENEMY_3) {
+        spawn = 1400;
+        x_min = 500;
+        x_max = spawn - 20;
+        y_min = 50;
+        y_max = 800;
+    } else {
+        spawn = 1250;
+        x_min = 650;
+        x_max = spawn - 20;
+        y_min = 100;
+        y_max = 650;
+    }
+
+    if (enemy.getX() > spawn)
         enemy.setX(enemy.getX() - enemy.getCelerity());
     else if (rand() % 200 == 0)
         enemy.setFrame(rand() % 4);
     else {
         switch (enemy.getFrame()) {
             case 0:
-                if (enemy.getY() <= 800)
+                if (enemy.getY() <= y_max)
                     enemy.setY(enemy.getY() + enemy.getCelerity());
                 else
                     enemy.setFrame(rand() % 4);
                 break;
             case 1:
-                if (enemy.getY() >= 50)
+                if (enemy.getY() >= y_min)
                     enemy.setY(enemy.getY() - enemy.getCelerity());
                 else
                     enemy.setFrame(rand() % 4);
                 break;
             case 2:
-                if (enemy.getX() < 1350)
+                if (enemy.getX() < x_max)
                     enemy.setX(enemy.getX() + enemy.getCelerity());
                 else
                     enemy.setFrame(rand() % 4);
                 break;
             case 3:
-                if (enemy.getX() >= 600)
+                if (enemy.getX() >= x_min)
                     enemy.setX(enemy.getX() - enemy.getCelerity());
                 else
                     enemy.setFrame(rand() % 4);
                 break;
         }
     }
+
+    int prob = (1 / sqrt(enemy.getEnemy())) * 300;
+    if (rand() % prob == 0) {
+        if (enemy.getEnemy() == EnemyType::BOSS_3) {
+            if (rand() % 2 == 0)
+                CreateBullet(enemy, BulletType::LASER);
+            else
+                CreateBullet(enemy, BulletType::ROCKET);
+        }
+        else
+            CreateBullet(enemy, enemy.getBullet());
+    }
 }
 
 void UDPServer::UpdateBullet(Network::Object & bullet) {
     if (bullet.getX() > 0 && bullet.getX() < 1500)
         bullet.setX(bullet.getX() + bullet.getCelerity());
-    else
+    else {
         bullet.setType(ObjectType::UNDEFINED);
+        return;
+    }
 
     for (auto & object: _gameObject) {
         if (object.getType() == ObjectType::ENEMY) {
@@ -460,9 +540,20 @@ void UDPServer::UpdateBullet(Network::Object & bullet) {
                 bullet.setType(ObjectType::UNDEFINED);
                 if (object.getHealth() <= 0) {
                     CreateExplosion(object.getExplosion(), object.getX(), object.getY());
-                    if (object.getType() == ObjectType::ENEMY)
-                        _nbEnemy--;
+                    _nbEnemy--;
                     object.setType(ObjectType::UNDEFINED);
+                }
+            }
+        } if (object.getType() == ObjectType::PLAYER && object.getHealth() > 0) {
+            if (CheckCollision(object, bullet) && bullet.getCelerity() < 0) {
+                if (bullet.getBullet() == BulletType::ROCKET)
+                    CreateExplosion(ExplosionType::MISSILE, bullet.getX() - 10, bullet.getY() - 20);
+                object.setHealth(object.getHealth() - bullet.getStrength());
+                bullet.setType(ObjectType::UNDEFINED);
+                if (object.getHealth() <= 0) {
+                    CreateExplosion(object.getExplosion(), object.getX(), object.getY());
+                    object.setX(20);
+                    object.setY(20 * object.getId());
                 }
             }
         }
@@ -470,8 +561,35 @@ void UDPServer::UpdateBullet(Network::Object & bullet) {
 }
 
 bool UDPServer::CheckCollision(Network::Object & object, Network::Object & bullet) {
-    return (object.getX() < bullet.getX() && object.getX() + 60 > bullet.getX()
-            && object.getY() < bullet.getY() + 10 && object.getY() + 60 > bullet.getY());
+    if (object.getType() == ObjectType::PLAYER) {
+        return (object.getX() < bullet.getX() &&
+                object.getX() + 30 > bullet.getX()
+                && object.getY() < bullet.getY() + 10 &&
+                object.getY() + 30 > bullet.getY());
+    } else if (object.getType() == ObjectType::ENEMY) {
+        if (object.getEnemy() >= EnemyType::ENEMY_1 && object.getEnemy() <= EnemyType::ENEMY_3) {
+            return (object.getX() < bullet.getX() &&
+                    object.getX() + 60 > bullet.getX()
+                    && object.getY() < bullet.getY() + 10 &&
+                    object.getY() + 60 > bullet.getY());
+        } else if (object.getEnemy() == EnemyType::BOSS_1) {
+            return (object.getX() < bullet.getX() &&
+                    object.getX() + 180 > bullet.getX()
+                    && object.getY() < bullet.getY() &&
+                    object.getY() + 180 > bullet.getY());
+        } else if (object.getEnemy() == EnemyType::BOSS_2) {
+            return (object.getX() < bullet.getX() &&
+                    object.getX() + 235 > bullet.getX()
+                    && object.getY() < bullet.getY() &&
+                    object.getY() + 235 > bullet.getY());
+        } else {
+            return (object.getX() < bullet.getX() &&
+                    object.getX() + 250 > bullet.getX()
+                    && object.getY() < bullet.getY() &&
+                    object.getY() + 250 > bullet.getY());
+        }
+    } else
+        return false;
 }
 
 void UDPServer::KillObject(Network::Object object) {
@@ -499,34 +617,40 @@ void UDPServer::UpdateSound(Network::Object & sound) {
         sound.setType(ObjectType::UNDEFINED);
 }
 
+
+// Level and waves management
+
 void UDPServer::Level_1(Network::Object & gameState) {
     std::cout << "Level 1" << std::endl;
 
-    if (gameState.getGameState() != GameState::LEVEL_2 && gameState.getGameState() != GameState::LEVEL_3)
+    for (auto & object : _gameObject) {
+        if (object.getType() == ObjectType::PLAYER) {
+            object.setHealth(object.getFullHealth());
+            object.setX(100);
+            object.setY(420);
+        }
+    }
+    if (gameState.getGameState() == GameState::WAITING || gameState.getGameState() == GameState::WIN || gameState.getGameState() == GameState::LOOSE) {
+        gameState.setId(0);
         gameState.setGameState(GameState::LEVEL_1);
+    }
 }
 
 void UDPServer::Level_2(Network::Object & gameState) {
-    gameState.setGameState(GameState::LEVEL_2);
     std::cout << "Level 2" << std::endl;
 
-    if (_nbEnemy == 0) {
-        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-        CreateBullet(_gameObject.back(), BulletType::ROCKET);
+    if (gameState.getGameState() == GameState::WAITING || gameState.getGameState() == GameState::WIN || gameState.getGameState() == GameState::LOOSE) {
+        gameState.setId(0);
+        gameState.setGameState(GameState::LEVEL_2);
     }
 }
 
 void UDPServer::Level_3(Network::Object & gameState) {
-    gameState.setGameState(GameState::LEVEL_3);
     std::cout << "Level 3" << std::endl;
 
-    if (_nbEnemy == 0) {
-        CreateEnemy(EnemyType::ENEMY_1, 1550, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_1, 1550, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_2, 1850, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_2, 2050, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_3, 2250, rand() % 800 + 50);
+    if (gameState.getGameState() == GameState::WAITING || gameState.getGameState() == GameState::WIN || gameState.getGameState() == GameState::LOOSE) {
+        gameState.setId(0);
+        gameState.setGameState(GameState::LEVEL_3);
     }
 }
 
@@ -554,22 +678,27 @@ void UDPServer::UpdateLevel_1(Network::Object & gameState) {
             case 0:
                 gameState.setId(1);
                 for (int i = 0; i < 3; i++)
-                    CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                    CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
                 break;
             case 1:
                 gameState.setId(2);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
                 break;
             case 2:
                 gameState.setId(3);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 700 + 50);
                 break;
             case 3:
-                gameState.setGameState(GameState::LEVEL_2);
+                gameState.setId(4);
+                CreateEnemy(EnemyType::BOSS_1, 1350, rand() % 700 + 50);
+                break;
+            case 4:
                 gameState.setId(0);
+                gameState.setGameState(GameState::LEVEL_2);
+                break;
             default:
                 break;
         }
@@ -583,28 +712,33 @@ void UDPServer::UpdateLevel_2(Network::Object & gameState) {
         switch (wave) {
             case 0:
                 gameState.setId(1);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
                 break;
             case 1:
                 gameState.setId(2);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
                 break;
             case 2:
                 gameState.setId(3);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 700 + 50);
                 break;
             case 3:
-                gameState.setGameState(GameState::LEVEL_3);
+                gameState.setId(4);
+                CreateEnemy(EnemyType::BOSS_2, 1350, rand() % 700 + 50);
+                break;
+            case 4:
                 gameState.setId(0);
+                gameState.setGameState(GameState::LEVEL_3);
+                break;
             default:
                 break;
         }
@@ -618,28 +752,33 @@ void UDPServer::UpdateLevel_3(Network::Object & gameState) {
         switch (wave) {
             case 0:
                 gameState.setId(1);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
                 break;
             case 1:
                 gameState.setId(2);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
                 break;
             case 2:
                 gameState.setId(3);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
-                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 700 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 700 + 50);
                 break;
             case 3:
-                gameState.setGameState(GameState::LEVEL_3);
+                gameState.setId(4);
+                CreateEnemy(EnemyType::BOSS_3, 1350, rand() % 700 + 50);
+                break;
+            case 4:
                 gameState.setId(0);
+                gameState.setGameState(GameState::WIN);
+                break;
             default:
                 break;
         }

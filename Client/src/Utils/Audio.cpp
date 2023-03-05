@@ -26,7 +26,7 @@ Audio::Audio() {
     _sound[SoundType::SHOOT_ROCKET].setVolume(200);
 
     // Explosion Sounds
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= 2; i++) {
         _soundBuffer[(SoundType)(8 * pow(2, i))] = std::make_shared<sf::SoundBuffer>();
         _soundBuffer[(SoundType)(8 * pow(2, i))]->loadFromFile("assets/Sounds/Explosion" + std::to_string(i) + ".wav");
         _sound[(SoundType)(8 * pow(2, i))].setBuffer(*_soundBuffer[(SoundType)(8 * pow(2, i))]);

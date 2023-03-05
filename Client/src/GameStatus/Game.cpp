@@ -41,7 +41,7 @@ Game::Game() {
     _playerName.setPosition(90, 400);
 
     // Enemy assets initialization
-    for (int i = 1; i<= 3; i++) {
+    for (int i = 1; i<= 6; i++) {
         _enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))] = std::make_shared<sf::Texture>();
         _enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))]->loadFromFile("assets/Images/Enemies/Enemy" + std::to_string(i) + ".png");
         _enemies[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))].setTexture(*_enemyTextures[(EnemyType)(pow((double)EnemyType::ENEMY_1, i))]);
@@ -49,6 +49,9 @@ Game::Game() {
     _enemies[EnemyType::ENEMY_1].setScale(2, 2);
     _enemies[EnemyType::ENEMY_2].setScale(2, 2);
     _enemies[EnemyType::ENEMY_3].setScale(1.2, 1.2);
+    _enemies[EnemyType::BOSS_1].setScale(4, 4);
+    _enemies[EnemyType::BOSS_2].setScale(3, 3);
+    _enemies[EnemyType::BOSS_3].setScale(4, 4);
     // HealthBar assets initialization
     _healthBarTexture.loadFromFile("assets/Images/HealthBar.png");
     _healthBar.setTexture(_healthBarTexture);
@@ -198,7 +201,6 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
     } else {
         _mutex.lock();
         for (auto &object: _objects) {
-            std::cout << "Object type: " << object.getType() << " position: " << object.getX() << " " << object.getY() << std::endl;
             switch (object.getType()) {
                 case ObjectType::GAME_STATE:
                     UpdateGameState(window, object);
@@ -242,15 +244,15 @@ void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Netw
             break;
         case GameState::LEVEL_1:
             _gameStateText.setString("Level 1");
-            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            SetHelpText(gameState.getId());
             break;
         case GameState::LEVEL_2:
             _gameStateText.setString("Level 2");
-            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            SetHelpText(gameState.getId());
             break;
         case GameState::LEVEL_3:
             _gameStateText.setString("Level 3");
-            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            SetHelpText(gameState.getId());
             break;
         case GameState::WIN:
             _gameStateText.setFillColor(sf::Color::Green);
@@ -268,6 +270,13 @@ void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Netw
     Utils::HorizontalCenterText(_helpText, 150);
     window->draw(_gameStateText);
     window->draw(_helpText);
+}
+
+void Game::SetHelpText(int wave) {
+    if (wave == 4)
+        _helpText.setString("BOSS");
+    else
+        _helpText.setString("Wave " + std::to_string(wave) + "/3");
 }
 
 void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & player) {
@@ -288,8 +297,14 @@ void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network
     if (player.getId() == _playerId)
         _playerName.setFillColor(sf::Color::Cyan);
 
+    if (player.getHealth() > 0)
+        window->draw(_spaceShip);
+    else {
+        _playerName.setString("Player " + std::to_string(player.getId()) + " is dead");
+        _playerName.setFillColor(sf::Color::Red);
+    }
     window->draw(_playerName);
-    window->draw(_spaceShip);
+
 }
 
 void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & enemy) {

@@ -31,6 +31,7 @@ namespace Network {
         void setBullet(BulletType bullet) override;
         void setSound(SoundType sound) override;
         void setEnemy(EnemyType enemyType) override;
+        void setFullHealth(int fullHealth) override;
 
         // Getters
         GameState getGameState() override;
@@ -48,6 +49,7 @@ namespace Network {
         BulletType getBullet() override;
         SoundType getSound() override;
         EnemyType getEnemy() override;
+        int getFullHealth() override;
 
     private:
         GameState _gameState;
@@ -65,5 +67,6 @@ namespace Network {
         BulletType _bullet;
         SoundType _sound;
         EnemyType _enemyType;
+        int _fullHealth;
     };
 }

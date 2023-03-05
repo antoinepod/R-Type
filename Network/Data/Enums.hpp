@@ -95,5 +95,8 @@ enum GameState {
 enum EnemyType {
     ENEMY_1 = 2,
     ENEMY_2 = 4,
-    ENEMY_3 = 8
+    ENEMY_3 = 8,
+    BOSS_1 = 16,
+    BOSS_2 = 32,
+    BOSS_3 = 64
 };
