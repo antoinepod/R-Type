@@ -10,6 +10,14 @@ First, you need to clone the repo, and its git submodules:
 ```sh
 git clone https://github.com/EpitechPromo2025/B-CPP-500-LIL-5-2-rtype-william.mallevays.git --recurse-submodules
 ```
+or
+```sh
+git clone https://github.com/EpitechPromo2025/B-CPP-500-LIL-5-2-rtype-william.mallevays.git
+```
+```sh
+cd B-CPP-500-LIL-5-2-rtype-william.mallevays && git submodule update --init --recursive
+```
+
 
 <br/>
 
@@ -55,9 +63,11 @@ Launch the R-Type server:
 - `Arrows`: Up, Down, Left, Right
 - `Space`: Simple shoot
 - `X`: Laser shoot
-- `C`: Rocket shoot 
+- `C`: Rocket shoot
+- `Escape`: Go back
 ### 🎮 Controller (DualShock 4 taken as an example)
 - `Left joystick`: Up, Down, Left, Right
 - `Cross`: Simple shoot
-- `Circle`: Laser shoot
-- `Triangle`: Rocket shoot 
+- `Square`: Laser shoot
+- `Triangle`: Rocket shoot
+- `Circle`: Go back

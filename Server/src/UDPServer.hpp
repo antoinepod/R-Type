@@ -42,11 +42,12 @@ public:
     bool CheckCollision(Network::Object & object, Network::Object & bullet);
     void KillObject(Network::Object object);
 
-    void Level_1();
-    void Level_2();
-    void Level_3();
-    void Level_4();
-    void Level_5();
+    void Level_1(Network::Object & gameState);
+    void Level_2(Network::Object & gameState);
+    void Level_3(Network::Object & gameState);
+    void UpdateLevel_1(Network::Object & gameState);
+    void UpdateLevel_2(Network::Object & gameState);
+    void UpdateLevel_3(Network::Object & gameState);
 
 private:
     std::vector<Network::Object> _gameObject;
