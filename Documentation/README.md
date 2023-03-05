@@ -124,10 +124,6 @@ void UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::
     _explosionRect[ExplosionType::MEDIUM] = {0, 0, 32, 32};
 ```
 
-
-
-### Network architecture
-
 ## 👥 Contributors
 - [Antoine Podvin](https://github.com/antoinepod)
 - [Antoine Paul](https://github.com/PAn-27)
