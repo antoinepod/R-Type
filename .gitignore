@@ -7,3 +7,5 @@ test.cpp
 /.vs
 /Client.cpp
 Makefile
+CMakeSettings.json
+vcpkg_installed/
