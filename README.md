@@ -64,3 +64,10 @@ Launch the R-Type server:
 - `Cross`: Simple shoot
 - `Circle`: Laser shoot
 - `Triangle`: Rocket shoot 
+
+[//]: # (contributors)
+## 👥 Contributors
+- [Antoine Podvin](https://github.com/antoinepod)
+- [Antoine Paul](https://github.com/PAn-27)
+- [Marine Poteau](https://github.com/mpoteau)
+- [William Mallevays](https://github.com/2oubleV)
