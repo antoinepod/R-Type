@@ -18,6 +18,9 @@ The commands from client to server that are implemented:
 Those commands are serialized and sent as bytes to the server.
 (thanks to Network/Serialization cpp and hpp files)
 
+You can find all the actions send and the Network/Data folder.
+
+
 Server-Replies
 
 The server replies with an serialized std::vector<IObject> (see Network/Objects folder)
