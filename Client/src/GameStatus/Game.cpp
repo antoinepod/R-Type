@@ -262,7 +262,7 @@ void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Netw
         case GameState::LOOSE:
             _gameStateText.setFillColor(sf::Color::Red);
             _gameStateText.setString("You loose...");
-            _helpText.setString("Press 'F1' 'F2' or 'F3' key to restart Level 1 2 or 3");
+            _helpText.setString("Press 'F1' key to resume your progression");
             break;
     }
 
