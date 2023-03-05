@@ -83,7 +83,48 @@ The rules are simple, you have to destroy all the enemies that are coming to you
 - `documentation`: Contains all the documentation files
 - `CMakeLists.txt`: CMake file
 
-### Class diagram
+### The game Engine
+#### Class diagram
+[//]: # (![Class diagram]&#40;./ClassDiagram.pdf&#41;)
+![ClassDiagram](ClassDiagram.png)
+
+#### Add an entity
+
+- Declare the entity in the `networks/objects` folder
+- Inherit it from `Objects` like the example below:
+```cpp
+    namespace Network {
+        class Bullet : public Object {
+        public:
+            Bullet();
+            ~Bullet() override;
+        };
+}
+```
+- Include your Entity in Deserialization.hpp
+```cpp
+    #include "YourObject.hpp"
+```
+- Declare your entity and a function to update it in Game.hpp, example:
+```cpp
+void UpdateExplosion(const std::shared_ptr<sf::RenderWindow> & window, Network::Object & explosion);
+```
+- Set its assets in Game.cpp, example:
+```cpp
+    std::map<ExplosionType, sf::Sprite> _explosion;
+    std::map<ExplosionType ,std::shared_ptr<sf::Texture>> _explosionTexture;
+    std::map<ExplosionType ,sf::IntRect> _explosionRect;
+    int _explosionTmp;
+```
+- Initialize the entity in the `Client/src/GameStatus/Game.cpp` file and define its behavior
+```cpp
+// Explosion assets initialization example
+    _explosionRect[ExplosionType::MISSILE] = {0, 0, 16, 14};
+    _explosionRect[ExplosionType::SMALL] = {0, 0, 32, 30};
+    _explosionRect[ExplosionType::MEDIUM] = {0, 0, 32, 32};
+```
+
+
 
 ### Network architecture
 
