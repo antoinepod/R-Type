@@ -42,4 +42,5 @@ public:
 
     virtual GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) = 0;
     virtual void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) = 0;
+    virtual void Disconnect() = 0;
 };

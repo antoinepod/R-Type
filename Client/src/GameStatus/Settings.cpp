@@ -105,3 +105,6 @@ void Settings::Display(const std::shared_ptr<sf::RenderWindow>& window, const st
         window->draw(_texts[i]);
     }
 }
+
+void Settings::Disconnect() {
+}

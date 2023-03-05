@@ -20,6 +20,7 @@ public:
     // SFML functions
     GameStatus ManageInput(sf::Event event, std::string &serverIp, Inputs &inputs) override;
     void Display(const std::shared_ptr<sf::RenderWindow>& window, const std::shared_ptr<Audio>& audio) override;
+    void Disconnect() override;
 
     // Server connection
     void ConnectToServer();
@@ -36,6 +37,7 @@ public:
     void UpdateData(std::vector<Network::Object> objects);
         // Timers
     void ShootTimer(Action action);
+
 
     std::atomic_bool isRunning;
 
