@@ -35,7 +35,8 @@ enum Action {
     ROCKET_SHOOT = 128,
     LEVEL1 = 256,
     LEVEL2 = 512,
-    LEVEL3 = 1024
+    LEVEL3 = 1024,
+    DISCONNECT = 2048
 };
 
 enum Events {

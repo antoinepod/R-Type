@@ -109,6 +109,10 @@ void UDPServer::StartReceive() {
                     case Action::LEVEL3:
                         Level_3(_gameObject.front());
                         break;
+                    case Action::DISCONNECT:
+                        _gameObject[playerIndex].setGameState(GameState::WAITING);
+                        std::cout << "Client " + std::to_string(search->second) + " (" + _remoteEndpoint.address().to_string() + ") disconnected" << std::endl;
+                        break;
                     }
                     _mutex.unlock();
 
@@ -543,14 +547,14 @@ void UDPServer::UpdateGameState(Network::Object &gameState) {
 }
 
 void UDPServer::UpdateLevel_1(Network::Object & gameState) {
-    std::cout << "Update Level 1" << std::endl;
     int wave = gameState.getId();
 
     if (_nbEnemy == 0) {
         switch (wave) {
             case 0:
                 gameState.setId(1);
-                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                for (int i = 0; i < 3; i++)
+                    CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
                 break;
             case 1:
                 gameState.setId(2);
@@ -573,7 +577,6 @@ void UDPServer::UpdateLevel_1(Network::Object & gameState) {
 }
 
 void UDPServer::UpdateLevel_2(Network::Object & gameState) {
-    std::cout << "Update Level 2" << std::endl;
     int wave = gameState.getId();
 
     if (_nbEnemy == 0) {
@@ -609,14 +612,36 @@ void UDPServer::UpdateLevel_2(Network::Object & gameState) {
 }
 
 void UDPServer::UpdateLevel_3(Network::Object & gameState) {
-    gameState.setGameState(GameState::LEVEL_3);
-    std::cout << "Update Level 3" << std::endl;
+    int wave = gameState.getId();
 
     if (_nbEnemy == 0) {
-        CreateEnemy(EnemyType::ENEMY_1, 1550, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_1, 1550, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_2, 1850, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_2, 2050, rand() % 800 + 50);
-        CreateEnemy(EnemyType::ENEMY_3, 2250, rand() % 800 + 50);
+        switch (wave) {
+            case 0:
+                gameState.setId(1);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                break;
+            case 1:
+                gameState.setId(2);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                break;
+            case 2:
+                gameState.setId(3);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_1, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_2, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+                CreateEnemy(EnemyType::ENEMY_3, 1350, rand() % 800 + 50);
+                break;
+            case 3:
+                gameState.setGameState(GameState::LEVEL_3);
+                gameState.setId(0);
+            default:
+                break;
+        }
     }
 }

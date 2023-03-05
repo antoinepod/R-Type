@@ -40,6 +40,7 @@ int main()
         UDPServer udpServer(io_context);
         TCPServer tcpServer(io_context, 8081, udpServer);
         std::thread t([&io_context] { io_context.run(); });
+        std::cout << "Server is running, waiting for clients..." << std::endl;
         while (true) {
             //    std::cout << "IS OK" << std::endl;
             //    sleep(5);
