@@ -112,3 +112,6 @@ GameStatus Menu::GetSelectedButton() {
     }
     return GameStatus::MENU;
 }
+
+void Menu::Disconnect() {
+}

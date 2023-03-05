@@ -97,6 +97,13 @@ Game::~Game() {
     }
 }
 
+void Game::Disconnect() {
+    if (_playerId != 0) {
+        boost::array<unsigned int, 1> buf = { Action::DISCONNECT };
+        _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
+    }
+}
+
 void Game::ShootTimer(Action action) {
     switch (action) {
         case Action::SIMPLE_SHOOT:
@@ -116,7 +123,8 @@ void Game::ShootTimer(Action action) {
 
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) ||
-    (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))) {
+        (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))) {
+        Disconnect();
         isRunning = false;
         return GameStatus::MENU;
     }
