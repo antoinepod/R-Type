@@ -1,5 +1,8 @@
 # 👾 R-Type
 
+## 📝 Description
+R-Type is a game where you have to destroy all the enemies that are coming to you. You can shoot with your spaceship, and you can also use special weapons. You can play with friends in a multiplayer mode.
+
 ## 📖 Documentation
 You can see our documentation in the documentation folder. Use vscode to open a better view, on a live server.
 
