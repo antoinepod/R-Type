@@ -27,7 +27,7 @@ Game::Game() {
     _helpText.setFont(_arcadeFont);
     _helpText.setCharacterSize(20);
     _helpText.setFillColor(sf::Color::White);
-    _helpText.setPosition(300, 200);
+    _helpText.setPosition(300, 150);
 
     // Player assets initialization
     _spaceShipTexture.loadFromFile("assets/Images/spaceShip.png");
@@ -117,9 +117,18 @@ void Game::ShootTimer(Action action) {
 GameStatus Game::ManageInput(sf::Event event, std::string& serverIp, Inputs &inputs) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) ||
     (event.type == sf::Event::JoystickButtonPressed && sf::Joystick::isButtonPressed(0, 1))) {
+        if (_playerId != 0) {
+            boost::array<unsigned int, 1> buf = { Action::DISCONNECT };
+            _socket->send_to(boost::asio::buffer(buf), _serverEndpoint);
+        }
         isRunning = false;
         return GameStatus::MENU;
     }
+
+//    if (event.type == sf::Event::Closed) {
+//        std::cout << "azerty close" << std::endl;
+//        return GameStatus::CLOSE;
+//    }
 
     if (!isRunning) {
         _serverIp = serverIp;
@@ -230,7 +239,7 @@ void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Netw
     switch (gameState.getGameState()) {
         case GameState::WAITING:
             _gameStateText.setString("Waiting for other players...");
-            _helpText.setString("Press 'Enter' to start the game or F1, F2, F3 to start Level 1, 2, 3");
+            _helpText.setString("Press 'F1' 'F2' or 'F3' key to start Level 1 2 or 3");
             break;
         case GameState::LEVEL_1:
             _gameStateText.setString("Level 1");
@@ -247,17 +256,17 @@ void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Netw
         case GameState::WIN:
             _gameStateText.setFillColor(sf::Color::Green);
             _gameStateText.setString("You win!");
-            _helpText.setString("Press '1' to start Level 1, '2' to start Level 2, '3' to start Level 3");
+            _helpText.setString("Press 'F1' 'F2' or 'F3' key to restart Level 1 2 or 3");
             break;
         case GameState::LOOSE:
             _gameStateText.setFillColor(sf::Color::Red);
             _gameStateText.setString("You loose...");
-            _helpText.setString("Press '1' to start Level 1, '2' to start Level 2, '3' to start Level 3");
+            _helpText.setString("Press 'F1' 'F2' or 'F3' key to restart Level 1 2 or 3");
             break;
     }
 
     Utils::HorizontalCenterText(_gameStateText, 75);
-    Utils::HorizontalCenterText(_helpText, 200);
+    Utils::HorizontalCenterText(_helpText, 150);
     window->draw(_gameStateText);
     window->draw(_helpText);
 }
@@ -269,10 +278,16 @@ void Game::UpdatePlayer(const std::shared_ptr<sf::RenderWindow>& window, Network
     _spaceShip.setTextureRect(_spaceShipRect);
     _spaceShip.setPosition(player.getX(), player.getY());
 
-    _playerName.setString("Player " + std::to_string(player.getId()));
+    if (player.getGameState() == GameState::WAITING) {
+        _playerName.setString("Offline");
+        _playerName.setFillColor(sf::Color::Red);
+    } else {
+        _playerName.setString("Player " + std::to_string(player.getId()));
+        _playerName.setFillColor(sf::Color::White);
+    }
     _playerName.setPosition(player.getX() - 10, player.getY() - 20);
     if (player.getId() == _playerId)
-        _playerName.setFillColor(sf::Color::White);
+        _playerName.setFillColor(sf::Color::Cyan);
 
     window->draw(_playerName);
     window->draw(_spaceShip);
@@ -347,7 +362,7 @@ void Game::ConnectToServer() {
             throw boost::system::system_error(error);
         }
         std::cout << "Response from server: " << response << std::endl;
-        _playerId = response[0] - 88;
+        _playerId = response[12] - 48;
         std::cout << "Player ID = " << _playerId << std::endl;
         boost::asio::write(socket, boost::asio::buffer(request, sizeof(request)));
         _drawError = false;

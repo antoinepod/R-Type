@@ -52,6 +52,8 @@ void UDPServer::StartReceive() {
                         return;
                     }
 
+                    _gameObject[playerIndex].setGameState(GameState::WIN);
+
                     switch (_recvBuffer.data()[0]) {
                     case Action::SIMPLE_SHOOT:
                         CreateBullet(_gameObject[playerIndex], BulletType::SIMPLE);
