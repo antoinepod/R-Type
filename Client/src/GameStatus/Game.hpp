@@ -35,10 +35,11 @@ public:
     void UpdateSound(const std::shared_ptr<Audio>& audio, Network::Object & explosion);
 
     void UpdateData(std::vector<Network::Object> objects);
-        // Timers
+
+    // Timers
     void ShootTimer(Action action);
 
-
+    void SetHelpText(int wave);
     std::atomic_bool isRunning;
 
 private:

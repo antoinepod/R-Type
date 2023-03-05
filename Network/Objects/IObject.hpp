@@ -30,6 +30,7 @@ namespace Network {
         virtual void setBullet(BulletType bullet) = 0;
         virtual void setSound(SoundType sound) = 0;
         virtual void setEnemy(EnemyType enemyType) = 0;
+        virtual void setFullHealth(int fullHealth) = 0;
 
         // Getters
         virtual GameState getGameState() = 0;
@@ -47,5 +48,6 @@ namespace Network {
         virtual BulletType getBullet() = 0;
         virtual SoundType getSound() = 0;
         virtual EnemyType getEnemy() = 0;
+        virtual int getFullHealth() = 0;
     };
 }

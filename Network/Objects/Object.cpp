@@ -24,6 +24,7 @@ namespace Network {
         _bullet = (BulletType)0;
         _sound = (SoundType)0;
         _gameState = (GameState)0;
+        _fullHealth = 0;
     };
 
     Object::~Object() = default;
@@ -74,6 +75,9 @@ namespace Network {
     void Object::setEnemy(EnemyType enemyType) {
         _enemyType = enemyType;
     }
+    void Object::setFullHealth(int fullHealth) {
+        _fullHealth = fullHealth;
+    }
 
     // Getters
     GameState Object::getGameState() {
@@ -120,5 +124,8 @@ namespace Network {
     }
     EnemyType Object::getEnemy() {
         return _enemyType;
+    }
+    int Object::getFullHealth() {
+        return _fullHealth;
     }
 }

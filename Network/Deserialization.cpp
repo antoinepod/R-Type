@@ -15,7 +15,6 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
     std::vector<Network::Object> gameObjectHolder;
 
     size = getMeta(buffer, pos);
-    //std::cout << "the buffer size is: " << size << std::endl;
     for (int i = 0; i < size; i++) {
         gameObject.setGameState((GameState)getIntValue(buffer, pos));
         gameObject.setX(getFloatValue(buffer, pos));
@@ -25,12 +24,12 @@ std::vector<Network::Object> Network::Deseria::D_eserialize(boost::array<char, 1
         gameObject.setStrength(getIntValue(buffer, pos));
         gameObject.setId(getIntValue(buffer, pos));
         gameObject.setType((ObjectType)getIntValue(buffer, pos));
-//            gameObject.setName(getStringValue(buffer, pos));
         gameObject.setFrame(getIntValue(buffer, pos));
         gameObject.setExplosion((ExplosionType)getIntValue(buffer, pos));
         gameObject.setBullet((BulletType)getIntValue(buffer, pos));
         gameObject.setSound((SoundType)getIntValue(buffer, pos));
         gameObject.setEnemy((EnemyType)getIntValue(buffer, pos));
+        gameObject.setFullHealth(getIntValue(buffer, pos));
         gameObjectHolder.push_back(gameObject);
     }
     return gameObjectHolder;
