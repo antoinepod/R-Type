@@ -1,0 +1,11 @@
+{
+  "name": "r-type",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "sfml",
+    "boost-array",
+    "boost-asio",
+    "boost-bind",
+    "boost-smart-ptr"
+  ]
+}
