@@ -25,124 +25,129 @@ UDPServer::UDPServer(boost::asio::io_context& io_context) : _socket(io_context, 
     _playerFrames[2] = 0;
     _playerFrames[3] = 0;
     _playerFrames[4] = 0;
+    _myMap = {};
 }
 
 UDPServer::~UDPServer() = default;
 
 void UDPServer::StartReceive() {
 //    _timer->async_wait(boost::bind(&UDPServer::UpdateGame, this));
-    _socket.async_receive_from(boost::asio::buffer(_recvBuffer), _remoteEndpoint,boost::bind(&UDPServer::Receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-    // Debug
-    // std::cout << _remoteEndpoint.address().to_string() << ": " << std::to_string(_recvBuffer.data()[0]) << std::endl;
+    if (_recvBuffer.size() > 0) {
+        _socket.async_receive_from(boost::asio::buffer(_recvBuffer), _remoteEndpoint, boost::bind(&UDPServer::Receive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)); {
+            // std::cout << _remoteEndpoint.address().to_string() << ": " << std::to_string(_recvBuffer.data()[0]) << std::endl;
 
-    auto search = _myMap.find(_remoteEndpoint.address().to_string());
-    if (!_myMap.empty() && search != _myMap.end()) {
-        // Debug
-        // for (auto &i: _myMap)
-        //     std::cout << i.first << "  " << i.second << std::endl;
+            if (!_myMap.empty()) {
+                auto search = _myMap.find(_remoteEndpoint.address().to_string());
+                if (!_myMap.empty() && search != _myMap.end()) {
+                    // Debug
+                    // for (auto &i: _myMap)
+                    //     std::cout << i.first << "  " << i.second << std::endl;
 
-        _mutex.lock();
+                    _mutex.lock();
 
-        int playerIndex = FindPlayer(search->second);
+                    int playerIndex = FindPlayer(search->second);
 
-        if (playerIndex == -1) {
-            _mutex.unlock();
-            return;
+                    if (playerIndex == -1) {
+                        _mutex.unlock();
+                        return;
+                    }
+
+                    switch (_recvBuffer.data()[0]) {
+                    case Action::SIMPLE_SHOOT:
+                        CreateBullet(_gameObject[playerIndex], BulletType::SIMPLE);
+                        break;
+                    case Action::LASER_SHOOT:
+                        CreateBullet(_gameObject[playerIndex], BulletType::LASER);
+                        break;
+                    case Action::ROCKET_SHOOT:
+                        CreateBullet(_gameObject[playerIndex], BulletType::ROCKET);
+                        break;
+                    case Action::LEFT:
+                        if (_gameObject[playerIndex].getX() > 0) {
+                            _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() - 4);
+                            _playerFrames[search->second] = 0;
+                            _gameObject[playerIndex].setFrame(0);
+                        }
+                        break;
+                    case Action::RIGHT:
+                        if (_gameObject[playerIndex].getX() < 1500 - 66) {
+                            _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() + 4);
+                            _playerFrames[search->second] = 0;
+                            _gameObject[playerIndex].setFrame(0);
+                        }
+                        break;
+                    case Action::UP:
+                        if (_gameObject[playerIndex].getY() > 0) {
+                            _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() - 4);
+                            _playerFrames[search->second]++;
+                            if (_playerFrames[search->second] >= 10)
+                                _gameObject[playerIndex].setFrame(2);
+                            else
+                                _gameObject[playerIndex].setFrame(1);
+                        }
+                        break;
+                    case Action::DOWN:
+                        if (_gameObject[playerIndex].getY() < 900 - 34) {
+                            _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() + 4);
+                            _playerFrames[search->second]++;
+                            if (_playerFrames[search->second] >= 10)
+                                _gameObject[playerIndex].setFrame(-2);
+                            else
+                                _gameObject[playerIndex].setFrame(-1);
+                        }
+                        break;
+                    case Action::NONE:
+                        _playerFrames[search->second] = 0;
+                        _gameObject[playerIndex].setFrame(0);
+                        break;
+                    case Action::LEVEL1:
+                        Level_1();
+                        break;
+                    case Action::LEVEL2:
+                        Level_2();
+                        break;
+                    case Action::LEVEL3:
+                        Level_3();
+                        break;
+                    case Action::LEVEL4:
+                        Level_4();
+                        break;
+                    case Action::LEVEL5:
+                        Level_5();
+                        break;
+                    }
+                    _mutex.unlock();
+
+                    //if (_recvBuffer.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
+                    //    _myMap.erase(_remoteEndpoint.address().to_string());
+                    //    if (_myMap.size() == 0) {
+                    //        for (auto& t : _threadPool)
+                    //            t.join();
+                    //        return;
+                    //    }
+                    //}
+                    //        }
+                }
+            }
         }
-
-        switch (_recvBuffer.data()[0]) {
-            case Action::SIMPLE_SHOOT:
-                CreateBullet(_gameObject[playerIndex], BulletType::SIMPLE);
-                break;
-            case Action::LASER_SHOOT:
-                CreateBullet(_gameObject[playerIndex], BulletType::LASER);
-                break;
-            case Action::ROCKET_SHOOT:
-                CreateBullet(_gameObject[playerIndex], BulletType::ROCKET);
-                break;
-            case Action::LEFT:
-                if (_gameObject[playerIndex].getX() > 0) {
-                    _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() - 4);
-                    _playerFrames[search->second] = 0;
-                    _gameObject[playerIndex].setFrame(0);
-                }
-                break;
-            case Action::RIGHT:
-                if (_gameObject[playerIndex].getX() < 1500 - 66) {
-                    _gameObject[playerIndex].setX(_gameObject[playerIndex].getX() + 4);
-                    _playerFrames[search->second] = 0;
-                    _gameObject[playerIndex].setFrame(0);
-                }
-                break;
-            case Action::UP:
-                if (_gameObject[playerIndex].getY() > 0) {
-                    _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() - 4);
-                    _playerFrames[search->second]++;
-                    if (_playerFrames[search->second] >= 10)
-                        _gameObject[playerIndex].setFrame(2);
-                    else
-                        _gameObject[playerIndex].setFrame(1);
-                }
-                break;
-            case Action::DOWN:
-                if (_gameObject[playerIndex].getY() < 900 - 34) {
-                    _gameObject[playerIndex].setY(_gameObject[playerIndex].getY() + 4);
-                    _playerFrames[search->second]++;
-                    if (_playerFrames[search->second] >= 10)
-                        _gameObject[playerIndex].setFrame(-2);
-                    else
-                        _gameObject[playerIndex].setFrame(-1);
-                }
-                break;
-            case Action::NONE:
-                _playerFrames[search->second] = 0;
-                _gameObject[playerIndex].setFrame(0);
-                break;
-            case Action::LEVEL1:
-                Level_1();
-                break;
-            case Action::LEVEL2:
-                Level_2();
-                break;
-            case Action::LEVEL3:
-                Level_3();
-                break;
-            case Action::LEVEL4:
-                Level_4();
-                break;
-            case Action::LEVEL5:
-                Level_5();
-                break;
-        }
-        _mutex.unlock();
-
-        //if (_recvBuffer.data()[0] == static_cast<unsigned char>(RType::Events::QUIT)) {
-        //    _myMap.erase(_remoteEndpoint.address().to_string());
-        //    if (_myMap.size() == 0) {
-        //        for (auto& t : _threadPool)
-        //            t.join();
-        //        return;
-        //    }
-        //}
-        //        }
     }
 }
 
 
 void UDPServer::Receive(const boost::system::error_code& error, std::size_t) {
     if (!error) {
-//        if (_gameObject.size() > 1)
-//            _gameObject[1].setX(_gameObject[1].getX() + _gameObject[1].getCelerity());
         _mutex.lock();
         Network::Seria::S_erialize(_gameObject, &_buf);
         _mutex.unlock();
-        std::string strBuf(boost::asio::buffers_begin(_buf.data()),boost::asio::buffers_end(_buf.data()));
-        boost::shared_ptr<std::string> message(new std::string(strBuf));
-        //            std::cout << "" << *message << std::endl;
-        //std::cout << "Serialized data size: " << _buf.size() << "and mess length: " << message->length() << std::endl;
-        _socket.async_send_to(boost::asio::buffer(*message), _remoteEndpoint, boost::bind(&UDPServer::Send, this, message, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-        _buf.consume(_buf.size());
-        StartReceive();
+        if (_buf.size() != 0) {
+            std::string strBuf(boost::asio::buffers_begin(_buf.data()), boost::asio::buffers_end(_buf.data()));
+            boost::shared_ptr<std::string> message(new std::string(strBuf));
+            //            std::cout << "" << *message << std::endl;
+            //std::cout << "Serialized data size: " << _buf.size() << "and mess length: " << message->length() << std::endl;
+            _socket.async_send_to(boost::asio::buffer(*message), _remoteEndpoint, boost::bind(&UDPServer::Send, this, message, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+            _buf.consume(_buf.size());
+            StartReceive();
+        }
     }
 }
 

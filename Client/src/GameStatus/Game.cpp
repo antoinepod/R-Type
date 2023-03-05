@@ -85,6 +85,7 @@ Game::Game() {
     isRunning = false;
     _socket = std::make_shared<boost::asio::ip::udp::socket>(_service);
     _socket->open(boost::asio::ip::udp::v4());
+    _socket->bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 8082));
 }
 
 Game::~Game() {
@@ -301,7 +302,7 @@ void Game::UpdateSound(const std::shared_ptr<Audio>& audio, Network::Object & so
 void Game::ConnectToServer() {
     try {
         boost::asio::ip::tcp::resolver resolver(_service);
-        boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), _serverIp, std::to_string(12345));
+        boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), _serverIp, std::to_string(8081));
 
         boost::asio::ip::tcp::socket socket(_service);
         boost::asio::connect(socket, resolver.resolve(query));
@@ -340,7 +341,7 @@ void Game::ConnectToServer() {
 
     while (isRunning)
     {
-        boost::array<char, 1024> recv_buf{};
+        boost::array<char, 1024> recv_buf;
         boost::asio::ip::udp::endpoint sender_endpoint;
         size_t bytes_recvd = _socket->receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
 

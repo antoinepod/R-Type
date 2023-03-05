@@ -24,6 +24,8 @@ public:
 private:
     void Accept(UDPServer& udpServer);
 
-    tcp::acceptor _acceptor;
+    tcp::acceptor *_acceptor;
+    tcp::endpoint* _endpoint;
+    boost::asio::io_service& _ioService;
     std::map<std::string, int> _clients;
 };
