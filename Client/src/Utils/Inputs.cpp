@@ -15,11 +15,9 @@ Inputs::Inputs() {
     _keys[Action::DOWN] = sf::Keyboard::Down;
     _keys[Action::LEFT] = sf::Keyboard::Left;
     _keys[Action::RIGHT] = sf::Keyboard::Right,
-    _keys[Action::LEVEL1] = sf::Keyboard::Num1;
-    _keys[Action::LEVEL2] = sf::Keyboard::Num2;
-    _keys[Action::LEVEL3] = sf::Keyboard::Num3;
-    _keys[Action::LEVEL4] = sf::Keyboard::Num4;
-    _keys[Action::LEVEL5] = sf::Keyboard::Num5;
+    _keys[Action::LEVEL1] = sf::Keyboard::F1;
+    _keys[Action::LEVEL2] = sf::Keyboard::F2;
+    _keys[Action::LEVEL3] = sf::Keyboard::F3;
 }
 
 Inputs::~Inputs() = default;

@@ -35,9 +35,7 @@ enum Action {
     ROCKET_SHOOT = 128,
     LEVEL1 = 256,
     LEVEL2 = 512,
-    LEVEL3 = 1024,
-    LEVEL4 = 2048,
-    LEVEL5 = 4096,
+    LEVEL3 = 1024
 };
 
 enum Events {
@@ -89,8 +87,6 @@ enum GameState {
     LEVEL_1 = 4,
     LEVEL_2 = 8,
     LEVEL_3 = 16,
-    LEVEL_4 = 32,
-    LEVEL_5 = 64,
     WIN = 128,
     LOOSE = 256
 };

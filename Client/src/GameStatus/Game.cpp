@@ -225,13 +225,34 @@ void Game::Display(const std::shared_ptr<sf::RenderWindow>& window, const std::s
 }
 
 void Game::UpdateGameState(const std::shared_ptr<sf::RenderWindow> &window, Network::Object &gameState) {
+    _gameStateText.setFillColor(sf::Color::White);
+    _helpText.setString("");
     switch (gameState.getGameState()) {
         case GameState::WAITING:
             _gameStateText.setString("Waiting for other players...");
+            _helpText.setString("Press 'Enter' to start the game or F1, F2, F3 to start Level 1, 2, 3");
+            break;
+        case GameState::LEVEL_1:
+            _gameStateText.setString("Level 1");
+            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            break;
+        case GameState::LEVEL_2:
+            _gameStateText.setString("Level 2");
+            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            break;
+        case GameState::LEVEL_3:
+            _gameStateText.setString("Level 3");
+            _helpText.setString("Wave " + std::to_string(gameState.getId()) + "/3");
+            break;
+        case GameState::WIN:
+            _gameStateText.setFillColor(sf::Color::Green);
+            _gameStateText.setString("You win!");
             _helpText.setString("Press '1' to start Level 1, '2' to start Level 2, '3' to start Level 3");
             break;
-        default:
-            _gameStateText.setString("Work in progress");
+        case GameState::LOOSE:
+            _gameStateText.setFillColor(sf::Color::Red);
+            _gameStateText.setString("You loose...");
+            _helpText.setString("Press '1' to start Level 1, '2' to start Level 2, '3' to start Level 3");
             break;
     }
 
@@ -274,7 +295,12 @@ void Game::UpdateEnemy(const std::shared_ptr<sf::RenderWindow>& window, Network:
 
 void Game::UpdateBullet(const std::shared_ptr<sf::RenderWindow>& window, Network::Object & bullet) {
     BulletType type = bullet.getBullet();
+    sf::IntRect rect = _bullet[type].getTextureRect();
 
+    if (bullet.getCelerity() < 0)
+        _bullet[type].setTextureRect(sf::IntRect(rect.width, 0, -rect.width, rect.height));
+    else
+        _bullet[type].setTextureRect(sf::IntRect(0, 0, rect.width, rect.height));
     _bullet[type].setPosition(bullet.getX(), bullet.getY());
 
     window->draw(_bullet[type]);
