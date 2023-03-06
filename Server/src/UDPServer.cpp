@@ -510,7 +510,7 @@ void UDPServer::UpdateEnemy(Network::Object & enemy) {
         }
     }
 
-    int prob = (1 / sqrt(enemy.getEnemy())) * 300;
+    int prob = (1 / sqrt((double)enemy.getEnemy())) * 300;
     if (rand() % prob == 0) {
         if (enemy.getEnemy() == EnemyType::BOSS_3) {
             if (rand() % 2 == 0)
