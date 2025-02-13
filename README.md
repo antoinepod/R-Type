@@ -11,14 +11,14 @@ You can see our documentation in the documentation folder. Use vscode to open a 
 ## ⚙️ Installation
 First, you need to clone the repo, and its git submodules:
 ```sh
-git clone https://github.com/EpitechPromo2025/B-CPP-500-LIL-5-2-rtype-william.mallevays.git --recurse-submodules
+git clone https://github.com/antoinepod/R-Type.git --recurse-submodules
 ```
 or
 ```sh
-git clone https://github.com/EpitechPromo2025/B-CPP-500-LIL-5-2-rtype-william.mallevays.git
+git clone https://github.com/antoinepod/R-Type.git
 ```
 ```sh
-cd B-CPP-500-LIL-5-2-rtype-william.mallevays && git submodule update --init --recursive
+cd R-Type && git submodule update --init --recursive
 ```
 
 
